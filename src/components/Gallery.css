@@ -1,0 +1,26 @@
+.gallery {
+  .slick-list {
+    @apply overflow-visible -mx-2 lg:-mx-12;
+  }
+  .slick-slide {
+    @apply px-2 lg:px-12;
+  }
+  .slick-prev {
+    left: -40px;
+  }
+  .slick-next {
+    right: -40px;
+  }
+  .slick-prev, .slick-next {
+    width: 65px;
+    height: 30px;
+    @apply z-30;
+    &.slick-disabled {
+      display: none;
+    }
+  }
+  .slick-prev:before, .slick-next:before {
+    @apply text-black hidden;
+  }
+
+}

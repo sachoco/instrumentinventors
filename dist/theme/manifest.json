@@ -1,0 +1,50 @@
+{
+  "main.css": "theme/main-03a73bfc.css",
+  "main.css.map": "theme/main-03a73bfc.css.map",
+  "main.js": "theme/main-5fa93f02.js",
+  "main.js.map": "theme/main-5fa93f02.js.map",
+  "runtime.js": "theme/runtime-9a84b121.js",
+  "runtime.js.map": "theme/runtime-9a84b121.js.map",
+  "theme/assets/Antipol Extended Bold.otf": "theme/assets/Antipol%20Extended%20Bold-47719189.otf",
+  "theme/assets/Antipol Extended Regular.otf": "theme/assets/Antipol%20Extended%20Regular-c41cd2ee.otf",
+  "theme/assets/GT-Walsheim-Bold.eot": "theme/assets/GT-Walsheim-Bold-33f7eff5.eot",
+  "theme/assets/GT-Walsheim-Bold.woff": "theme/assets/GT-Walsheim-Bold-e9a3833e.woff",
+  "theme/assets/GT-Walsheim-Bold.woff2": "theme/assets/GT-Walsheim-Bold-1bcdcd82.woff2",
+  "theme/assets/GT-Walsheim-Regular.eot": "theme/assets/GT-Walsheim-Regular-397595bb.eot",
+  "theme/assets/GT-Walsheim-Regular.woff": "theme/assets/GT-Walsheim-Regular-e7d96dc5.woff",
+  "theme/assets/GT-Walsheim-Regular.woff2": "theme/assets/GT-Walsheim-Regular-c4f8cd15.woff2",
+  "theme/assets/ajax-loader.gif": "theme/assets/ajax-loader-fb6f3c23.gif",
+  "theme/assets/overlay.jpg": "theme/assets/overlay-f84db85c.jpg",
+  "theme/assets/slick.eot": "theme/assets/slick-a4e97f5a.eot",
+  "theme/assets/slick.svg": "theme/assets/slick-0e84c71d.svg",
+  "theme/assets/slick.ttf": "theme/assets/slick-c94f7671.ttf",
+  "theme/assets/slick.woff": "theme/assets/slick-29518378.woff",
+  "vendors~main.css": "theme/vendors~main-dbe03e4f.css",
+  "vendors~main.css.map": "theme/vendors~main-dbe03e4f.css.map",
+  "vendors~main.js": "theme/vendors~main-31d4b153.js",
+  "vendors~main.js.map": "theme/vendors~main-31d4b153.js.map",
+  "wpackioEp": {
+    "main": {
+      "assets": {
+        "js": [
+          "theme/runtime-9a84b121.js",
+          "theme/vendors~main-31d4b153.js",
+          "theme/main-5fa93f02.js"
+        ],
+        "js.map": [
+          "theme/runtime-9a84b121.js.map",
+          "theme/vendors~main-31d4b153.js.map",
+          "theme/main-5fa93f02.js.map"
+        ],
+        "css": [
+          "theme/vendors~main-dbe03e4f.css",
+          "theme/main-03a73bfc.css"
+        ],
+        "css.map": [
+          "theme/vendors~main-dbe03e4f.css.map",
+          "theme/main-03a73bfc.css.map"
+        ]
+      }
+    }
+  }
+}

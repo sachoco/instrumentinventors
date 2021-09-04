@@ -1,0 +1,395 @@
+import React, { useState } from "react";
+import { Link, NavLink } from "react-router-dom";
+import styled from "styled-components";
+
+const MobileNavigation = () => {
+  const MyLink = styled(NavLink)`
+    &.active {
+      &:before {
+        content: "";
+        width: 50px;
+        border-bottom: 2px solid;
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+  `;
+  const [showMenu, setShowMenu] = useState(false);
+  const [showSubMenu, setShowSubMenu] = useState(false);
+
+  const onClickHandler = (e) => {
+    showMenu ? setShowMenu(false) : setShowMenu(true);
+  };
+  const onToggleSubmenu = (cat) => {
+    showSubMenu ? setShowSubMenu(false) : setShowSubMenu(cat);
+  };
+  return (
+    <div className="relative w-full h-full">
+      <button
+        className="w-full h-full flex justify-center items-center"
+        onClick={onClickHandler}
+      >
+        {!showMenu ? (
+          <svg width="35px" height="23px" viewBox="0 0 35 23">
+            <g
+              stroke="none"
+              strokeWidth="1"
+              fill="none"
+              fillRule="evenodd"
+            >
+              <g
+                transform="translate(0.000000, 1.000000)"
+                stroke="#000000"
+                strokeWidth="2"
+              >
+                <line x1="35" y1="0.5" x2="0" y2="0.5" ></line>
+                <line x1="35" y1="10.5" x2="0" y2="10.5"></line>
+                <line x1="35" y1="20.5" x2="0" y2="20.5" ></line>
+              </g>
+            </g>
+          </svg>
+        ) : (
+          <svg width="27px" height="27px" viewBox="0 0 27 27">
+            <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+              <g
+                transform="translate(1.000000, 1.000000)"
+                stroke="#000000"
+                strokeWidth="2"
+              >
+                <line
+                  x1="30.2279221"
+                  y1="12.7279221"
+                  x2="-4.77207794"
+                  y2="12.7279221"
+                  transform="translate(12.727922, 12.727922) rotate(45.000000) translate(-12.727922, -12.727922) "
+                ></line>
+                <line
+                  x1="30.2279221"
+                  y1="12.7281847"
+                  x2="-4.77207794"
+                  y2="12.7281847"
+                  transform="translate(12.727922, 12.728185) rotate(-45.000000) translate(-12.727922, -12.728185) "
+                ></line>
+              </g>
+            </g>
+          </svg>
+        )}
+      </button>
+      {showSubMenu && (
+        <button
+          className="w-full h-full flex justify-center items-center absolute top-0 left-0 bg-white"
+          onClick={onToggleSubmenu}
+        >
+          <svg width="31px" height="26px" viewBox="0 0 31 26">
+            <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+              <g
+                transform="translate(2.000000, 1.000000)"
+                stroke="#000000"
+                strokeWidth="2"
+              >
+                <line x1="28.658" y1="11.913" x2="0" y2="11.913"></line>
+                <polyline points="11.913 0 5.68434189e-13 11.913 11.913 23.826"></polyline>
+              </g>
+            </g>
+          </svg>
+        </button>
+      )}
+      <div
+        className={`fixed -z-10 top-0 h-screen w-full left-0 pt-14 font-nav transform duration-200 transition-all ${
+          !showMenu ? "opacity-0 invisible" : "opacity-100 visible"
+        }`}
+      >
+        <div className="relative h-full p-8 bg-white flex flex-col justify-between">
+          <nav className="flex-grow border-b-2 pb-8">
+            <ul className="flex flex-col justify-around h-full  leading-10">
+              <li className="text-center">
+                <MyLink
+                  activeClassName="font-bold active"
+                  className="relative hover:font-bold"
+                  to="/artists"
+                >
+                  artists
+                </MyLink>
+              </li>
+              <li className="text-center">
+                <MyLink
+                  activeClassName="font-bold active"
+                  className="relative hover:font-bold"
+                  to="/hosted"
+                >
+                  hosted program
+                </MyLink>
+              </li>
+              <li className="text-center">
+                <MyLink
+                  activeClassName="font-bold active"
+                  className="relative hover:font-bold"
+                  to="/agency"
+                >
+                  agency
+                </MyLink>
+              </li>
+              <li className="text-center">
+                <MyLink
+                  activeClassName="font-bold active"
+                  className="relative hover:font-bold"
+                  to="/education"
+                >
+                  education
+                </MyLink>
+              </li>
+              <li className="text-center">
+                <MyLink
+                  activeClassName="font-bold active"
+                  className="relative hover:font-bold"
+                  to="/editions"
+                >
+                  editions
+                </MyLink>
+              </li>
+            </ul>
+          </nav>
+
+          <nav className="flex-grow py-10 border-b-2 ">
+            <ul className="flex flex-col justify-around h-full leading-10">
+              <li className="text-center">
+                <span
+                  className="relative font-bold cursor-pointer"
+                  onClick={(e) => {
+                    onToggleSubmenu("about");
+                  }}
+                >
+                  about
+                  <svg
+                    className="absolute -right-8 top-1 ml-5 transform -rotate-90"
+                    width="14px"
+                    height="9px"
+                    viewBox="0 0 14 9"
+                  >
+                    <g
+                      stroke="none"
+                      strokeWidth="1"
+                      fill="none"
+                      fillRule="evenodd"
+                    >
+                      <polyline
+                        stroke="#000000"
+                        strokeWidth="2"
+                        points="0.8835 1.1165 7.1165 7.3495 13.3495 1.1165"
+                        className="stroke-3"
+                      ></polyline>
+                    </g>
+                  </svg>
+                </span>
+              </li>
+              <li className="text-center">
+                <span
+                  className="relative font-bold cursor-pointer"
+                  onClick={(e) => {
+                    onToggleSubmenu("get-involved");
+                  }}
+                >
+                  get involbed
+                  <svg
+                    className="absolute -right-8 top-1 ml-5 transform -rotate-90"
+                    width="14px"
+                    height="9px"
+                    viewBox="0 0 14 9"
+                  >
+                    <g
+                      stroke="none"
+                      strokeWidth="1"
+                      fill="none"
+                      fillRule="evenodd"
+                    >
+                      <polyline
+                        stroke="#000000"
+                        strokeWidth="2"
+                        points="0.8835 1.1165 7.1165 7.3495 13.3495 1.1165"
+                        className="stroke-3"
+                      ></polyline>
+                    </g>
+                  </svg>
+                </span>
+              </li>
+            </ul>
+          </nav>
+          <div className="flex-grow flex flex-col justify-around">
+            <h5 className="relative text-xl font-bold border-b-2 mt-12 text-center ">
+              search
+              <svg
+                className="absolute mr-3 right-0 -top-2"
+                width="31px"
+                height="31px"
+                viewBox="0 0 31 31"
+              >
+                <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+                  <g
+                    transform="translate(1.000000, 1.000000)"
+                    stroke="#000000"
+                    strokeWidth="2"
+                  >
+                    <g id="Ellipse_1" transform="translate(8.000000, 0.000000)">
+                      <circle id="Oval" cx="10.5" cy="10.5" r="10.5"></circle>
+                    </g>
+                    <line x1="11" y1="18" x2="0" y2="29" id="Line_36"></line>
+                  </g>
+                </g>
+              </svg>
+            </h5>
+          </div>
+
+          <div
+            className={`absolute top-0 left-0 h-full w-full p-8 bg-white flex flex-col justify-between font-nav transform duration-200 transition-all ${
+              !showSubMenu ? "opacity-0 invisible" : "opacity-100 visible"
+            }`}
+          >
+            <nav className="flex-grow pb-8">
+              <ul className="flex flex-col justify-around h-full leading-10">
+                {showSubMenu == "about" && (
+                  <>
+                    <li className="text-center">
+                      <MyLink
+                        activeClassName="font-bold active"
+                        className="relative hover:font-bold"
+                        to="/mission"
+                      >
+                        mission
+                      </MyLink>
+                    </li>
+                    <li className="text-center">
+                      <MyLink
+                        activeClassName="font-bold active"
+                        className="relative hover:font-bold"
+                        to="/program-themes"
+                      >
+                        program themes
+                      </MyLink>
+                    </li>
+                    <li className="text-center">
+                      <MyLink
+                        activeClassName="font-bold active"
+                        className="relative hover:font-bold"
+                        to="/residencies"
+                      >
+                        residencies
+                      </MyLink>
+                    </li>
+                    <li className="text-center">
+                      <MyLink
+                        activeClassName="font-bold active"
+                        className="relative hover:font-bold"
+                        to="/agency"
+                      >
+                        agendy
+                      </MyLink>
+                    </li>
+                    <li className="text-center">
+                      <MyLink
+                        activeClassName="font-bold active"
+                        className="relative hover:font-bold"
+                        to="/education"
+                      >
+                        education
+                      </MyLink>
+                    </li>
+                    <li className="text-center">
+                      <MyLink
+                        activeClassName="font-bold active"
+                        className="relative hover:font-bold"
+                        to="/workspace"
+                      >
+                        workspace
+                      </MyLink>
+                    </li>
+                    <li className="text-center">
+                      <MyLink
+                        activeClassName="font-bold active"
+                        className="relative hover:font-bold"
+                        to="/organisation"
+                      >
+                        organisation
+                      </MyLink>
+                    </li>
+                    <li className="text-center">
+                      <MyLink
+                        activeClassName="font-bold active"
+                        className="relative hover:font-bold"
+                        to="/partners"
+                      >
+                        partners
+                      </MyLink>
+                    </li>
+                    <li className="text-center">
+                      <MyLink
+                        activeClassName="font-bold active"
+                        className="relative hover:font-bold"
+                        to="/transparency"
+                      >
+                        transparency
+                      </MyLink>
+                    </li>
+                  </>
+                )}
+
+                {showSubMenu == "get-involved" && (
+                  <>
+                    <li className="text-center">
+                      <MyLink
+                        activeClassName="font-bold active"
+                        className="relative hover:font-bold"
+                        to="/apply-for-residency"
+                      >
+                        apply for residency
+                      </MyLink>
+                    </li>
+                    <li className="text-center">
+                      <MyLink
+                        activeClassName="font-bold active"
+                        className="relative hover:font-bold"
+                        to="/iii-workspace-membership"
+                      >
+                        iii workspace membership
+                      </MyLink>
+                    </li>
+                    <li className="text-center">
+                      <MyLink
+                        activeClassName="font-bold active"
+                        className="relative hover:font-bold"
+                        to="/propose-an-activity"
+                      >
+                        propose an activity
+                      </MyLink>
+                    </li>
+                    <li className="text-center">
+                      <MyLink
+                        activeClassName="font-bold active"
+                        className="relative hover:font-bold"
+                        to="/project-space-rental"
+                      >
+                        project space rental
+                      </MyLink>
+                    </li>
+                    <li className="text-center">
+                      <MyLink
+                        activeClassName="font-bold active"
+                        className="relative hover:font-bold"
+                        to="/internships"
+                      >
+                        internships
+                      </MyLink>
+                    </li>
+                  </>
+                )}
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default MobileNavigation;

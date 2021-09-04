@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+      font-family: "GT Walsheim";
+      src: url("./fonts/GT Walsheim/GT-Walsheim-Regular.eot"),
+      url("./fonts/GT Walsheim/GT-Walsheim-Regular.woff2"),
+      url("./fonts/GT Walsheim/GT-Walsheim-Regular.woff");
+  }
+  /* @font-face {
+      font-family: "GT Walsheim";
+      src: url("./fonts/GT Walsheim/GT-Walsheim-Medium.eot"),
+      url("./fonts/GT Walsheim/GT-Walsheim-Medium.woff"),
+      url("./fonts/GT Walsheim/GT-Walsheim-Medium.woff2");
+  } */
+  @font-face {
+      font-family: "GT Walsheim";
+      src: url("./fonts/GT Walsheim/GT-Walsheim-Bold.eot"),
+      url("./fonts/GT Walsheim/GT-Walsheim-Bold.woff2"),
+      url("./fonts/GT Walsheim/GT-Walsheim-Bold.woff");
+      font-weight: bold;
+  }
+  @font-face {
+      font-family: "Antipol Extended";
+      src: url("./fonts/Antipol Extended/Antipol Extended Regular.otf");
+  }
+  @font-face {
+      font-family: "Antipol Extended";
+      src: url("./fonts/Antipol Extended/Antipol Extended Bold.otf");
+      font-weight: bold;
+  }
+  html {
+    font-size: 18px;
+  }
+  body {
+    @apply text-mobile lg:text-base;
+  }
+  h1, h2 , h3, h4, h5 {
+    @apply font-title;
+  }
+
+}
+
+
+.outline-text {
+  -webkit-text-stroke:2px white;
+  -webkit-text-fill-color:transparent;
+  /* color: rgba(255,255,255,0);
+  text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF; */
+}
