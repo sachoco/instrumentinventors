@@ -1,7 +1,9 @@
 <?php
-// require_once 'inc/includes/theme-setup.php';
-// require_once 'inc/includes/theme-functions.php';
-// require_once 'inc/includes/theme-restapi.php';
+require_once 'inc/theme-posttype.php';
+require_once 'inc/theme-restapi.php';
+include 'meta_box_defs.php';
+
+add_filter( 'show_admin_bar', '__return_false' );
 
 // Require the composer autoload for getting conflict-free access to enqueue
 require_once __DIR__ . '/vendor/autoload.php';
@@ -23,21 +25,23 @@ function theme_scripts() {
 	 * @var \WPackio\Enqueue
 	 */
 	global $enqueue;
-	$enqueue->enqueue( 'theme', 'main', [] );
+	// $enqueue->enqueue( 'theme', 'main', [] );
 
-	// $assets = $enqueue->enqueue( 'theme', 'main',  [
-	// 	'js' => true,
-	// 	'css' => true,
-	// 	'js_dep' => [],
-	// 	'css_dep' => [],
-	// 	'in_footer' => true,
-	// 	'media' => 'all',
-	// ]  );
-// $entry_point = array_pop( $assets['js'] );
-	// wp_localize_script( $entry_point['handle'], 'wpApiSettings', array(
-	//     'root' => esc_url_raw( rest_url() ),
-	//     'nonce' => wp_create_nonce( 'wp_rest' ),
-	// ) );
+	$assets = $enqueue->enqueue( 'theme', 'main',  [
+		'js' => true,
+		'css' => true,
+		'js_dep' => [],
+		'css_dep' => [],
+		'in_footer' => true,
+		'media' => 'all',
+	]  );
+	$entry_point = array_pop( $assets['js'] );
+
+	global $post;
+	wp_localize_script( $entry_point['handle'], 'wpApiSettings', array(
+	    'root' => esc_url_raw( rest_url() ),
+	    'nonce' => wp_create_nonce( 'wp_rest' )
+	) );
 
 
 

@@ -1,0 +1,60 @@
+import { useEffect, useState } from "react";
+import Axios from "axios";
+
+const fetchData = (url, single=false, concat=true) => {
+  const [state, setState] = useState({
+    items: [],
+    loaded: false,
+    error: "",
+    hasMore: false,
+    page: 1,
+    noItem: false,
+  });
+  useEffect(() => {
+    getItems();
+  }, [url]);
+
+  const getItems = () => {
+    setState({
+      ...state,
+      loaded: false,
+    });
+    let rest_call_url = wpApiSettings.root + url;
+    !single && rest_call_url + "&page=" + state.page;
+
+    return Axios.get(rest_call_url).then(
+      (response) => {
+        console.log(response.data);
+        setState((prevState, props) => ({
+          ...state,
+          item: response.data[0],
+          items: concat ? prevState.items.concat(response.data) : response.data,
+          loaded: true,
+          page: prevState.page + 1,
+          hasMore:
+            response.headers["x-wp-totalpages"] > prevState.page ? true : false,
+          noItem: response.headers["x-wp-total"] == 0 ? true : false,
+        }));
+      },
+      (error) => {
+        setState((prevState, props) => ({
+          ...state,
+          error: error.toJSON().message,
+          loaded: true,
+          hasMore: false,
+        }));
+      }
+    );
+  };
+  const loadMore = () => {
+    state.loaded === true &&
+      state.hasMore &&
+      getItems().then(() => {
+        console.log("loading more...");
+      });
+  };
+
+  return [state, loadMore];
+};
+
+export default fetchData;

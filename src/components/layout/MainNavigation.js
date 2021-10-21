@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
 import MobileNavigation from "./MobileNavigation";
 import { useLocation } from "react-router-dom";
+import MetaContext from "../../store/meta-context";
+import getTitle from "../utilities/getTitle";
 
 import styled from "styled-components";
 
 const MainNavigation = () => {
+  const metaCtx = useContext(MetaContext);
+
   const MyLink = styled(NavLink)`
     &.active {
       &:before {
@@ -19,18 +23,8 @@ const MainNavigation = () => {
       }
     }
   `;
-  const getTitle = (location)=>{
-    let title = "home";
-    if(location.pathname=="/artists"){
-      title = "artists";
-    }else if(location.pathname=="/hosted"){
-      title = "hosted program";
-    }
-    return title;
-  }
-  const location = useLocation();
-  console.log(location);
-  const title = getTitle(location);
+
+  // metaCtx.changeTitle(getTitle(location));
   return (
     <>
       <header className="fixed w-full h-14 lg:h-24 bg-white border-b-2 flex z-50 font-nav text-xl">
@@ -62,7 +56,7 @@ const MainNavigation = () => {
               <MyLink
                 activeClassName="font-bold active"
                 className="relative hover:font-bold"
-                to="/artists"
+                to="/artists/"
               >
                 artists
               </MyLink>
@@ -71,7 +65,7 @@ const MainNavigation = () => {
               <MyLink
                 activeClassName="font-bold active"
                 className="relative hover:font-bold"
-                to="/hosted"
+                to="/hosted/"
               >
                 hosted program
               </MyLink>
@@ -80,7 +74,7 @@ const MainNavigation = () => {
               <MyLink
                 activeClassName="font-bold active"
                 className="relative hover:font-bold"
-                to="/agency"
+                to="/agency/"
               >
                 agency
               </MyLink>
@@ -89,7 +83,7 @@ const MainNavigation = () => {
               <MyLink
                 activeClassName="font-bold active"
                 className="relative hover:font-bold"
-                to="/education"
+                to="/education/"
               >
                 education
               </MyLink>
@@ -98,7 +92,7 @@ const MainNavigation = () => {
               <MyLink
                 activeClassName="font-bold active"
                 className="relative hover:font-bold"
-                to="/editions"
+                to="/editions/"
               >
                 editions
               </MyLink>
@@ -106,7 +100,7 @@ const MainNavigation = () => {
           </ul>
 
           <div className="flex lg:hidden justify-center items-center h-full ">
-            <h2>{title}</h2>
+            <h2>{metaCtx.title}</h2>
           </div>
         </nav>
 

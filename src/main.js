@@ -5,17 +5,23 @@ import { render } from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { ViewContextProvider } from "./store/view-context";
-
+import { MetaContextProvider } from "./store/meta-context";
+import { ThemeProvider } from '@mui/material/styles';
+import iiiTheme from "./themes/iiiTheme";
 // document.addEventListener('DOMContentLoaded', () => {
 const entry = document.querySelector("#root");
 // render(<App />, entry);
 
 render(
-	<ViewContextProvider>
   <BrowserRouter basename={"/"}>
-    <App />
-  </BrowserRouter>
-	</ViewContextProvider>,
+    <ThemeProvider theme={iiiTheme}>
+      <MetaContextProvider>
+        <ViewContextProvider>
+          <App />
+        </ViewContextProvider>
+      </MetaContextProvider>
+    </ThemeProvider>
+  </BrowserRouter>,
   entry
 );
 // });

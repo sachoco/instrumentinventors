@@ -1,0 +1,11 @@
+{
+  "artist": {
+    "category": {
+      "null" : "Select a category",
+      "iii_member" : "iii member",
+      "workspace_member" : "Workspace member",
+      "resident" : "Resident",
+      "agency" : "Agency"
+    }
+  }
+}

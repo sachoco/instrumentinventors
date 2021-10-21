@@ -2,21 +2,23 @@ import React from "react";
 import Slideshow from "../components/Slideshow";
 import Carousel from "../components/Carousel";
 import Block from "../components/layout/Block";
+import Meta from "../components/layout/Meta";
 
 const Home = () => (
   <>
+    <Meta title="Home" />
     <Slideshow />
     <Block title="hosted program">
-      <Carousel />
+      <Carousel url="wp/v2/agenda/?cat=hosted&upcoming&_embed" />
     </Block>
     <Block title="circulation program" bg={true}>
-      <Carousel />
+      <Carousel url="wp/v2/agenda/?cat=circulation&upcoming&_embed" />
     </Block>
     <Block title="projects">
-      <Carousel />
+      <Carousel url="wp/v2/project/?_embed" />
     </Block>
     <Block title="news & media" bg={true}>
-      <Carousel />
+      <Carousel url="wp/v2/posts/?_embed" />
     </Block>
     <Block title="about iii">
       <p className="max-w-prose">

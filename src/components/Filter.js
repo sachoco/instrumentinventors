@@ -3,6 +3,8 @@ import ViewContext from "../store/view-context";
 import SelectBox from "./SelectBox";
 import Switch from "./Switch";
 
+import filterData from "../data/filterData.json";
+
 export default function Filter(props) {
   const viewCtx = useContext(ViewContext);
 
@@ -33,7 +35,7 @@ export default function Filter(props) {
       }
       setY(window.scrollY);
     },
-    [y]
+    [y, showBox]
   );
 
   useEffect(() => {
@@ -130,14 +132,14 @@ export default function Filter(props) {
             <label className="font-nav">category</label>
 
             <select className="form-select block w-full mt-1 border-2 p-1">
-              <option>Option 1</option>
-              <option>Option 2</option>
-              <option>Option 3</option>
-              <option>Option 4</option>
-              <option>Option 5</option>
+              {Object.keys(filterData.artist.category).map((item, i) => (
+                <option key={i} value={item}>
+                  {filterData.artist.category[item]}
+                </option>
+              ))}
             </select>
           </div>
-          <div className="w-full mt-5 lg:mr-20 ">
+          <div className="w-full mt-5 lg:mt-0 lg:mr-20 ">
             <label className="font-nav">subcategory 1</label>
 
             <select className="form-select block w-full mt-1 border-2 p-1">
@@ -148,7 +150,7 @@ export default function Filter(props) {
               <option>Option 5</option>
             </select>
           </div>
-          <div className="w-full mt-5 lg:mr-20 ">
+          <div className="w-full mt-5 lg:mt-0 lg:mr-20 ">
             <label className="font-nav">subcategory 2</label>
 
             <select className="form-select block w-full mt-1 border-2 p-1">
@@ -159,7 +161,7 @@ export default function Filter(props) {
               <option>Option 5</option>
             </select>
           </div>
-          <div className="w-full mt-5 lg:mr-20 ">
+          <div className="w-full mt-5 lg:mt-0 lg:mr-20 ">
             <label className="font-nav">tag</label>
 
             <select className="form-select block w-full mt-1 border-2 p-1">
