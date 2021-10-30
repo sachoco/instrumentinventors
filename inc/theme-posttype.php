@@ -2,7 +2,7 @@
 require_once 'posttype/agenda.php';
 require_once 'posttype/artist.php';
 require_once 'posttype/project.php';
-// require_once 'posttype/work.php';
+require_once 'posttype/work.php';
 
 add_action( 'init', 'add_tags_to_pages' );
 function add_tags_to_pages() {
@@ -48,11 +48,11 @@ function create_post_type() {
 }
 // add_action( 'init', 'create_post_type' );
 
-// add_action( 'init', 'custom_post_event');
+add_action( 'init', 'custom_post_event');
 add_action( 'init', 'custom_post_production');
 add_action( 'init', 'custom_post_research');
-// add_action( 'init', 'custom_post_workshop');
-// add_action( 'init', 'custom_post_residency');
+add_action( 'init', 'custom_post_workshop');
+add_action( 'init', 'custom_post_residency');
 
 	// adding the function to the Wordpress init
 // let's create the function for the custom type
