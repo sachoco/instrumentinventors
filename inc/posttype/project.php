@@ -8,14 +8,14 @@ function custom_post_project() {
     array( 'labels' => array(
       'name' => __( 'Projects', 'iii' ), /* This is the Title of the Group */
       'singular_name' => __( 'Project', 'iii' ), /* This is the individual type */
-      'all_items' => __( 'All Artworks', 'iii' ), /* the all items menu item */
+      'all_items' => __( 'All Projects', 'iii' ), /* the all items menu item */
       'add_new' => __( 'Add New', 'iii' ), /* The add new menu item */
       'add_new_item' => __( 'Add New Project', 'iii' ), /* Add New Display Title */
       'edit' => __( 'Edit', 'iii' ), /* Edit Dialog */
       'edit_item' => __( 'Edit Project', 'iii' ), /* Edit Display Title */
       'new_item' => __( 'New Project', 'iii' ), /* New Display Title */
       'view_item' => __( 'View Project', 'iii' ), /* View Display Title */
-      'search_items' => __( 'Search Artworks', 'iii' ), /* Search Custom Type Title */
+      'search_items' => __( 'Search Projects', 'iii' ), /* Search Custom Type Title */
       'not_found' =>  __( 'Nothing found in the Database.', 'iii' ), /* This displays if there are no entries yet */
       'not_found_in_trash' => __( 'Nothing found in Trash', 'iii' ), /* This displays if there is nothing in the trash */
       'parent_item_colon' => ''

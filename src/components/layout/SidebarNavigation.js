@@ -69,22 +69,22 @@ const SidebarNavigation = () => {
                 <Link to="/residences">residencies</Link>
               </li>
               <li className="my-1">
-                <Link to="/agency">agency</Link>
+                <Link to="/agency-about">agency</Link>
               </li>
               <li className="my-1">
-                <Link to="education">education</Link>
+                <Link to="/education">education</Link>
               </li>
               <li className="my-1">
-                <Link to="workspace">workspace</Link>
+                <Link to="/workspace/about">workspace</Link>
               </li>
               <li className="my-1">
-                <Link to="organisation">organisation</Link>
+                <Link to="/organisation">organisation</Link>
               </li>
               <li className="my-1">
-                <Link to="partners">partners</Link>
+                <Link to="/organisation">partners</Link>
               </li>
               <li className="my-1">
-                <Link to="transparency">transparency</Link>
+                <Link to="/transparency">transparency</Link>
               </li>
             </ul>
             <h5 className="text-xl font-bold border-b-2 mt-12">get involved</h5>
@@ -93,7 +93,7 @@ const SidebarNavigation = () => {
                 <Link to="apply-for-residency">apply for residency</Link>
               </li>
               <li className="my-1">
-                <Link to="iii-workspace-membership">
+                <Link to="/residencies-description">
                   iii workspace membership
                 </Link>
               </li>

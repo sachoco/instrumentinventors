@@ -219,7 +219,7 @@ function register_rest_search(){
     register_rest_field( 'search-result',
         'search_result',
         array(
-            'get_callback'    => function ( $object ) use ( $field ) {
+            'get_callback'    => function ( $object ) {
                     return true;
                 },
             'update_callback' => null,

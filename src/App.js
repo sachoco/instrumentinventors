@@ -12,7 +12,7 @@ import Agency from "./pages/Agency";
 import Education from "./pages/Education";
 import Search from "./pages/Search";
 
-import "./assets/vc/assets/css/js_composer.min.css";
+
 
 const App = () => {
   return (
