@@ -4,7 +4,6 @@ import { useHistory } from "react-router-dom";
 const SearchForm = ({ mobile = false, noreactrouter = false }) => {
   const [searchStr, setSearchStr] = useState("");
   let history = useHistory();
-  console.log(noreactrouter)
   const onChangeHandler = (event) => {
     const { name, value } = event.target;
     setSearchStr(value);

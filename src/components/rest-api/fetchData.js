@@ -20,11 +20,13 @@ const fetchData = (url, single=false, concat=true) => {
       loaded: false,
     });
     let rest_call_url = wpApiSettings.root + url;
-    !single && rest_call_url + "&page=" + state.page;
+    if(!single){
+      rest_call_url = rest_call_url + "&page=" + state.page;
+    }
 
     return Axios.get(rest_call_url).then(
       (response) => {
-        console.log(response.data);
+        console.log(response);
         setState((prevState, props) => ({
           ...state,
           item: response.data[0],
