@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
-const SearchForm = ({ mobile = false }) => {
+const SearchForm = ({ mobile = false, noreactrouter = false }) => {
   const [searchStr, setSearchStr] = useState("");
   let history = useHistory();
+  console.log(noreactrouter)
   const onChangeHandler = (event) => {
     const { name, value } = event.target;
     setSearchStr(value);
   };
   const onClickHandler = () => {
-    history.push("/search?q=" + searchStr);
+    noreactrouter
+      ? (window.location.href = "/search?q=" + searchStr)
+      : history.push("/search?q=" + searchStr);
   };
   const onKeyDown = (event) => {
     // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event

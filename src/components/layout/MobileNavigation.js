@@ -3,7 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
 import SearchForm from "./SearchForm";
 
-const MobileNavigation = ({ menuItems }) => {
+const MobileNavigation = ({ menuItems, noreactrouter }) => {
   const MyLink = styled(NavLink)`
     &.active {
       &:before {
@@ -213,29 +213,7 @@ const MobileNavigation = ({ menuItems }) => {
             </ul>
           </nav>
           <div className="flex-grow flex flex-col justify-around">
-            <SearchForm mobile />
-            <h5 className="relative text-xl font-bold border-b-2 mt-12 text-center ">
-              search
-              <svg
-                className="absolute mr-3 right-0 -top-2"
-                width="31px"
-                height="31px"
-                viewBox="0 0 31 31"
-              >
-                <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-                  <g
-                    transform="translate(1.000000, 1.000000)"
-                    stroke="#000000"
-                    strokeWidth="2"
-                  >
-                    <g id="Ellipse_1" transform="translate(8.000000, 0.000000)">
-                      <circle id="Oval" cx="10.5" cy="10.5" r="10.5"></circle>
-                    </g>
-                    <line x1="11" y1="18" x2="0" y2="29" id="Line_36"></line>
-                  </g>
-                </g>
-              </svg>
-            </h5>
+            <SearchForm mobile noreactrouter={noreactrouter} />
           </div>
 
           <div
@@ -249,13 +227,22 @@ const MobileNavigation = ({ menuItems }) => {
                   <>
                     {menuItems.items["about-menu"]?.map((item, i) => (
                       <li key={i} className="text-center">
-                        <MyLink
-                          activeClassName="font-bold active"
-                          className="relative hover:font-bold"
-                          to={item.path}
-                        >
-                          {item.title}
-                        </MyLink>
+                        {noreactrouter ? (
+                          <a
+                            className="relative hover:font-bold"
+                            href={item.path}
+                          >
+                            {item.title}
+                          </a>
+                        ) : (
+                          <MyLink
+                            activeClassName="font-bold active"
+                            className="relative hover:font-bold"
+                            to={item.path}
+                          >
+                            {item.title}
+                          </MyLink>
+                        )}
                       </li>
                     ))}
                   </>
@@ -263,17 +250,26 @@ const MobileNavigation = ({ menuItems }) => {
 
                 {showSubMenu == "get-involved" && (
                   <>
-                  {menuItems.items["get_involved-menu"]?.map((item, i) => (
-                    <li key={i} className="text-center">
-                      <MyLink
-                        activeClassName="font-bold active"
-                        className="relative hover:font-bold"
-                        to={item.path}
-                      >
-                        {item.title}
-                      </MyLink>
-                    </li>
-                  ))}
+                    {menuItems.items["get_involved-menu"]?.map((item, i) => (
+                      <li key={i} className="text-center">
+                        {noreactrouter ? (
+                          <a
+                            className="relative hover:font-bold"
+                            href={item.path}
+                          >
+                            {item.title}
+                          </a>
+                        ) : (
+                          <MyLink
+                            activeClassName="font-bold active"
+                            className="relative hover:font-bold"
+                            to={item.path}
+                          >
+                            {item.title}
+                          </MyLink>
+                        )}
+                      </li>
+                    ))}
                   </>
                 )}
               </ul>

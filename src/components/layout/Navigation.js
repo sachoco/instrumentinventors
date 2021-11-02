@@ -9,7 +9,7 @@ import fetchMenu from "../rest-api/fetchMenu";
 
 import styled from "styled-components";
 
-const Navigation = () => {
+const Navigation = ({ noreactrouter = false }) => {
   const metaCtx = useContext(MetaContext);
   const menuItems = fetchMenu();
 
@@ -33,7 +33,12 @@ const Navigation = () => {
       <header className="fixed w-full h-14 lg:h-24 bg-white border-b-2 flex z-50 font-nav text-xl">
         <span className="w-14 lg:w-24 h-full border-r-2 flex justify-center items-center">
           <Link className="w-full text-center" to="/">
-            <svg className="inline-block transform scale-75 lg:scale-100" width="25px" height="36px" viewBox="0 0 25 36">
+            <svg
+              className="inline-block transform scale-75 lg:scale-100"
+              width="25px"
+              height="36px"
+              viewBox="0 0 25 36"
+            >
               <g strokeWidth="1" fill="none" fillRule="evenodd">
                 <g fill="#000000" fillRule="nonzero">
                   <path
@@ -54,53 +59,83 @@ const Navigation = () => {
           </Link>
         </span>
         <nav className="flex-grow ">
-          <ul className="hidden lg:flex justify-evenly items-center h-full ">
-            <li>
-              <MyLink
-                activeClassName="font-bold active"
-                className="relative hover:font-bold"
-                to="/artists/"
-              >
-                artists
-              </MyLink>
-            </li>
-            <li>
-              <MyLink
-                activeClassName="font-bold active"
-                className="relative hover:font-bold"
-                to="/hosted/"
-              >
-                hosted program
-              </MyLink>
-            </li>
-            <li>
-              <MyLink
-                activeClassName="font-bold active"
-                className="relative hover:font-bold"
-                to="/agency/"
-              >
-                agency
-              </MyLink>
-            </li>
-            <li>
-              <MyLink
-                activeClassName="font-bold active"
-                className="relative hover:font-bold"
-                to="/education/"
-              >
-                education
-              </MyLink>
-            </li>
-            <li>
-              <MyLink
-                activeClassName="font-bold active"
-                className="relative hover:font-bold"
-                to="/editions/"
-              >
-                editions
-              </MyLink>
-            </li>
-          </ul>
+          {noreactrouter ? (
+            <ul className="hidden lg:flex justify-evenly items-center h-full ">
+              <li>
+                <a className="relative hover:font-bold" href="/artists/">
+                  artists
+                </a>
+              </li>
+              <li>
+                <a className="relative hover:font-bold" href="/hosted/">
+                  hosted program
+                </a>
+              </li>
+              <li>
+                <a className="relative hover:font-bold" href="/agency/">
+                  agency
+                </a>
+              </li>
+              <li>
+                <a className="relative hover:font-bold" href="/education/">
+                  education
+                </a>
+              </li>
+              <li>
+                <a className="relative hover:font-bold" href="/editions/">
+                  editions
+                </a>
+              </li>
+            </ul>
+          ) : (
+            <ul className="hidden lg:flex justify-evenly items-center h-full ">
+              <li>
+                <MyLink
+                  activeClassName="font-bold active"
+                  className="relative hover:font-bold"
+                  to="/artists/"
+                >
+                  artists
+                </MyLink>
+              </li>
+              <li>
+                <MyLink
+                  activeClassName="font-bold active"
+                  className="relative hover:font-bold"
+                  to="/hosted/"
+                >
+                  hosted program
+                </MyLink>
+              </li>
+              <li>
+                <MyLink
+                  activeClassName="font-bold active"
+                  className="relative hover:font-bold"
+                  to="/agency/"
+                >
+                  agency
+                </MyLink>
+              </li>
+              <li>
+                <MyLink
+                  activeClassName="font-bold active"
+                  className="relative hover:font-bold"
+                  to="/education/"
+                >
+                  education
+                </MyLink>
+              </li>
+              <li>
+                <MyLink
+                  activeClassName="font-bold active"
+                  className="relative hover:font-bold"
+                  to="/editions/"
+                >
+                  editions
+                </MyLink>
+              </li>
+            </ul>
+          )}
 
           <div className="flex lg:hidden justify-center items-center h-full ">
             <h2>{metaCtx.title}</h2>
@@ -108,10 +143,13 @@ const Navigation = () => {
         </nav>
 
         <span className="lg:hidden w-14 h-full border-l-2 flex justify-center items-center">
-          <MobileNavigation menuItems={menuItems} />
+          <MobileNavigation
+            menuItems={menuItems}
+            noreactrouter={noreactrouter}
+          />
         </span>
       </header>
-      <SidebarNavigation menuItems={menuItems} />
+      <SidebarNavigation menuItems={menuItems} noreactrouter={noreactrouter} />
     </>
   );
 };

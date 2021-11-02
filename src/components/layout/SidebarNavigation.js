@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import SearchForm from "./SearchForm";
 
-const SidebarNavigation = ({menuItems}) => {
+const SidebarNavigation = ({ menuItems, noreactrouter }) => {
   const [showMenu, setShowMenu] = useState(false);
   const ref = useRef(null);
   const onClickHandler = (e) => {
@@ -59,22 +59,30 @@ const SidebarNavigation = ({menuItems}) => {
           <nav>
             <h5 className="text-xl font-bold border-b-2">about</h5>
             <ul className="my-5">
-              {menuItems.items['about-menu']?.map((item, i) => (
-                  <li key={i} className="my-1">
+              {menuItems.items["about-menu"]?.map((item, i) => (
+                <li key={i} className="my-1">
+                  {noreactrouter ? (
+                    <a href={item.path}>{item.title}</a>
+                  ) : (
                     <Link to={item.path}>{item.title}</Link>
-                  </li>
-                ))}
+                  )}
+                </li>
+              ))}
             </ul>
             <h5 className="text-xl font-bold border-b-2 mt-12">get involved</h5>
             <ul className="my-5">
-              {menuItems.items['get_involved-menu']?.map((item, i) => (
-                  <li key={i} className="my-1">
+              {menuItems.items["get_involved-menu"]?.map((item, i) => (
+                <li key={i} className="my-1">
+                  {noreactrouter ? (
+                    <a href={item.path}>{item.title}</a>
+                  ) : (
                     <Link to={item.path}>{item.title}</Link>
-                  </li>
-                ))}
+                  )}
+                </li>
+              ))}
             </ul>
           </nav>
-          <SearchForm />
+          <SearchForm noreactrouter={noreactrouter} />
         </div>
       </div>
       <div className="fixed bottom-0 ml-24 w-hscreen h-24 bg-white border-b-2 z-20 font-nav text-xl transform -rotate-90 origin-bottom-left ">
