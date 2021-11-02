@@ -1,14 +1,12 @@
 import React from "react";
-import MainNavigation from "./MainNavigation";
-import SidebarNavigation from "./SidebarNavigation";
+import Navigation from "./Navigation";
 import Footer from "./Footer";
 import SignupForm from "./SignupForm";
 import Overlay from "./Overlay";
 
 const Layout = (props) => (
   <>
-    <MainNavigation />
-    <SidebarNavigation />
+    <Navigation />
     <div className="relative z-10 pt-14 lg:pt-24 lg:pl-24 overflow-hidden">
       {props.children}
       <div className="p-8 lg:p-24 bg-bg-light-gray">

@@ -1623,6 +1623,11 @@ h1, h2, h3, h4, h5 {
   padding-right: 2rem;
 }
 
+.px-10 {
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+}
+
 .px-16 {
   padding-left: 4rem;
   padding-right: 4rem;
@@ -20280,4 +20285,4 @@ body ul.wpb_thumbnails-fluid li .entry-content :last-child{
 
 /* purgecss end ignore */
 
-/*# sourceMappingURL=main-9fe4bf39.css.map*/
+/*# sourceMappingURL=main-e07db988.css.map*/

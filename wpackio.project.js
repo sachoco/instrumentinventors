@@ -42,6 +42,7 @@ module.exports = {
 		     // global namespace pollutions 😉
 				// vendor: './src/mobile/vendor.js', // Could be a string
 				main: './src/main.js', // Or an array of string (string[])
+				noreact: './src/noreact.js',
 			},
 		// If enabled, all WordPress provided external scripts, including React
 		// and ReactDOM are aliased automatically. Do note that all `@wordpress`

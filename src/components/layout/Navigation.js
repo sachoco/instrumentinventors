@@ -1,14 +1,17 @@
 import React, { useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
 import MobileNavigation from "./MobileNavigation";
+import SidebarNavigation from "./SidebarNavigation";
 import { useLocation } from "react-router-dom";
 import MetaContext from "../../store/meta-context";
 import getTitle from "../utilities/getTitle";
+import fetchMenu from "../rest-api/fetchMenu";
 
 import styled from "styled-components";
 
-const MainNavigation = () => {
+const Navigation = () => {
   const metaCtx = useContext(MetaContext);
+  const menuItems = fetchMenu();
 
   const MyLink = styled(NavLink)`
     &.active {
@@ -105,11 +108,12 @@ const MainNavigation = () => {
         </nav>
 
         <span className="lg:hidden w-14 h-full border-l-2 flex justify-center items-center">
-          <MobileNavigation />
+          <MobileNavigation menuItems={menuItems} />
         </span>
       </header>
+      <SidebarNavigation menuItems={menuItems} />
     </>
   );
 };
 
-export default MainNavigation;
+export default Navigation;

@@ -53,7 +53,10 @@ const App = () => {
             path="/project/:slug"
             render={(props) => <Single {...props} posttype="project" />}
           />
-
+          <Route
+            path="/product/:slug"
+            render={(props) => <Single {...props} posttype="product" />}
+          />
           <Route
             path="/search/"
             render={(props) => (

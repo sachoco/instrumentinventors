@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import SearchForm from "./SearchForm";
 
-const SidebarNavigation = () => {
+const SidebarNavigation = ({menuItems}) => {
   const [showMenu, setShowMenu] = useState(false);
   const ref = useRef(null);
   const onClickHandler = (e) => {
@@ -59,53 +59,19 @@ const SidebarNavigation = () => {
           <nav>
             <h5 className="text-xl font-bold border-b-2">about</h5>
             <ul className="my-5">
-              <li className="my-1">
-                <Link to="/about/mission">mission</Link>
-              </li>
-              <li className="my-1">
-                <Link to="/themes">program themes</Link>
-              </li>
-              <li className="my-1">
-                <Link to="/residences">residencies</Link>
-              </li>
-              <li className="my-1">
-                <Link to="/agency-about">agency</Link>
-              </li>
-              <li className="my-1">
-                <Link to="/education">education</Link>
-              </li>
-              <li className="my-1">
-                <Link to="/workspace/about">workspace</Link>
-              </li>
-              <li className="my-1">
-                <Link to="/organisation">organisation</Link>
-              </li>
-              <li className="my-1">
-                <Link to="/organisation">partners</Link>
-              </li>
-              <li className="my-1">
-                <Link to="/transparency">transparency</Link>
-              </li>
+              {menuItems.items['about-menu']?.map((item, i) => (
+                  <li key={i} className="my-1">
+                    <Link to={item.path}>{item.title}</Link>
+                  </li>
+                ))}
             </ul>
             <h5 className="text-xl font-bold border-b-2 mt-12">get involved</h5>
             <ul className="my-5">
-              <li className="my-1">
-                <Link to="apply-for-residency">apply for residency</Link>
-              </li>
-              <li className="my-1">
-                <Link to="/residencies-description">
-                  iii workspace membership
-                </Link>
-              </li>
-              <li className="my-1">
-                <Link to="propose-an-activity">propose an activity</Link>
-              </li>
-              <li className="my-1">
-                <Link to="project-space-rental">project space rental</Link>
-              </li>
-              <li className="my-1">
-                <Link to="internships">internships</Link>
-              </li>
+              {menuItems.items['get_involved-menu']?.map((item, i) => (
+                  <li key={i} className="my-1">
+                    <Link to={item.path}>{item.title}</Link>
+                  </li>
+                ))}
             </ul>
           </nav>
           <SearchForm />
@@ -115,7 +81,10 @@ const SidebarNavigation = () => {
         <nav className="w-full h-full">
           <ul className="flex justify-around items-center h-full">
             <li className="inline-block mx-10">
-              <span className="inline-block cursor-pointer" onClick={onClickHandler}>
+              <span
+                className="inline-block cursor-pointer"
+                onClick={onClickHandler}
+              >
                 <svg width="31px" height="31px" viewBox="0 0 31 31">
                   <g
                     stroke="none"

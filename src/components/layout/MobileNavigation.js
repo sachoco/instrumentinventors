@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
+import SearchForm from "./SearchForm";
 
-const MobileNavigation = () => {
+const MobileNavigation = ({ menuItems }) => {
   const MyLink = styled(NavLink)`
     &.active {
       &:before {
@@ -33,20 +34,15 @@ const MobileNavigation = () => {
       >
         {!showMenu ? (
           <svg width="35px" height="23px" viewBox="0 0 35 23">
-            <g
-              stroke="none"
-              strokeWidth="1"
-              fill="none"
-              fillRule="evenodd"
-            >
+            <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
               <g
                 transform="translate(0.000000, 1.000000)"
                 stroke="#000000"
                 strokeWidth="2"
               >
-                <line x1="35" y1="0.5" x2="0" y2="0.5" ></line>
+                <line x1="35" y1="0.5" x2="0" y2="0.5"></line>
                 <line x1="35" y1="10.5" x2="0" y2="10.5"></line>
-                <line x1="35" y1="20.5" x2="0" y2="20.5" ></line>
+                <line x1="35" y1="20.5" x2="0" y2="20.5"></line>
               </g>
             </g>
           </svg>
@@ -217,6 +213,7 @@ const MobileNavigation = () => {
             </ul>
           </nav>
           <div className="flex-grow flex flex-col justify-around">
+            <SearchForm mobile />
             <h5 className="relative text-xl font-bold border-b-2 mt-12 text-center ">
               search
               <svg
@@ -250,137 +247,33 @@ const MobileNavigation = () => {
               <ul className="flex flex-col justify-around h-full leading-10">
                 {showSubMenu == "about" && (
                   <>
-                    <li className="text-center">
-                      <MyLink
-                        activeClassName="font-bold active"
-                        className="relative hover:font-bold"
-                        to="/mission"
-                      >
-                        mission
-                      </MyLink>
-                    </li>
-                    <li className="text-center">
-                      <MyLink
-                        activeClassName="font-bold active"
-                        className="relative hover:font-bold"
-                        to="/program-themes"
-                      >
-                        program themes
-                      </MyLink>
-                    </li>
-                    <li className="text-center">
-                      <MyLink
-                        activeClassName="font-bold active"
-                        className="relative hover:font-bold"
-                        to="/residencies"
-                      >
-                        residencies
-                      </MyLink>
-                    </li>
-                    <li className="text-center">
-                      <MyLink
-                        activeClassName="font-bold active"
-                        className="relative hover:font-bold"
-                        to="/agency"
-                      >
-                        agendy
-                      </MyLink>
-                    </li>
-                    <li className="text-center">
-                      <MyLink
-                        activeClassName="font-bold active"
-                        className="relative hover:font-bold"
-                        to="/education"
-                      >
-                        education
-                      </MyLink>
-                    </li>
-                    <li className="text-center">
-                      <MyLink
-                        activeClassName="font-bold active"
-                        className="relative hover:font-bold"
-                        to="/workspace"
-                      >
-                        workspace
-                      </MyLink>
-                    </li>
-                    <li className="text-center">
-                      <MyLink
-                        activeClassName="font-bold active"
-                        className="relative hover:font-bold"
-                        to="/organisation"
-                      >
-                        organisation
-                      </MyLink>
-                    </li>
-                    <li className="text-center">
-                      <MyLink
-                        activeClassName="font-bold active"
-                        className="relative hover:font-bold"
-                        to="/partners"
-                      >
-                        partners
-                      </MyLink>
-                    </li>
-                    <li className="text-center">
-                      <MyLink
-                        activeClassName="font-bold active"
-                        className="relative hover:font-bold"
-                        to="/transparency"
-                      >
-                        transparency
-                      </MyLink>
-                    </li>
+                    {menuItems.items["about-menu"]?.map((item, i) => (
+                      <li key={i} className="text-center">
+                        <MyLink
+                          activeClassName="font-bold active"
+                          className="relative hover:font-bold"
+                          to={item.path}
+                        >
+                          {item.title}
+                        </MyLink>
+                      </li>
+                    ))}
                   </>
                 )}
 
                 {showSubMenu == "get-involved" && (
                   <>
-                    <li className="text-center">
+                  {menuItems.items["get_involved-menu"]?.map((item, i) => (
+                    <li key={i} className="text-center">
                       <MyLink
                         activeClassName="font-bold active"
                         className="relative hover:font-bold"
-                        to="/apply-for-residency"
+                        to={item.path}
                       >
-                        apply for residency
+                        {item.title}
                       </MyLink>
                     </li>
-                    <li className="text-center">
-                      <MyLink
-                        activeClassName="font-bold active"
-                        className="relative hover:font-bold"
-                        to="/iii-workspace-membership"
-                      >
-                        iii workspace membership
-                      </MyLink>
-                    </li>
-                    <li className="text-center">
-                      <MyLink
-                        activeClassName="font-bold active"
-                        className="relative hover:font-bold"
-                        to="/propose-an-activity"
-                      >
-                        propose an activity
-                      </MyLink>
-                    </li>
-                    <li className="text-center">
-                      <MyLink
-                        activeClassName="font-bold active"
-                        className="relative hover:font-bold"
-                        to="/project-space-rental"
-                      >
-                        project space rental
-                      </MyLink>
-                    </li>
-                    <li className="text-center">
-                      <MyLink
-                        activeClassName="font-bold active"
-                        className="relative hover:font-bold"
-                        to="/internships"
-                      >
-                        internships
-                      </MyLink>
-                    </li>
+                  ))}
                   </>
                 )}
               </ul>

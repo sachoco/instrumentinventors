@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
-const SearchForm = () => {
+const SearchForm = ({ mobile = false }) => {
   const [searchStr, setSearchStr] = useState("");
   let history = useHistory();
   const onChangeHandler = (event) => {
@@ -20,10 +20,12 @@ const SearchForm = () => {
     }
   };
   return (
-    <h5 className="text-xl font-bold border-b-2 mt-12 flex">
+    <h5 className="relative text-xl font-bold border-b-2 mt-12 flex">
       <button
         type="submit"
-        className="p-1 focus:outline-none focus:shadow-outline"
+        className={`p-1 focus:outline-none focus:shadow-outline ${
+          mobile ? "absolute z-50 right-0 bottom-0" : ""
+        }`}
         onClick={onClickHandler}
       >
         <svg
@@ -47,7 +49,9 @@ const SearchForm = () => {
         </svg>
       </button>
       <input
-        className="appearance-none bg-transparent placeholder-black w-full py-1 px-2 leading-tight focus:outline-none placeholder-light"
+        className={`appearance-none bg-transparent placeholder-black w-full py-1 leading-tight focus:outline-none placeholder-light ${
+          mobile ? "text-center px-10" : "px-2"
+        }`}
         type="text"
         placeholder="search"
         aria-label="search"
