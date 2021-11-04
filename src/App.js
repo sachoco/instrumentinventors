@@ -24,7 +24,7 @@ const App = () => {
             path="/artists/"
             exact
             render={(props) => (
-              <Aggregation {...props} url="wp/v2/artist/?_embed&per_page=100&_fields=id,title,slug,formatted_date,acf,type,tags,featured_media,_links,_embedded" />
+              <Aggregation {...props} url="wp/v2/artist/?_embed&per_page=12&_fields=id,title,slug,formatted_date,acf,type,tags,featured_media,_links,_embedded" />
             )}
           />
           <Route

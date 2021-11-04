@@ -22,7 +22,7 @@ const normalizePosttype = (item) => {
       (Object.keys(item).length === 0 && item.constructor === Object)
     )
   ) {
-    if (item.search_result) {
+    if (item.search_result || item.related_result) {
       returnObj.title = he.decode(item.title);
       returnObj.image = item.featured_image ? {medium:item.featured_image} : {medium:NoImage};
       returnObj.link = item.url.replace('http://','').replace('https://','').split(/[/?#]/)[1];

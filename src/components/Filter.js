@@ -131,7 +131,7 @@ export default function Filter(props) {
           <div className="w-full mr-20 ">
             <label className="font-nav">category</label>
 
-            <select className="form-select block w-full mt-1 border-2 p-1">
+            <select className="form-select block w-full mt-1 border-2 p-1" name="cat" onChange={props.onChange}>
               {Object.keys(filterData.artist.category).map((item, i) => (
                 <option key={i} value={item}>
                   {filterData.artist.category[item]}

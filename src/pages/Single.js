@@ -16,6 +16,7 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
   const metaCtx = useContext(MetaContext);
   const { slug } = useParams();
   const url = "wp/v2/" + posttype + "/?slug=" + slug + "&_embed";
+  const related_url = "iii/related/" + posttype + "/" + slug +"/?";
   const [state, loadMore] = fetchData(url, true);
   const {title, content} = normalizePosttype(state.item);
 
@@ -69,7 +70,7 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
         <Gallery />
       </Block>
       <Block title="related" bg={true}>
-        <Carousel />
+        <Carousel url={related_url} />
       </Block>
       <div className="px-24 pb-10 bg-bg-lighter-gray">
         <button className="relative">

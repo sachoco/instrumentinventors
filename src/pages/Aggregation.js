@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import fetchData from "../components/rest-api/fetchData";
 
 import Block from "../components/layout/Block";
@@ -10,12 +10,19 @@ import ViewContext from "../store/view-context";
 
 const Aggregation = ({ url, ...otherProps }) => {
   const viewCtx = useContext(ViewContext);
+  const [filter, setFilter] = useState({});
+  const [state, loadMore] = fetchData(url,false,true,filter);
 
-  const [state, loadMore] = fetchData(url,true);
-
+  const onFilterChange = (event) => {
+    const { name, value } = event.target;
+    setFilter({
+      ...filter,
+      [name]: value,
+    });
+  }
   return (
     <>
-      <Filter />
+      <Filter onChange={onFilterChange}/>
 
       <Block className="mt-16">
         {state.noItem ? (

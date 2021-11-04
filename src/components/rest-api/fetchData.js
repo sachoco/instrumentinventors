@@ -1,29 +1,39 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Axios from "axios";
 
-const fetchData = (url, single=false, concat=true) => {
-  const [state, setState] = useState({
+const fetchData = (url, single = false, concat = true, filter = null) => {
+  const initialState = {
     items: [],
     loaded: false,
     error: "",
     hasMore: false,
     page: 1,
     noItem: false,
-  });
+  };
+  const [state, setState] = useState(initialState);
   useEffect(() => {
-    getItems();
-  }, [url]);
+    getItems(true);
+  }, [url,filter]);
 
-  const getItems = () => {
-    setState({
-      ...state,
-      loaded: false,
-    });
-    let rest_call_url = wpApiSettings.root + url;
-    if(!single){
-      rest_call_url = rest_call_url + "&page=" + state.page;
+  const getItems = (init=false) => {
+    if(init){
+      setState(state => (initialState));
+    }else{
+      setState({
+        ...state,
+        loaded: false,
+      });
     }
-
+    let rest_call_url = wpApiSettings.root + url;
+    if (!single) {
+      rest_call_url = rest_call_url + "&page=" + (init ? "1" : state.page);
+    }
+    if (filter) {
+      Object.keys(filter).forEach(key => {
+        rest_call_url += "&" + key + "=" + filter[key];
+      });
+    }
+    console.log(rest_call_url)
     return Axios.get(rest_call_url).then(
       (response) => {
         console.log(response);

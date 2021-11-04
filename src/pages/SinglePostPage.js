@@ -33,6 +33,7 @@ const SinglePostPage = ({ ...otherProps }) => {
       : wpApiSettings.posttype;
   const slug = p2 ? p2 : p1;
   const url = "wp/v2/posts/?slug=" + slug + "&include_page&_embed";
+  const related_url = "iii/related/" + posttype + "/" + slug +"/?";
 
   const [state, loadMore] = fetchData(url, true);
   const { title, content } = normalizePosttype(state.item);
@@ -57,7 +58,7 @@ const SinglePostPage = ({ ...otherProps }) => {
         <div className="mt-10 mx-auto max-w-3xl"></div>
       </Block>
       <Block title="related" bg={true}>
-        <Carousel />
+        <Carousel url={related_url} />
       </Block>
     </>
   );
