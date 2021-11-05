@@ -3,7 +3,7 @@ require_once 'inc/theme-posttype.php';
 require_once 'inc/theme-restapi.php';
 include 'meta_box_defs.php';
 
-add_filter( 'show_admin_bar', '__return_false' );
+// add_filter( 'show_admin_bar', '__return_false' );
 
 function register_my_menu() {
 	register_nav_menu('main-menu',__( 'Main Menu' ));
