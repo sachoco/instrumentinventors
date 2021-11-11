@@ -1,13 +1,24 @@
 import React, { useState, useContext, useEffect, useCallback } from "react";
 import ViewContext from "../store/view-context";
-import SelectBox from "./SelectBox";
+import SelectBox from "./formsUI/SelectBox";
+// import MultiSelectBox from "./formsUI/MultiSelectBox";
+import CatSelectBox from "./formsUI/CatSelectBox";
+import TagSelectBox from "./formsUI/TagSelectBox";
 import Switch from "./Switch";
 
-import filterData from "../data/filterData.json";
+// import filterData from "../data/filterData.json";
+import fetchFilterItems from "./rest-api/fetchFilterItems";
 
-export default function Filter(props) {
+const category = [
+  { value: "agenda", name: "Agenda" },
+  { value: "artist", name: "Artist" },
+  { value: "project", name: "Project" },
+  { value: "posts", name: "News & Media" },
+];
+
+export default function Filter({ initialFilter, filter, ...props }) {
   const viewCtx = useContext(ViewContext);
-
+  const filterData = fetchFilterItems(initialFilter.posttype);
   const [showBox, setShowBox] = useState(false);
   const onClickHandler = (e) => {
     showBox ? setShowBox(false) : setShowBox(true);
@@ -38,6 +49,32 @@ export default function Filter(props) {
     [y, showBox]
   );
 
+  const renderFilterItems = (str,p='cat') => {
+    const array = str.toString().split(",");
+    return array.map((item, i) => {
+      if(initialFilter.posttype=="project"&&p=="subcat"){
+        if(filterData.items.subcat){
+          var result = filterData.items.subcat[filter.cat].find(obj => {
+            return obj.value == item
+          });
+          return (<div key={i} className="rounded-full text-sm leading-6 py-0 px-2 m-1 border border-white lowercase">
+            {result.name}
+          </div>)
+        }
+      }else if(p!="posttype"&&filterData.items[p]){
+        var result = filterData.items[p].find(obj => {
+          return obj.value == item
+        });
+        return (<div key={i} className="rounded-full text-sm leading-6 py-0 px-2 m-1 border border-white lowercase">
+          {result.name}
+        </div>)
+      }else {
+        return (<div key={i} className="rounded-full text-sm leading-6 py-0 px-2 m-1 border border-white lowercase">
+          {item}
+        </div>)
+      }
+    })
+  };
   useEffect(() => {
     setY(window.scrollY);
     window.addEventListener("scroll", onScrollHandler);
@@ -56,7 +93,7 @@ export default function Filter(props) {
         }
       >
         <div className="relative flex justify-between items-center bg-bg-filter border-b-2 text-white z-10">
-          <div className="border-r-2 py-5 px-24 font-nav flex-grow lg:flex-grow-0">
+          <div className="border-r-2 py-5 px-5 md:px-12 xl:px-24 font-nav flex-grow lg:flex-grow-0">
             filter
             <button onClick={onClickHandler}>
               <svg
@@ -101,8 +138,13 @@ export default function Filter(props) {
               </svg>
             </button>
           </div>
-          <div className="hidden lg:block"></div>
-          <div className="lg:border-l-2 py-5 px-24 font-nav flex items-center flex-grow lg:flex-grow-0">
+          <div className="hidden lg:flex">
+            {renderFilterItems(initialFilter.posttype,'posttype')}
+            {filter?.cat && renderFilterItems(filter.cat,'cat')}
+            {filter?.subcat && renderFilterItems(filter.subcat,'subcat')}
+            {filter?.tags && renderFilterItems(filter.tags,'tag')}
+          </div>
+          <div className="lg:border-l-2 py-5 px-5 md:px-12 xl:px-24 font-nav flex items-center flex-grow lg:flex-grow-0">
             <span className="hidden lg:inline-block">view mode:</span>
             <span
               className={"mx-3 " + (viewCtx.mode == "tile" || "opacity-50")}
@@ -124,53 +166,93 @@ export default function Filter(props) {
 
         <div
           className={
-            "absolute w-full bg-bg-light-gray border-b-2 flex flex-col lg:flex-row justify-between px-24 py-5 transition transform z-0 " +
+            "relative w-full bg-bg-light-gray border-b-2 py-5 transition transform z-0 " +
             (showBox ? "" : "-translate-y-full")
           }
         >
-          <div className="w-full mr-20 ">
-            <label className="font-nav">category</label>
+          <div className="px-5 flex flex-col lg:flex-row justify-center ">
+            <div className="w-full mr-5 ">
+              <label className="font-nav">category</label>
 
-            <select className="form-select block w-full mt-1 border-2 p-1" name="cat" onChange={props.onChange}>
-              {Object.keys(filterData.artist.category).map((item, i) => (
-                <option key={i} value={item}>
-                  {filterData.artist.category[item]}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="w-full mt-5 lg:mt-0 lg:mr-20 ">
-            <label className="font-nav">subcategory 1</label>
-
-            <select className="form-select block w-full mt-1 border-2 p-1">
-              <option>Option 1</option>
-              <option>Option 2</option>
-              <option>Option 3</option>
-              <option>Option 4</option>
-              <option>Option 5</option>
-            </select>
-          </div>
-          <div className="w-full mt-5 lg:mt-0 lg:mr-20 ">
-            <label className="font-nav">subcategory 2</label>
-
-            <select className="form-select block w-full mt-1 border-2 p-1">
-              <option>Option 1</option>
-              <option>Option 2</option>
-              <option>Option 3</option>
-              <option>Option 4</option>
-              <option>Option 5</option>
-            </select>
-          </div>
-          <div className="w-full mt-5 lg:mt-0 lg:mr-20 ">
-            <label className="font-nav">tag</label>
-
-            <select className="form-select block w-full mt-1 border-2 p-1">
-              <option>Option 1</option>
-              <option>Option 2</option>
-              <option>Option 3</option>
-              <option>Option 4</option>
-              <option>Option 5</option>
-            </select>
+              <SelectBox
+                label="Category"
+                options={category}
+                defaultValue={initialFilter.posttype}
+                onChange={props.onCatChange}
+                name="posttype"
+              />
+            </div>
+            <div className="w-full mt-5 lg:mt-0 lg:mr-5 ">
+              <label className="font-nav">subcategory 1</label>
+              {filterData.items?.cat && (
+                <>
+                  {initialFilter.posttype == "artist" ? (
+                    <TagSelectBox
+                      label="Subcategory1"
+                      options={filterData.items.cat}
+                      defaultValue={initialFilter.cat}
+                      onChange={props.onFilterChange}
+                      name="cat"
+                      filterVal={filter.cat}
+                    />
+                  ) : (
+                    <CatSelectBox
+                      label="Subcategory1"
+                      options={filterData.items.cat}
+                      defaultValue={initialFilter.cat}
+                      onChange={props.onFilterChange}
+                      name="cat"
+                      filterVal={filter.cat}
+                    />
+                  )}
+                </>
+              )}
+            </div>
+            <div className="w-full mt-5 lg:mt-0 lg:mr-5 ">
+              <label className="font-nav">subcategory 2</label>
+              {filterData.items?.subcat && (
+                <>
+                  {initialFilter.posttype == "project" ? (
+                    <>
+                      {filter.cat && filterData.items.subcat[filter.cat] && (
+                        <TagSelectBox
+                          label="Subcategory2"
+                          options={filterData.items.subcat[filter.cat]}
+                          defaultValue={initialFilter.subcat}
+                          onChange={props.onFilterChange}
+                          name="subcat"
+                          filterVal={filter.subcat}
+                        />
+                      )}
+                    </>
+                  ) : (
+                    <>
+                    <TagSelectBox
+                      label="Subcategory2"
+                      options={filterData.items.subcat}
+                      defaultValue={initialFilter.subcat}
+                      onChange={props.onFilterChange}
+                      name="subcat"
+                      filterVal={filter.subcat}
+                    />
+                  </>
+                  )}
+                </>
+              )}
+            </div>
+            <div className="w-full mt-5 lg:mt-0 ">
+              <label className="font-nav">tag</label>
+              {filterData.items?.tag && (
+                <TagSelectBox
+                  label="Tag"
+                  options={filterData.items.tag}
+                  defaultValue={initialFilter.tags}
+                  onChange={props.onFilterChange}
+                  name="tags"
+                  filterVal={filter.tags}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>

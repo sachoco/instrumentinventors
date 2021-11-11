@@ -2,7 +2,7 @@ import React from "react";
 import ListItem from "../ListItem";
 
 export default function ListView({ items = null, ...otherProps }) {
-  const dummyItems = new Array(12).fill({});
+  const dummyItems = new Array(6).fill({});
 
   return (
     <>

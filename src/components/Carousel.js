@@ -11,8 +11,9 @@ export default function Carousel({
   type = null,
   ...otherProps
 }) {
-  const [state, loadMore] = fetchData(url);
   url = url + "&_fields=id,title,slug,formatted_date,acf,type,tags,featured_media,_links,_embedded";
+  const [state, loadMore] = fetchData(url);
+
   const settings = {
     dots: false,
     arrows: false,

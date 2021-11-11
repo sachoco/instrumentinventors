@@ -7,15 +7,15 @@ import Meta from "../components/layout/Meta";
 const Education = () => (
   <>
     <Meta title="Education" />
-
-    <Block title="hosted workshops, current and upcoming">
-      <Carousel url="wp/v2/agenda/?cat=hosted&subcat=workshops&upcoming&_embed" />
+    <Slideshow url="iii/getFeatured/education" />
+    <Block title="hosted workshops">
+      <Carousel url="wp/v2/agenda/?subcat=hosted&cat=workshop&_embed" />
     </Block>
-    <Block title="circulation workshops, current and upcoming" bg={true}>
-      <Carousel url="wp/v2/agenda/?cat=circulation&subcat=workshops&upcoming&_embed" />
+    <Block title="circulation workshops" bg={true}>
+      <Carousel url="wp/v2/agenda/?subcat=circulation&cat=workshop&_embed" />
     </Block>
-    <Block title="workshops, highlighted">
-      <Carousel url="wp/v2/project/?type=workshops&is_highlighted&&_embed" />
+    <Block title="workshops">
+      <Carousel url="wp/v2/project/?cat=workshop&subcat=hosted&_embed" />
     </Block>
   </>
 );

@@ -24,11 +24,40 @@ const normalizePosttype = (item) => {
   ) {
     if (item.search_result || item.related_result) {
       returnObj.title = he.decode(item.title);
-      returnObj.image = item.featured_image ? {medium:item.featured_image} : {medium:NoImage};
-      returnObj.link = item.url.replace('http://','').replace('https://','').split(/[/?#]/)[1];
+      returnObj.image = item.featured_image
+        ? { medium: item.featured_image, large: item.featured_image }
+        : { medium: NoImage, large: NoImage };
+      item.search_result
+        ? (returnObj.link = item.url
+            .replace("http://", "")
+            .replace("https://", "")
+            .split(/[/?#]/)[1])
+        : (returnObj.link =
+            "/" +
+            item.url
+              .replace("http://", "")
+              .replace("https://", "")
+              .split(/[/?#](.+)/)[1]);
       returnObj.subcategory = item.subtype;
       returnObj.tag = "tag, tag, tag";
-
+      returnObj.posttype = item.subtype;
+    } else if (item.featured_result) {
+      returnObj.title = he.decode(item.title);
+      returnObj.image = item.featured_image
+        ? { medium: item.featured_image, large: item.featured_image }
+        : { medium: NoImage, large: NoImage };
+      returnObj.link =
+        "/" +
+        item.url
+          .replace("http://", "")
+          .replace("https://", "")
+          .split(/[/?#](.+)/)[1];
+      returnObj.tag = item.tag;
+      returnObj.posttype = item.posttype;
+      returnObj.date = item.date;
+      returnObj.meta1 = item.meta1;
+      returnObj.meta2 = item.meta2;
+      returnObj.meta3 = item.meta3;
     } else {
       returnObj.title = item.title.rendered
         ? he.decode(item.title.rendered)
@@ -55,7 +84,7 @@ const normalizePosttype = (item) => {
             medium: NoImage,
           };
       returnObj.link = "/" + item.type + "/" + item.slug;
-      returnObj.posttype = item.posttype;
+      returnObj.posttype = item.type;
       returnObj.tag = "tag, tag, tag";
 
       if (item.type == "artist") {

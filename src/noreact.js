@@ -6,6 +6,8 @@ import React from "react";
 import { render } from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import Navigation from "./components/layout/Navigation";
+import SidebarNavigation from "./components/layout/SidebarNavigation";
+import fetchMenu from "./components/rest-api/fetchMenu";
 import Footer from "./components/layout/Footer";
 import SignupForm from "./components/layout/SignupForm";
 import Overlay from "./components/layout/Overlay";
@@ -16,7 +18,9 @@ import { ThemeProvider } from '@mui/material/styles';
 import iiiTheme from "./themes/iiiTheme";
 // document.addEventListener('DOMContentLoaded', () => {
 const entryHeader = document.querySelector("#react-header");
+const entrySidemenu = document.querySelector("#react-sidemenu");
 const entryFooter = document.querySelector("#react-footer");
+
 
 render(
   <BrowserRouter basename={"/"}>
@@ -27,6 +31,17 @@ render(
     </ThemeProvider>
   </BrowserRouter>,
   entryHeader
+);
+
+render(
+  <BrowserRouter basename={"/"}>
+    <ThemeProvider theme={iiiTheme}>
+      <MetaContextProvider>
+        <SidebarNavigation noreactrouter />
+      </MetaContextProvider>
+    </ThemeProvider>
+  </BrowserRouter>,
+  entrySidemenu
 );
 
 render(

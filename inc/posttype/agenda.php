@@ -39,28 +39,28 @@ function custom_post_agenda() {
     ) /* end of options */
   ); /* end of register post type */
 
-  register_taxonomy( 'agenda_category',
-    array('agenda'), /* if you change the name of register_post_type( 'custom_type', then you have to change this */
-    array('hierarchical' => true,     /* if this is true, it acts like categories */
-      'labels' => array(
-        'name' => __( 'Agenda Categories', 'iii' ), /* name of the custom taxonomy */
-        'singular_name' => __( 'Agenda Category', 'iii' ), /* single taxonomy name */
-        'search_items' =>  __( 'Search Agenda Categories', 'iii' ), /* search title for taxomony */
-        'all_items' => __( 'All Agenda Categories', 'iii' ), /* all title for taxonomies */
-        'parent_item' => __( 'Parent Agenda Category', 'iii' ), /* parent title for taxonomy */
-        'parent_item_colon' => __( 'Parent Agenda Category:', 'iii' ), /* parent taxonomy title */
-        'edit_item' => __( 'Edit Agenda Category', 'iii' ), /* edit custom taxonomy title */
-        'update_item' => __( 'Update Agenda Category', 'iii' ), /* update title for taxonomy */
-        'add_new_item' => __( 'Add New Agenda Category', 'iii' ), /* add new title for taxonomy */
-        'new_item_name' => __( 'New Agenda Category Name', 'iii' ) /* name title for taxonomy */
-      ),
-      'show_admin_column' => true,
-      'show_ui' => true,
-      'query_var' => true,
-      'rewrite' => array( 'slug' => 'agenda-category' ),
-      'show_in_rest' => true,
-    )
-  );
+  // register_taxonomy( 'agenda_category',
+  //   array('agenda'), /* if you change the name of register_post_type( 'custom_type', then you have to change this */
+  //   array('hierarchical' => true,     /* if this is true, it acts like categories */
+  //     'labels' => array(
+  //       'name' => __( 'Agenda Categories', 'iii' ), /* name of the custom taxonomy */
+  //       'singular_name' => __( 'Agenda Category', 'iii' ), /* single taxonomy name */
+  //       'search_items' =>  __( 'Search Agenda Categories', 'iii' ), /* search title for taxomony */
+  //       'all_items' => __( 'All Agenda Categories', 'iii' ), /* all title for taxonomies */
+  //       'parent_item' => __( 'Parent Agenda Category', 'iii' ), /* parent title for taxonomy */
+  //       'parent_item_colon' => __( 'Parent Agenda Category:', 'iii' ), /* parent taxonomy title */
+  //       'edit_item' => __( 'Edit Agenda Category', 'iii' ), /* edit custom taxonomy title */
+  //       'update_item' => __( 'Update Agenda Category', 'iii' ), /* update title for taxonomy */
+  //       'add_new_item' => __( 'Add New Agenda Category', 'iii' ), /* add new title for taxonomy */
+  //       'new_item_name' => __( 'New Agenda Category Name', 'iii' ) /* name title for taxonomy */
+  //     ),
+  //     'show_admin_column' => true,
+  //     'show_ui' => true,
+  //     'query_var' => true,
+  //     'rewrite' => array( 'slug' => 'agenda-category' ),
+  //     'show_in_rest' => true,
+  //   )
+  // );
 
 
 }
@@ -99,7 +99,7 @@ function filter_agenda_by_taxonomies( $post_type, $which ) {
 	}
 
 }
-add_action( 'restrict_manage_posts', 'filter_agenda_by_taxonomies' , 10, 2);
+// add_action( 'restrict_manage_posts', 'filter_agenda_by_taxonomies' , 10, 2);
 
 /*
  * Add columns to exhibition post list

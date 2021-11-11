@@ -1,25 +1,26 @@
 import { useEffect, useState } from "react";
 import Axios from "axios";
 
-const fetchMenu = (url="iii/menu") => {
+const fetchFilterItems = (posttype) => {
   const [state, setState] = useState({
-    items: [],
-    error: ""
+    items: {},
+    error: "",
   });
+  const url = "iii/filterItems/" + posttype;
   useEffect(() => {
     const abortController = new AbortController();
     getItems();
     return () => {
       abortController.abort(); // cancel pending fetch request on component unmount
     };
-  }, [url]);
+  }, [posttype]);
 
   const getItems = () => {
     let rest_call_url = wpApiSettings.root + url;
 
     return Axios.get(rest_call_url).then(
       (response) => {
-        // console.log(response.data);
+        console.log(response.data);
         setState({
           items: response.data,
         });
@@ -36,4 +37,4 @@ const fetchMenu = (url="iii/menu") => {
   return state;
 };
 
-export default fetchMenu;
+export default fetchFilterItems;

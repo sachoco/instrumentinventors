@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import Axios from "axios";
+import { useCookies } from "react-cookie";
 
 const fetchData = (url, single = false, concat = true, filter = null) => {
   const initialState = {
@@ -10,15 +11,22 @@ const fetchData = (url, single = false, concat = true, filter = null) => {
     page: 1,
     noItem: false,
   };
+  const [cookies, setCookie] = useCookies(["lang"]);
+
   const [state, setState] = useState(initialState);
   useEffect(() => {
+    const abortController = new AbortController();
+    abortController.abort();
     getItems(true);
-  }, [url,filter]);
+    return () => {
+      abortController.abort(); // cancel pending fetch request on component unmount
+    };
+  }, [url, filter, cookies]);
 
-  const getItems = (init=false) => {
-    if(init){
-      setState(state => (initialState));
-    }else{
+  const getItems = (init = false) => {
+    if (init) {
+      setState((state) => initialState);
+    } else {
       setState({
         ...state,
         loaded: false,
@@ -29,11 +37,16 @@ const fetchData = (url, single = false, concat = true, filter = null) => {
       rest_call_url = rest_call_url + "&page=" + (init ? "1" : state.page);
     }
     if (filter) {
-      Object.keys(filter).forEach(key => {
-        rest_call_url += "&" + key + "=" + filter[key];
+      Object.keys(filter).forEach((key) => {
+        if(filter[key]){
+          rest_call_url += "&" + key + "=" + filter[key];
+        }
       });
     }
-    console.log(rest_call_url)
+    if (cookies.lang == "nl") {
+      // rest_call_url += "&lang=" + cookies.lang;
+    }
+    console.log(rest_call_url);
     return Axios.get(rest_call_url).then(
       (response) => {
         console.log(response);
@@ -62,7 +75,6 @@ const fetchData = (url, single = false, concat = true, filter = null) => {
     state.loaded === true &&
       state.hasMore &&
       getItems().then(() => {
-        console.log("loading more...");
       });
   };
 

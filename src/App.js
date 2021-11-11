@@ -24,7 +24,7 @@ const App = () => {
             path="/artists/"
             exact
             render={(props) => (
-              <Aggregation {...props} url="wp/v2/artist/?_embed&per_page=12&_fields=id,title,slug,formatted_date,acf,type,tags,featured_media,_links,_embedded" />
+              <Aggregation {...props} url="wp/v2/artist/?" posttype="artist" />
             )}
           />
           <Route
@@ -35,19 +35,43 @@ const App = () => {
           <Route path="/hosted/" exact component={HostedProgram} />
           <Route path="/agency/" exact component={Agency} />
           <Route path="/education/" exact component={Education} />
+
           <Route
             path="/editions/"
             exact
             render={(props) => (
               <Aggregation
                 {...props}
-                url="wp/v2/project/?type=editions&_embed"
+                url="wp/v2/project/?cat=editions"
+                posttype="project"
+              />
+            )}
+          />
+          <Route
+            path="/agenda/"
+            exact
+            render={(props) => (
+              <Aggregation
+                {...props}
+                url="wp/v2/agenda/?"
+                posttype="agenda"
               />
             )}
           />
           <Route
             path="/agenda/:slug"
             render={(props) => <Single {...props} posttype="agenda" />}
+          />
+          <Route
+            path="/projects/"
+            exact
+            render={(props) => (
+              <Aggregation
+                {...props}
+                url="wp/v2/project/?"
+                posttype="project"
+              />
+            )}
           />
           <Route
             path="/project/:slug"
@@ -61,6 +85,17 @@ const App = () => {
             path="/search/"
             render={(props) => (
               <Search {...props} />
+            )}
+          />
+          <Route
+            path="/posts/"
+            exact
+            render={(props) => (
+              <Aggregation
+                {...props}
+                url="wp/v2/posts/?"
+                posttype="posts"
+              />
             )}
           />
           <Route

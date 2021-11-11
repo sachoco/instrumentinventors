@@ -2,21 +2,24 @@ import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
 import SearchForm from "./SearchForm";
+import LanguageSlect from "../LanguageSelect";
+
+const MyLink = styled(NavLink)`
+  &.active {
+    &:before {
+      content: "";
+      width: 50px;
+      border-bottom: 2px solid;
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+`;
 
 const MobileNavigation = ({ menuItems, noreactrouter }) => {
-  const MyLink = styled(NavLink)`
-    &.active {
-      &:before {
-        content: "";
-        width: 50px;
-        border-bottom: 2px solid;
-        position: absolute;
-        bottom: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-    }
-  `;
+
   const [showMenu, setShowMenu] = useState(false);
   const [showSubMenu, setShowSubMenu] = useState(false);
 
@@ -99,53 +102,87 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
       >
         <div className="relative h-full p-8 bg-white flex flex-col justify-between">
           <nav className="flex-grow border-b-2 pb-8">
-            <ul className="flex flex-col justify-around h-full  leading-10">
-              <li className="text-center">
-                <MyLink
-                  activeClassName="font-bold active"
-                  className="relative hover:font-bold"
-                  to="/artists"
-                >
-                  artists
-                </MyLink>
-              </li>
-              <li className="text-center">
-                <MyLink
-                  activeClassName="font-bold active"
-                  className="relative hover:font-bold"
-                  to="/hosted"
-                >
-                  hosted program
-                </MyLink>
-              </li>
-              <li className="text-center">
-                <MyLink
-                  activeClassName="font-bold active"
-                  className="relative hover:font-bold"
-                  to="/agency"
-                >
-                  agency
-                </MyLink>
-              </li>
-              <li className="text-center">
-                <MyLink
-                  activeClassName="font-bold active"
-                  className="relative hover:font-bold"
-                  to="/education"
-                >
-                  education
-                </MyLink>
-              </li>
-              <li className="text-center">
-                <MyLink
-                  activeClassName="font-bold active"
-                  className="relative hover:font-bold"
-                  to="/editions"
-                >
-                  editions
-                </MyLink>
-              </li>
-            </ul>
+
+              {noreactrouter ? (
+                <ul className="flex flex-col justify-around h-full  leading-10">
+                  <li className="text-center">
+                    <a className="relative hover:font-bold" href="/artists/">
+                      artists
+                    </a>
+                  </li>
+                  <li className="text-center">
+                    <a className="relative hover:font-bold" href="/hosted/">
+                      hosted program
+                    </a>
+                  </li>
+                  <li className="text-center">
+                    <a className="relative hover:font-bold" href="/agency/">
+                      agency
+                    </a>
+                  </li>
+                  <li className="text-center">
+                    <a className="relative hover:font-bold" href="/education/">
+                      education
+                    </a>
+                  </li>
+                  <li className="text-center">
+                    <a className="relative hover:font-bold" href="/editions/">
+                      editions
+                    </a>
+                  </li>
+                </ul>
+              ) : (
+                <ul className="flex flex-col justify-around h-full  leading-10">
+                  <li className="text-center">
+                    <MyLink
+                      activeClassName="font-bold active"
+                      className="relative hover:font-bold"
+                      to="/artists/"
+                    >
+                      artists
+                    </MyLink>
+                  </li>
+                  <li className="text-center">
+                    <MyLink
+                      activeClassName="font-bold active"
+                      className="relative hover:font-bold"
+                      to="/hosted/"
+                    >
+                      hosted program
+                    </MyLink>
+                  </li>
+                  <li className="text-center">
+                    <MyLink
+                      activeClassName="font-bold active"
+                      className="relative hover:font-bold"
+                      to="/agency/"
+                    >
+                      agency
+                    </MyLink>
+                  </li>
+                  <li className="text-center">
+                    <MyLink
+                      activeClassName="font-bold active"
+                      className="relative hover:font-bold"
+                      to="/education/"
+                    >
+                      education
+                    </MyLink>
+                  </li>
+                  <li className="text-center">
+                    <MyLink
+                      activeClassName="font-bold active"
+                      className="relative hover:font-bold"
+                      to="/editions/"
+                    >
+                      editions
+                    </MyLink>
+                  </li>
+                  <li className="text-center">
+                    <LanguageSlect />
+                  </li>
+                </ul>
+              )}
           </nav>
 
           <nav className="flex-grow py-10 border-b-2 ">
@@ -187,7 +224,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                     onToggleSubmenu("get-involved");
                   }}
                 >
-                  get involbed
+                  get involved
                   <svg
                     className="absolute -right-8 top-1 ml-5 transform -rotate-90"
                     width="14px"

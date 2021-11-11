@@ -25,18 +25,11 @@ const SinglePostPage = ({ ...otherProps }) => {
   const metaCtx = useContext(MetaContext);
 
   const { p1, p2 } = useParams();
-  const posttype =
-    wpApiSettings.posttype == "page"
-      ? "pages"
-      : wpApiSettings.posttype == "post"
-      ? "posts"
-      : wpApiSettings.posttype;
   const slug = p2 ? p2 : p1;
   const url = "wp/v2/posts/?slug=" + slug + "&include_page&_embed";
-  const related_url = "iii/related/" + posttype + "/" + slug +"/?";
 
   const [state, loadMore] = fetchData(url, true);
-  const { title, content } = normalizePosttype(state.item);
+  const { title, content, posttype } = normalizePosttype(state.item);
   // metaCtx.changeTitle(getTitle(state.item));
   useEffect(() => {
       jQuery('[data-ride="vc_carousel"]').each(function () {
@@ -50,16 +43,18 @@ const SinglePostPage = ({ ...otherProps }) => {
   return (
     <>
       <Meta title={title} />
-      {}
       <Block className="single-item-content ">
         {content}
 
         <div className="max-w-3xl  font-bold lg:font-normal text-base lg:text-2xl"></div>
         <div className="mt-10 mx-auto max-w-3xl"></div>
       </Block>
-      <Block title="related" bg={true}>
-        <Carousel url={related_url} />
-      </Block>
+      {posttype &&
+        <Block title="related" bg={true}>
+          <Carousel url={"iii/related/" + posttype + "/" + slug +"/?"} />
+        </Block>
+      }
+
     </>
   );
 };

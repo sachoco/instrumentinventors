@@ -8,11 +8,10 @@ import "./Slideshow.css";
 import Item from "./SlideItem";
 
 export default function Slideshow({
-  url = "wp/v2/agenda/?_embed&featured",
+  url = "wp/v2/agenda/?_embed&featured&_fields=id,title,slug,formatted_date,acf,type,tags,featured_media,_links,_embedded",
   ...otherProps
 }) {
-  url = url + "&_fields=id,title,slug,formatted_date,acf,type,tags,featured_media,_links,_embedded";
-  const [state, loadMore] = fetchData(url, true);
+  const [state] = fetchData(url, true);
 
   var settings = {
     dots: true,

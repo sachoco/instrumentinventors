@@ -3,10 +3,11 @@ import "./main.css";
 import React from "react";
 import { render } from "react-dom";
 import { BrowserRouter } from "react-router-dom";
+import { CookiesProvider } from "react-cookie";
 import App from "./App";
 import { ViewContextProvider } from "./store/view-context";
 import { MetaContextProvider } from "./store/meta-context";
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider } from "@mui/material/styles";
 import iiiTheme from "./themes/iiiTheme";
 // document.addEventListener('DOMContentLoaded', () => {
 const entry = document.querySelector("#root");
@@ -14,13 +15,15 @@ const entry = document.querySelector("#root");
 
 render(
   <BrowserRouter basename={"/"}>
-    <ThemeProvider theme={iiiTheme}>
-      <MetaContextProvider>
-        <ViewContextProvider>
-          <App />
-        </ViewContextProvider>
-      </MetaContextProvider>
-    </ThemeProvider>
+    <CookiesProvider>
+      <ThemeProvider theme={iiiTheme}>
+        <MetaContextProvider>
+          <ViewContextProvider>
+            <App />
+          </ViewContextProvider>
+        </MetaContextProvider>
+      </ThemeProvider>
+    </CookiesProvider>
   </BrowserRouter>,
   entry
 );

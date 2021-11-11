@@ -1,6 +1,7 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
+  mode: 'jit',
   purge: ["./**/*.php", "./src/**/*.js"],
   // darkMode: false, // or 'media' or 'class'
 
@@ -65,9 +66,17 @@ module.exports = {
         "4/5": "80%",
         "full": "100%",
       },
+      margin: {
+        "sidemenu-close": "calc(-25vw + 108px)",
+      },
       width: {
         "hscreen": "100vh",
+        "200px": "200px",
+        "220px": "220px",
         "350px": "350px",
+        "sidemenu-open": "25vw",
+        "sidemenu-open2": "calc(25vw - 108px)",
+        "sidemenu-close": "108px",
       },
       maxWidth: {
         "input-name": "190px",
@@ -78,6 +87,9 @@ module.exports = {
       },
       minHeight: {
         "full+2px": "calc(100% + 2px)",
+      },
+      transitionProperty: {
+        'width': 'width',
       },
       transitionDelay: {
         "0": "0ms",
@@ -100,6 +112,14 @@ module.exports = {
       strokeWidth: {
         "3": "3",
         "4": "4"
+      },
+      translate: {
+         'sidemenu-open': 'calc(25vw - 108px)',
+         '-test': "calc(-25vw + 108px)",
+      },
+      screens: {
+        'hbp': {'raw': '(min-height: 800px)'},
+        // => @media (orientation: portrait) { ... }
       }
     },
   },

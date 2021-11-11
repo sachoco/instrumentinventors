@@ -1,8 +1,35 @@
 <?php
+/**
+ * Register the /wp-json/acf/v3/posts endpoint so it will be cached.
+ */
+function wprc_add_acf_posts_endpoint( $allowed_endpoints ) {
+    if ( ! isset( $allowed_endpoints[ 'acf/v3' ] ) || ! in_array( 'posts', $allowed_endpoints[ 'acf/v3' ] ) ) {
+        $allowed_endpoints[ 'acf/v3' ][] = 'posts';
+    }
+    return $allowed_endpoints;
+}
+add_filter( 'wp_rest_cache/allowed_endpoints', 'wprc_add_acf_posts_endpoint', 10, 1);
+
+
+function wprc_add_iii_endpoint( $allowed_endpoints ) {
+    if ( ! isset( $allowed_endpoints[ 'iii' ] ) || ! in_array( 'menu', $allowed_endpoints[ 'iii' ] )|| ! in_array( 'related', $allowed_endpoints[ 'iii' ] )|| ! in_array( 'filterItems', $allowed_endpoints[ 'iii' ] )|| ! in_array( 'getFeatured', $allowed_endpoints[ 'iii' ] ) ) {
+        $allowed_endpoints[ 'iii' ][] = 'menu';
+        $allowed_endpoints[ 'iii' ][] = 'related';
+        $allowed_endpoints[ 'iii' ][] = 'filterItems';
+        $allowed_endpoints[ 'iii' ][] = 'getFeatured';
+    }
+    return $allowed_endpoints;
+}
+add_filter( 'wp_rest_cache/allowed_endpoints', 'wprc_add_iii_endpoint', 10, 1);
+
+require_once 'rest-api/get-featured.php';
 
 function query_post($args, $request) {
   if(isset($request['include_page'])){
     $args['post_type'] = array('post','page');
+  }
+  if(isset($request['cat'])) {
+    $args['cat'] = $request['cat'];
   }
   return $args;
 }
@@ -16,27 +43,28 @@ function query_agenda($args, $request) {
   $args['meta_query'] = array('relation' => 'AND');
 
     if(isset($request["cat"])) {
-      if($request["cat"]=="hosted"){
-        $args['meta_query'][] = array(
-            'key' => 'host_|_circulation',
-            'value' => 'host',
-            'compare' => 'LIKE'
-        );
-      }else if($request["cat"]=="circulation"){
-        $args['meta_query'][] = array(
-            'key' => 'host_|_circulation',
-            'value' => 'circulation',
-            'compare' => 'LIKE'
-        );
-      }
-    }
-    if(isset($request["subcat"])) {
       $args['meta_query'][] = array(
           'key' => 'category',
-          'value' => $request["subcat"],
+          'value' => $request["cat"],
           'compare' => 'LIKE'
       );
     }
+    if(isset($request["subcat"])) {
+      foreach( explode(",",$request["subcat"]) as $item ){
+        $args['meta_query'][] = array(
+          'key'     => 'host_|_circulation',
+          'value'   => $item,
+          'compare' => 'LIKE',
+        );
+      }
+      // $args['meta_query'][] = array(
+      //     'key' => 'host_|_circulation',
+      //     'value' => explode(",",$request["subcat"]),
+      //     'compare' => 'LIKE'
+      // );
+
+    }
+
     if(isset($request["upcoming"])) {
         $args['meta_key'] = 'date_from';
         $args['orderby'] = 'meta_value_num';
@@ -95,29 +123,32 @@ function query_project($args, $request) {
   // $args['orderby'] = 'meta_value_num';
   $args['meta_query'] = array('relation' => 'AND');
 
-  if(isset($request["type"])) {
+  if(isset($request["cat"])) {
     $args['meta_query'][] = array(
         'key' => 'category',
-        'value' => $request["type"],
+        'value' => $request["cat"],
         'compare' => 'LIKE'
     );
   }
+  if(isset($request["subcat"])) {
 
-  if(isset($request["cat"])) {
-    if($request["cat"]=="hosted"){
-      $args['meta_query'][] = array(
-          'key' => 'host_|_circulation',
-          'value' => 'host',
-          'compare' => 'LIKE'
-      );
-    }else if($request["cat"]=="circulation"){
-      $args['meta_query'][] = array(
-          'key' => 'host_|_circulation',
-          'value' => 'circulation',
-          'compare' => 'LIKE'
-      );
+    foreach( explode(",",$request["subcat"]) as $item ){
+      if(strpos($request["subcat"], "host") === FALSE&&strpos($request["subcat"], "circulation") === FALSE){
+        $args['meta_query'][] = array(
+          'key'     => 'type',
+          'value'   => $item,
+          'compare' => 'LIKE',
+        );
+      }else{
+        $args['meta_query'][] = array(
+          'key'     => 'host_|_circulation',
+          'value'   => $item,
+          'compare' => 'LIKE',
+        );
+      }
     }
   }
+
   if(isset($request["is_agency"])) {
     $args['meta_query'][] = array(
         'key' => 'is_agency',
@@ -243,7 +274,9 @@ function get_menu() {
   $menu_slug = get_nav_menu_locations();
   foreach($menu_slug as $key => $value){
     $items = wp_get_nav_menu_items($value);
-    $menus[$key] = array_map('extract_from_menu', $items);
+    if(is_array($items)){
+      $menus[$key] = array_map('extract_from_menu', $items);
+    }
   }
   return $menus;
   // $x = wp_get_nav_menu_items('about-menu');
@@ -267,7 +300,7 @@ function get_menu() {
   // return $menu;
 }
 function extract_from_menu($menu){
-  return array("title"=>$menu->title, "path"=>parse_url($menu->url)[path]);
+  return array("title"=>$menu->title, "path"=>parse_url($menu->url)['path']);
 }
 function get_index($menu,$parent_id){
   $index = -1;
@@ -280,10 +313,11 @@ function get_index($menu,$parent_id){
   return $index;
 }
 
-function get_related() {
-  // if ( $post = get_page_by_path( $request['slug'], OBJECT, $request['posttype'] ) )
+function get_related( $request ) {
+  $slug = $request['slug'];
+  $posttype = $request['posttype'];
 
-  if ( $post = get_page_by_path( 'lauren-jetty', OBJECT, 'artist' ) ) {
+  if ( $post = get_page_by_path( $slug, OBJECT, $posttype ) ) {
     $id = $post->ID;
   } else {
     return new WP_Error( 'empty_post', 'there is no post', array('status' => 404) );
@@ -308,6 +342,96 @@ function get_related() {
   // Return all of our comment response data.
   return new WP_REST_Response($data, 200);
 }
+
+function get_filter_items( $request ) {
+  $posttype = $request['posttype'];
+  $data = array();
+  function format_data($obj){
+    return array("value"=>$obj->term_id, "name"=>$obj->name);
+  }
+  function get_choices($field_id){
+    $field = get_field_object($field_id);
+    $choices = [];
+    foreach($field['choices'] as $key=>$value) {
+      array_push($choices, array("value"=>$key,"name"=>$value));
+    }
+    return $choices;
+  }
+  function get_filter_by_posttype($posttype){
+    $data = array();
+    if($posttype=="posts"){
+      $cat = get_terms( array(
+        'taxonomy' => 'category',
+        'hide_empty' => true,
+      ) );
+      $data['cat'] = array_map('format_data', $cat);
+      $tag = get_terms_per_post_type( 'post_tag', array( 'post_type' => 'post' ) );
+      $data['tag'] = array_map('format_data', $tag);
+
+    }else if($posttype=="artist"){
+      $data['cat'] = get_choices('field_615a077d70aaf');
+      $tag = get_terms_per_post_type( 'post_tag', array( 'post_type' => 'artist' ) );
+      $data['tag'] = array_map('format_data', $tag);
+
+    }else if($posttype=="agenda"){
+      $data['cat'] = get_choices('field_615a1faff19c4');
+      $data['subcat'] = get_choices('field_55c5b0997cd1f');
+      $tag = get_terms_per_post_type( 'post_tag', array( 'post_type' => 'agenda' ) );
+      $data['tag'] = array_map('format_data', $tag);
+
+    }else if($posttype=="project"){
+      $data['cat'] = get_choices('field_615a25b7a5c5f');
+      $data['subcat']["curated_programs"] = get_choices('field_615a26e97d0a0');
+      $data['subcat']["editions"] = get_choices('field_615a2778945ea');
+      $tag = get_terms_per_post_type( 'post_tag', array( 'post_type' => 'project' ) );
+      $data['tag'] = array_map('format_data', $tag);
+    }
+    return $data;
+  }
+
+
+  $data = get_filter_by_posttype($posttype);
+
+
+
+  // Return all of our comment response data.
+  return new WP_REST_Response($data, 200);
+}
+
+function get_terms_per_post_type( $taxonomies, $args=array() ) {
+    //Parse $args in case its a query string.
+    $args = wp_parse_args($args);
+
+    if( !empty( $args['post_type'] ) ){
+
+        $args['post_type'] = (array)$args['post_type'];
+
+        add_filter( 'terms_clauses', function ( $pieces, $tax, $args){
+            global $wpdb;
+
+            //Don't use db count
+            $pieces['fields'] .= ", COUNT(*) AS count_type" ;
+
+            //Join extra tables to restrict by post type.
+            $pieces['join'] .= " INNER JOIN $wpdb->term_relationships AS r ON r.term_taxonomy_id = tt.term_taxonomy_id
+                                 INNER JOIN $wpdb->posts AS p ON p.ID = r.object_id ";
+
+            //Restrict by post type and Group by term_id for COUNTing.
+            $post_type = implode( ',', $args['post_type'] );
+            $pieces['where'] .= $wpdb->prepare( " AND p.post_type IN(%s) GROUP BY t.term_id", $post_type );
+
+            remove_filter( current_filter(), __FUNCTION__ );
+
+            return $pieces;
+
+        }, 10, 3 );
+
+    }
+
+    return get_terms($taxonomies, $args);
+}
+
+
 add_action( 'rest_api_init', function () {
     register_rest_route( 'iii', '/menu', array(
         'methods' => 'GET',
@@ -327,49 +451,15 @@ add_action( 'rest_api_init', function () {
 					),
         'permission_callback' => '__return_true',
     ) );
+    register_rest_route( 'iii', '/filterItems\/(?P<posttype>[a-z0-9,+]+(?:-[a-z0-9,+]+)*)', array(
+        'methods' => 'GET',
+        'callback' => 'get_filter_items',
+        'args' => array(
+            'posttype' => array(
+              'requred' => true
+            ),
+          ),
+        'permission_callback' => '__return_true',
+    ) );
+
 } );
-/*
-Custom endpoints
- */
-// add_action( 'rest_api_init', function () {
-//   register_rest_route( 'iii/v1', '/featured/', array(
-//     'methods' => 'GET',
-//     'callback' => 'get_featured',
-//   ) );
-// } );
-function get_featured( WP_REST_Request $request ) {
-	$args = array(
-		'post_type' => array('agenda', 'project', 'posts'),
-		'meta_query' => array(
-		    'relation' => 'AND',
-		)
-
-	);
-
-
-	$items = new WP_User_Query( $args );
-
-	// User Loop
-	$data = [];
-	if ( ! empty( $items->results ) ) {
-		foreach ( $items->results as $item ) {
-
-			$item_data['acf'] = get_fields($item->id);
-			$item_data['id'] = $item->id;
-			// $user_data['display_name'] = $user->display_name;					// $user_data['meta']=get_userdata($userId);
-			// $data[] = $user_data;
-			array_push($data,  $item_data );
-    }
-	}else{
-    return null;
-  }
-	// $data['looking_for']=$looking_for;
-	// $data['query']=$matched_members;
-	// $data['suggested']=$matched_members->results;
-
-
-
-	// Return all of our comment response data.
-	return new WP_REST_Response($data, 200);
-	// return rest_ensure_response( $res );
-}
