@@ -95,6 +95,7 @@ const App = () => {
                 {...props}
                 url="wp/v2/posts/?"
                 posttype="posts"
+                key={props.location.key}
               />
             )}
           />

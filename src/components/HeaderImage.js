@@ -1,14 +1,23 @@
-import React, { useRef, useState, useEffect} from "react";
+import React, { useRef, useState, useEffect } from "react";
 import normalizePosttype from "./utilities/normalizePosttype";
+import { Link } from "react-router-dom";
 
-export default function HeaderImage({item, ...otherProps}) {
+export default function HeaderImage({ item, ...otherProps }) {
   const ref = useRef();
   const [targetHeight, setTargetHeight] = useState();
   useEffect(() => {
-    setTargetHeight(ref.current.offsetWidth+"px");
+    setTargetHeight(ref.current.offsetWidth + "px");
   }, []);
 
-  const {title, image, subcategory, link, tag, date} = normalizePosttype(item);
+  const {
+    title,
+    image,
+    subcategory,
+    link,
+    tag,
+    date,
+    archive_base,
+  } = normalizePosttype(item);
 
   return (
     <>
@@ -23,7 +32,16 @@ export default function HeaderImage({item, ...otherProps}) {
           style={{ paddingTop: "230px" }}
         >
           <h2 className="float-right text-4xl outline-text transform origin-bottom-right rotate-90 -translate-x-3 -translate-y-5">
-            {subcategory}
+            {subcategory.length > 0
+              ? subcategory?.map((cat, i) => (
+                  <span key={i}>
+                    {i > 0 && ", "}
+                    <Link to={"/" + archive_base + "/?c=" + cat.value}>
+                      {cat.label}
+                    </Link>
+                  </span>
+                ))
+              : ""}
           </h2>
         </div>
 
@@ -33,8 +51,20 @@ export default function HeaderImage({item, ...otherProps}) {
         >
           <div className="relative">
             <h2 className="text-5xl mb-3">{title}</h2>
-            <h2 ref={ref}  className="text-8xl absolute right-0 bottom-0 outline-text transform origin-bottom-right rotate-90 -translate-x-24 -translate-y-5">
-              {subcategory}
+            <h2
+              ref={ref}
+              className="text-8xl absolute right-0 bottom-0 outline-text transform origin-bottom-right rotate-90 -translate-x-24 -translate-y-5"
+            >
+              {subcategory.length > 0
+                ? subcategory?.map((cat, i) => (
+                    <span key={i}>
+                      {i > 0 && ", "}
+                      <Link to={"/" + archive_base + "/?c=" + cat.value}>
+                        {cat.label}
+                      </Link>
+                    </span>
+                  ))
+                : ""}
             </h2>
           </div>
           <div className="border-b-2 border-white"></div>
@@ -42,26 +72,38 @@ export default function HeaderImage({item, ...otherProps}) {
             {/*<span className="border-2 bg-white py-2 px-4 mr-2">
               {link}
             </span>*/}
-            <span className="border-2 bg-white py-2 px-4 mr-2">{subcategory}</span>
-            {date &&
-              <span className="border-2 bg-white py-2 px-4 mr-2">
-                {date}
-              </span>
-            }
-
+            <span className="border-2 bg-white py-2 px-4 mr-2">
+              {subcategory.length > 0
+                ? subcategory?.map((cat, i) => (
+                    <span key={i}>
+                      {i > 0 && ", "}
+                      <Link to={"/" + archive_base + "/?c=" + cat.value}>
+                        {cat.label}
+                      </Link>
+                    </span>
+                  ))
+                : ""}
+            </span>
+            {date && (
+              <span className="border-2 bg-white py-2 px-4 mr-2">{date}</span>
+            )}
           </div>
         </div>
       </div>
       <div className="lg:hidden relative w-full bg-bg-light-gray border-t-2 border-b-2">
         <h2 className="text-lg text-white bg-bg-gray px-6 py-3">{title}</h2>
         <div className=" text-black p-6 border-t-2 text-xs">
+          <span className="border-2 bg-white py-2 px-4 mr-2">{link}</span>
           <span className="border-2 bg-white py-2 px-4 mr-2">
-            {link}
+            {subcategory.length > 0 ? subcategory?.map((cat, i) =>
+              <span key={i}>
+              {i>0 && ', '}
+              <Link  to={'/'+archive_base+'/?c='+cat.value}>{cat.label}</Link>
+              </span>
+            )
+              : ""}
           </span>
-          <span className="border-2 bg-white py-2 px-4 mr-2">{subcategory}</span>
-          <span className="border-2 bg-white py-2 px-4 mr-2">
-            {date}
-          </span>
+          <span className="border-2 bg-white py-2 px-4 mr-2">{date}</span>
         </div>
       </div>
     </>

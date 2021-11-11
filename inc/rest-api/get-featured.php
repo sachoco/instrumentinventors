@@ -144,11 +144,11 @@ function get_featured_items( $request ) {
     foreach ( $items as $post ) {
       $post_data['id'] = $post->ID;
       $post_data['title'] = $post->post_title;
-      $post_data['subtype'] = $post->post_type;
+      $post_data['post_type'] = $post->post_type;
       $post_data['tag'] = get_the_tags($post->ID);
       $post_data['url'] = esc_url(get_permalink($post->ID));
       $post_data['featured_image'] = get_the_post_thumbnail_url($post->ID,'large');
-      $post_data['featuredd_result'] = true;
+      $post_data['featured_result'] = true;
       if ($post->post_type == "artist") {
         $post_data['subcategory'] = get_field('badges', $post->ID);
         $post_data['date_from'] = get_field('date_from', $post->ID);
@@ -168,7 +168,7 @@ function get_featured_items( $request ) {
         $post_data['subcategory'] = get_field('category', $post->ID);
         $post_data['date_from'] = get_field('date_from', $post->ID);
         $post_data['date_until'] = get_field('date_until', $post->ID);
-        if($post_data['date_from']){
+        if($post_data['date_until']){
           $post_data['date'] = $post_data['date_from'].' - ' .$post_data['date_until'];
         }else{
           $post_data['date'] = $post_data['date_from'];

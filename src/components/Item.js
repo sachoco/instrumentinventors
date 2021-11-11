@@ -9,6 +9,8 @@ export default function Item(props) {
     title,
     image,
     subcategory,
+    subcat_link,
+    archive_base,
     link,
     tag,
     date,
@@ -36,7 +38,22 @@ export default function Item(props) {
         </div>
       </div>
       <div className="absolute z-20 top-0 right-0 bg-white border-b-2 border-l-2 px-5 py-2">
-        {subcategory}
+        {typeof subcategory === "string" ? (
+          subcategory
+        ) : (
+          <>
+            {subcategory.length > 0
+              ? subcategory?.map((cat, i) => (
+                  <span key={i}>
+                    {i > 0 && ", "}
+                    <Link to={"/" + archive_base + "/?c=" + cat.value}>
+                      {cat.label}
+                    </Link>
+                  </span>
+                ))
+              : ""}
+          </>
+        )}
       </div>
       <div className="transition-all duration-200 absolute z-20 w-full top-16 text-2xl px-5 my-2 opacity-0 delay-0 group-hover:delay-200 group-hover:opacity-100 ">
         <div className="border-t-2">{meta1}</div>

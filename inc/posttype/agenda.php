@@ -65,6 +65,8 @@ function custom_post_agenda() {
 
 }
 
+
+
 function filter_agenda_by_taxonomies( $post_type, $which ) {
 
 	// Apply this only on a specific post type

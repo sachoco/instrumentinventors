@@ -22,6 +22,55 @@ function custom_post_artist() {
 }
 
 
+function filter_artist_by_acf_field( $post_type, $which ) {
+
+	// Apply this only on a specific post type
+	if ( 'artist' !== $post_type )
+		return;
+
+	// A list of taxonomy slugs to filter by
+	$acf_fields = array( 'badges' );
+  // $acf_fields = array( 'field_615a077d70aaf' );
+
+	foreach ( $acf_fields as $acf_field ) {
+
+		// Retrieve taxonomy terms
+		$field = get_field_object( $acf_field );
+    // var_dump($field);
+		// Display filter HTML
+		echo "<select name='{$field["name"]}' id='{$field["name"]}' class='postform'>";
+		echo '<option value="">' . sprintf( esc_html__( 'Show All %s', 'iii' ), $field["label"] ) . '</option>';
+    if( $field['choices'] ):
+		foreach ( $field['choices'] as $value => $label ) {
+			printf(
+				'<option value="%1$s" %2$s>%3$s</option>',
+				$value,
+				( ( isset( $_GET[$acf_field] ) && ( $_GET[$acf_field] == $value ) ) ? ' selected="selected"' : '' ),
+				$label
+			);
+		}
+    endif;
+		echo '</select>';
+	}
+
+}
+add_action( 'restrict_manage_posts', 'filter_artist_by_acf_field' , 10, 2);
+
+function admin_artist_filter( $query )
+{
+    global $pagenow;
+    if(!empty($query->query_vars['post_type'])){
+      $post_type = $query->query_vars['post_type'];
+      if ( is_admin() && isset($_GET['post_type']) && $_GET['post_type']=='artist' && $pagenow=='edit.php' && isset($_GET['badges']) && $_GET['badges'] != '' && $post_type=='artist') {
+          $query->query_vars['meta_query'][] = array(
+              'key' => 'badges',
+              'value' => $_GET['badges'],
+              'compare' => 'LIKE'
+          );
+      }
+    }
+}
+add_filter( 'parse_query', 'admin_artist_filter' );
 
   // Add the Artist Meta Boxes
   //

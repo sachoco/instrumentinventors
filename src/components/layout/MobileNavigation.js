@@ -126,7 +126,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                     </a>
                   </li>
                   <li className="text-center">
-                    <a className="relative hover:font-bold" href="/editions/">
+                    <a className="relative hover:font-bold" href="/projects/?c=editions">
                       editions
                     </a>
                   </li>
@@ -173,14 +173,14 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                     <MyLink
                       activeClassName="font-bold active"
                       className="relative hover:font-bold"
-                      to="/editions/"
+                      to="/projects/?c=editions"
                     >
                       editions
                     </MyLink>
                   </li>
-                  <li className="text-center">
+                  {/*<li className="text-center">
                     <LanguageSlect />
-                  </li>
+                  </li>*/}
                 </ul>
               )}
           </nav>

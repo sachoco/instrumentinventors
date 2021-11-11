@@ -10,6 +10,7 @@ export default function SlideItem(props) {
     title,
     image,
     subcategory,
+    archive_base,
     link,
     tag,
     date,
@@ -17,9 +18,8 @@ export default function SlideItem(props) {
     meta2,
     meta3,
   } = normalizePosttype(item);
-
   const itemBox = (
-    <>
+    <Link to={link}>
       <img
         className="absolute w-full h-full object-cover object-center"
         src={image.large}
@@ -49,7 +49,7 @@ export default function SlideItem(props) {
           </Marquee>
         </div>
       </div>
-    </>
+    </Link>
   );
 
   return (

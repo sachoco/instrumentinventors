@@ -111,7 +111,7 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
                 </a>
               </li>
               <li>
-                <a className="relative hover:font-bold" href="/editions/">
+                <a className="relative hover:font-bold" href="/projects/?c=editions">
                   editions
                 </a>
               </li>
@@ -158,7 +158,7 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
                 <MyLink
                   activeClassName="font-bold active"
                   className="relative hover:font-bold"
-                  to="/editions/"
+                  to="/projects/?c=editions"
                 >
                   editions
                 </MyLink>

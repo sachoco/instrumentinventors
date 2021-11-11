@@ -8,6 +8,7 @@ export default function ListItem(props) {
   const {
     title,
     subcategory,
+    archive_base,
     link,
     tag,
     date,
@@ -22,10 +23,16 @@ export default function ListItem(props) {
             {title}
           </div>
           <div className="border-l-2 px-4 leading-3 lg:leading-normal lg:py-1 w-48 flex-grow-0">
-            {subcategory}
+            {subcategory.length > 0 ? subcategory?.map((cat, i) =>
+              <span key={i}>
+              {i>0 && ', '}
+              <Link  to={'/'+archive_base+'/?c='+cat.value}>{cat.label}</Link>
+              </span>
+            )
+              : ""}
           </div>
           <div className="border-l-2 px-4 leading-3 lg:leading-normal lg:py-1 min-w-300px flex-grow">
-            tag 1, tag longer, tag extra long
+            {tag}
           </div>
         </div>
         <div style={{ width: "32px" }}>

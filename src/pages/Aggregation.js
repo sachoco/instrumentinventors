@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useRef, useState, useEffect, useContext } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
 import fetchData from "../components/rest-api/fetchData";
@@ -11,7 +11,7 @@ import Filter from "../components/Filter";
 import ViewContext from "../store/view-context";
 
 const Aggregation = ({ url, posttype, ...otherProps }) => {
-
+  const isInitialMount = useRef(true);
   const viewCtx = useContext(ViewContext);
   let history = useHistory();
   const { search } = useLocation();
@@ -56,14 +56,19 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
     tags:tag
   }
   useEffect(()=>{
-    let query = "?";
-    if(filter.cat&&filter.cat!=""){query+='c='+filter.cat}
-    if(filter.subcat&&filter.subcat!=""){query+='&sc='+filter.subcat}
-    if(filter.tag&&filter.tag!=""){query+='&t='+filter.tag}
+    if (isInitialMount.current) {
+       isInitialMount.current = false;
+    } else {
+        // Your useEffect code here to be run on update
+      let query = "?";
+      if(filter.cat&&filter.cat!=""){query+='c='+filter.cat}
+      if(filter.subcat&&filter.subcat!=""){query+='&sc='+filter.subcat}
+      if(filter.tag&&filter.tag!=""){query+='&t='+filter.tag}
 
-    history.push({
-      search: query,
-    });
+      history.push({
+        search: query,
+      });
+    }
 
   },[filter])
   return (
