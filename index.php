@@ -1,6 +1,6 @@
 <?php get_header(); ?>
 <?php
-if(!is_woocommerce()&&!is_product()&&!is_cart()&&!is_checkout()):
+if(!is_woocommerce()&&!is_product()&&!is_cart()&&!is_checkout()&&!is_account_page()):
 ?>
 <div id='root'></div>
 <?php else: ?>

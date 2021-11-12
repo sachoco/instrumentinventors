@@ -14,7 +14,7 @@ const Education = () => (
     <Block title="circulation workshops" bg={true}>
       <Carousel url="wp/v2/agenda/?subcat=circulation&cat=workshop&_embed" />
     </Block>
-    <Block title="workshops">
+    <Block title="workshop portfolio">
       <Carousel url="wp/v2/project/?cat=workshop&subcat=host&_embed" />
     </Block>
   </>

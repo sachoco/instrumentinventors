@@ -5,7 +5,6 @@ import MetaContext from "../store/meta-context";
 
 import fetchData from "../components/rest-api/fetchData";
 
-import Gallery from "../components/Gallery";
 import Carousel from "../components/Carousel";
 import Block from "../components/layout/Block";
 import Meta from "../components/layout/Meta";

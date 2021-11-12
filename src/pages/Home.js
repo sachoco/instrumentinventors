@@ -9,7 +9,7 @@ const Home = () => (
     <Meta title="Home" />
     <Slideshow />
     <Block title="hosted program">
-      <Carousel url="wp/v2/agenda/?subcat=hosted&upcoming&_embed" />
+      <Carousel url="wp/v2/agenda/?subcat=host&upcoming&_embed" />
     </Block>
     <Block title="circulation program" bg={true}>
       <Carousel url="wp/v2/agenda/?subcat=circulation&upcoming&_embed" />

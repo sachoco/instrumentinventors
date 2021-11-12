@@ -111,7 +111,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                     </a>
                   </li>
                   <li className="text-center">
-                    <a className="relative hover:font-bold" href="/hosted/">
+                    <a className="relative hover:font-bold" href="/hosted-progam/">
                       hosted program
                     </a>
                   </li>
@@ -146,7 +146,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                     <MyLink
                       activeClassName="font-bold active"
                       className="relative hover:font-bold"
-                      to="/hosted/"
+                      to="/hosted-program/"
                     >
                       hosted program
                     </MyLink>

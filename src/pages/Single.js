@@ -5,7 +5,6 @@ import MetaContext from "../store/meta-context";
 import fetchData from "../components/rest-api/fetchData";
 
 import HeaderImage from "../components/HeaderImage";
-import Gallery from "../components/Gallery";
 import Carousel from "../components/Carousel";
 import Block from "../components/layout/Block";
 import Meta from "../components/layout/Meta";
@@ -65,9 +64,6 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
 
         <div className="max-w-3xl  font-bold lg:font-normal text-base lg:text-2xl"></div>
         <div className="mt-10 mx-auto max-w-3xl"></div>
-      </Block>
-      <Block>
-        <Gallery />
       </Block>
       <Block title="related" bg={true}>
         <Carousel url={related_url} />

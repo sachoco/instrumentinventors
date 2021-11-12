@@ -54,6 +54,13 @@
   /* color: rgba(255,255,255,0);
   text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF; */
 }
+
+.woocommerce {
+  select, input {
+    @apply p-2 border border-gray-300;
+  }
+}
+
 .otgs-development-site-front-end {
   display: none;
 }

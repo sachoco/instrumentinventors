@@ -32,7 +32,7 @@ const App = () => {
             render={(props) => <Single {...props} posttype="artist" />}
           />
 
-          <Route path="/hosted/" exact component={HostedProgram} />
+          <Route path="/hosted-program/" exact component={HostedProgram} />
           <Route path="/agency/" exact component={Agency} />
           <Route path="/education/" exact component={Education} />
 

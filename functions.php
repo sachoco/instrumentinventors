@@ -36,7 +36,7 @@ function theme_scripts() {
 	 * @var \WPackio\Enqueue
 	 */
 	global $enqueue;
-	if(!is_woocommerce()&&!is_product()&&!is_cart()&&!is_checkout()):
+	if(!is_woocommerce()&&!is_product()&&!is_cart()&&!is_checkout()&&!is_account_page()):
 
 
 		$assets = $enqueue->enqueue( 'theme', 'main',  [
