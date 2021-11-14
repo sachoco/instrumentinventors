@@ -5,7 +5,7 @@ import MobileNavigation from "./MobileNavigation";
 import { useLocation } from "react-router-dom";
 import MetaContext from "../../store/meta-context";
 import getTitle from "../utilities/getTitle";
-// import LanguageSlect from "../LanguageSelect";
+import LanguageSlect from "../LanguageSelect";
 import fetchMenu from "../rest-api/fetchMenu";
 
 import styled from "styled-components";
@@ -27,8 +27,9 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
   if (!menuItems) {
     menuItems = fetchMenu();
   }
+  console.log(metaCtx.title);
   // const menuItems = fetchMenu();
-  // metaCtx.changeTitle(getTitle(location));
+  // metaCtx.setTitle(getTitle(location));
   return (
     <>
       <header className="fixed w-full h-14 lg:h-24 bg-white border-b-2 flex z-50 font-nav text-xl">
@@ -87,9 +88,9 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
             </Link>
           )}
         </span>
-        <nav className="flex-grow ">
+        <nav className="flex flex-grow ">
           {noreactrouter ? (
-            <ul className="hidden lg:flex justify-evenly items-center h-full ">
+            <ul className="hidden lg:flex justify-evenly items-center flex-grow h-full ">
               <li>
                 <a className="relative hover:font-bold" href="/artists/">
                   artists
@@ -111,62 +112,74 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
                 </a>
               </li>
               <li>
-                <a className="relative hover:font-bold" href="/projects/?c=editions">
+                <a
+                  className="relative hover:font-bold"
+                  href="/projects/?c=editions"
+                >
                   editions
                 </a>
               </li>
             </ul>
           ) : (
-            <ul className="hidden lg:flex justify-evenly items-center h-full ">
-              <li>
-                <MyLink
-                  activeClassName="font-bold active"
-                  className="relative hover:font-bold"
-                  to="/artists/"
-                >
-                  artists
-                </MyLink>
-              </li>
-              <li>
-                <MyLink
-                  activeClassName="font-bold active"
-                  className="relative hover:font-bold"
-                  to="/hosted-program/"
-                >
-                  hosted program
-                </MyLink>
-              </li>
-              <li>
-                <MyLink
-                  activeClassName="font-bold active"
-                  className="relative hover:font-bold"
-                  to="/agency/"
-                >
-                  agency
-                </MyLink>
-              </li>
-              <li>
-                <MyLink
-                  activeClassName="font-bold active"
-                  className="relative hover:font-bold"
-                  to="/education/"
-                >
-                  education
-                </MyLink>
-              </li>
-              <li>
-                <MyLink
-                  activeClassName="font-bold active"
-                  className="relative hover:font-bold"
-                  to="/projects/?c=editions"
-                >
-                  editions
-                </MyLink>
-              </li>
-              {/*<li>
-                <LanguageSlect />
-              </li>*/}
-            </ul>
+            <>
+              <ul className="hidden lg:flex justify-evenly items-center flex-grow h-full ">
+                <li>
+                  <MyLink
+                    activeClassName="font-bold active"
+                    className="relative hover:font-bold"
+                    to="/artists/"
+                  >
+                    artists
+                  </MyLink>
+                </li>
+                <li>
+                  <MyLink
+                    activeClassName="font-bold active"
+                    className="relative hover:font-bold"
+                    to="/hosted-program/"
+                  >
+                    hosted program
+                  </MyLink>
+                </li>
+                <li>
+                  <MyLink
+                    activeClassName="font-bold active"
+                    className="relative hover:font-bold"
+                    to="/agency/"
+                  >
+                    agency
+                  </MyLink>
+                </li>
+                <li>
+                  <MyLink
+                    activeClassName="font-bold active"
+                    className="relative hover:font-bold"
+                    to="/education/"
+                  >
+                    education
+                  </MyLink>
+                </li>
+                <li>
+                  <MyLink
+                    activeClassName="font-bold active"
+                    className="relative hover:font-bold"
+                    to="/projects/?c=editions"
+                  >
+                    editions
+                  </MyLink>
+                </li>
+                {/* <li>
+                  <LanguageSlect />
+                </li> */}
+              </ul>
+              {metaCtx.translation && (
+                <ul className="hidden lg:flex justify-evenly items-center h-full w-24 border-l-2 ">
+                  <li>
+                    <LanguageSlect />
+                  </li>
+                </ul>
+              )}
+            </>
           )}
 
           <div className="flex lg:hidden justify-center items-center h-full ">

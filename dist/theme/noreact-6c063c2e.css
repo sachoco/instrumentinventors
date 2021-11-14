@@ -783,6 +783,10 @@ video {
 	margin-left: 0.75rem;
 	margin-right: 0.75rem;
 }
+.-mx-24 {
+	margin-left: -6rem;
+	margin-right: -6rem;
+}
 .my-2 {
 	margin-top: 0.5rem;
 	margin-bottom: 0.5rem;
@@ -826,6 +830,9 @@ video {
 }
 .mr-2 {
 	margin-right: 0.5rem;
+}
+.mr-6 {
+	margin-right: 1.5rem;
 }
 .mb-1 {
 	margin-bottom: 0.25rem;
@@ -962,6 +969,9 @@ video {
 .w-14 {
 	width: 3.5rem;
 }
+.w-24 {
+	width: 6rem;
+}
 .w-screen {
 	width: 100vw;
 }
@@ -985,6 +995,9 @@ video {
 }
 .w-1\/3 {
 	width: 33.333333%;
+}
+.min-w-80 {
+	min-width: 20rem;
 }
 .min-w-0 {
 	min-width: 0px;
@@ -1152,6 +1165,12 @@ video {
 }
 .overflow-scroll {
 	overflow: scroll;
+}
+.overflow-x-scroll {
+	overflow-x: scroll;
+}
+.overscroll-x-none {
+	overscroll-behavior-x: none;
 }
 .whitespace-nowrap {
 	white-space: nowrap;
@@ -1565,7 +1584,29 @@ video {
 .duration-200 {
 	transition-duration: 200ms;
 }
+.scroll-snap-x {
+    -ms-scroll-snap-type: x mandatory;
+        scroll-snap-type: x mandatory;
+  }
+.scroll-align-start {
+    scroll-snap-align: start;
+  }
+.scroll-padding-x-24 {
+    scroll-padding-left: 6rem;
+    scroll-padding-right: 6rem;
+  }
+/* .overscroll-contain {
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .overscroll-none {
+    overscroll-behavior-x: none;
+    -webkit-overflow-scrolling: touch;
+  } */
 
+body {
+	overscroll-behavior-x: none;
+}
 .single-item-content p {
 	margin-bottom: 1rem;
 }
@@ -1591,6 +1632,14 @@ video {
 	content: "";
 	--tw-text-opacity: 1;
 	color: rgba(0, 0, 0, var(--tw-text-opacity));
+}
+
+.first\:ml-24:first-child {
+	margin-left: 6rem;
+}
+
+.last\:mr-24:last-child {
+	margin-right: 6rem;
 }
 
 .hover\:bg-bg-filter:hover {
@@ -1895,4 +1944,4 @@ video {
 }
 
 
-/*# sourceMappingURL=noreact-2c7a65d3.css.map*/
+/*# sourceMappingURL=noreact-6c063c2e.css.map*/

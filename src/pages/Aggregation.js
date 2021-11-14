@@ -9,10 +9,13 @@ import ListView from "../components/view/ListView";
 import Filter from "../components/Filter";
 
 import ViewContext from "../store/view-context";
+import MetaContext from "../store/meta-context";
 
 const Aggregation = ({ url, posttype, ...otherProps }) => {
   const isInitialMount = useRef(true);
   const viewCtx = useContext(ViewContext);
+  const metaCtx = useContext(MetaContext);
+
   let history = useHistory();
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);

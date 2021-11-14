@@ -6,6 +6,8 @@ import fetchData from "../components/rest-api/fetchData";
 
 import HeaderImage from "../components/HeaderImage";
 import Carousel from "../components/Carousel";
+import HorizontalSlider from "../components/HorizontalSlider";
+
 import Block from "../components/layout/Block";
 import Meta from "../components/layout/Meta";
 import normalizePosttype from "../components/utilities/normalizePosttype";
@@ -19,7 +21,7 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
   const [state, loadMore] = fetchData(url, true);
   const {title, content} = normalizePosttype(state.item);
 
-  metaCtx.changeTitle(getTitle(state.item));
+  metaCtx.setTitle(getTitle(state.item));
 
   return (
     <>
@@ -66,7 +68,7 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
         <div className="mt-10 mx-auto max-w-3xl"></div>
       </Block>
       <Block title="related" bg={true}>
-        <Carousel url={related_url} />
+        <HorizontalSlider url={related_url} />
       </Block>
       <div className="px-24 pb-10 bg-bg-lighter-gray">
         <button className="relative">

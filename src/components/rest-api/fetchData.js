@@ -44,7 +44,7 @@ const fetchData = (url, single = false, concat = true, filter = null) => {
       });
     }
     if (cookies.lang == "nl") {
-      // rest_call_url += "&lang=" + cookies.lang;
+      rest_call_url += "&lang=" + cookies.lang;
     }
     console.log(rest_call_url);
     return Axios.get(rest_call_url).then(
@@ -62,6 +62,8 @@ const fetchData = (url, single = false, concat = true, filter = null) => {
         }));
       },
       (error) => {
+        console.log("error")
+        console.log(error);
         setState((prevState, props) => ({
           ...state,
           error: error.toJSON().message,

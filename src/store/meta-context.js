@@ -4,19 +4,26 @@ import getTitle from "../components/utilities/getTitle";
 
 const MetaContext = createContext({
   title: "",
-  changeView: (mode) => {},
+  translation: false,
+  setTitle: (title) => {},
+  setTranslation: (boolean) => {},
 });
 
 export const MetaContextProvider = (props) => {
-  const [title, setTitle] = useState(getTitle());
+  const [pageTitle, setPageTitle] = useState(getTitle());
+  const [showTranslation, setShowTranslation] = useState(false);
 
   const changeTitleHandler = (title) => {
-    setTitle(title);
+    setPageTitle(title);
   };
-
+  const setTranslationHandler = (boolean) => {
+    setShowTranslation(boolean);
+  };
   const context = {
-    title: title,
-    changeTitle: changeTitleHandler,
+    title: pageTitle,
+    translation: showTranslation,
+    setTitle: changeTitleHandler,
+    setTranslation: setTranslationHandler,
   };
 
   return (

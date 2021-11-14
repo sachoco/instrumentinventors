@@ -37,17 +37,6 @@ const App = () => {
           <Route path="/education/" exact component={Education} />
 
           <Route
-            path="/editions/"
-            exact
-            render={(props) => (
-              <Aggregation
-                {...props}
-                url="wp/v2/project/?cat=editions"
-                posttype="project"
-              />
-            )}
-          />
-          <Route
             path="/agenda/"
             exact
             render={(props) => (
