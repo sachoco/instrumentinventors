@@ -16,8 +16,10 @@ const getTitle = (item) => {
     title = "agency";
   }else if(location.pathname=="/education/"){
     title = "education";
-  }else if(location.pathname=="/editions/"){
-    title = "editions";
+  }else if(location.pathname=="/projects/"){
+    title = "projects";
+  }else if(location.pathname=="/agenda/"){
+    title = "agenda";
   }
   if(item){
     const { title: posttitle, posttype } = normalizePosttype(item);

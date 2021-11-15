@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useParams } from "react-router";
 import MetaContext from "../store/meta-context";
 
@@ -21,8 +21,9 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
   const [state, loadMore] = fetchData(url, true);
   const {title, content} = normalizePosttype(state.item);
 
-  metaCtx.setTitle(getTitle(state.item));
-
+  useEffect(()=>{
+    metaCtx.setTitle(posttype);
+  },[state])
   return (
     <>
       <Meta title={title} />

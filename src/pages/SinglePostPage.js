@@ -1,7 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { useParams, useLocation } from "react-router";
 import MetaContext from "../store/meta-context";
-// import $ from "jquery";
 
 import fetchData from "../components/rest-api/fetchData";
 
@@ -13,35 +12,37 @@ import Meta from "../components/layout/Meta";
 import normalizePosttype from "../components/utilities/normalizePosttype";
 import getTitle from "../components/utilities/getTitle";
 
-// import "../assets/vc/assets/lib/bower/isotope/dist/isotope.pkgd.min.js";
 import "../assets/vc/assets/css/js_composer.min.css";
 import "../assets/vc/assets/js/dist/js_composer_front.min.js";
 import "../assets/vc/assets/lib/vc_carousel/css/vc_carousel.min.css";
 import "../assets/vc/assets/lib/vc_carousel/js/vc_carousel.min.js";
 import "../assets/vc/assets/lib/vc_carousel/js/transition.min.js";
-// import "../assets/vc/assets/lib/bower/lightbox2/dist/css/lightbox.min.css";
-// import "../assets/vc/assets/lib/bower/lightbox2/dist/js/lightbox.min.js";
 
 const SinglePostPage = ({ ...otherProps }) => {
   const metaCtx = useContext(MetaContext);
   const location = useLocation();
   const { p1, p2 } = useParams();
   const slug = p2 ? p2 : p1;
-  const path = p2 ? p1+"/"+p2 : p1; 
+  const path = p2&&p1!="post" ? p1+"/"+p2 : p1; 
   const url = "wp/v2/posts/?slug=" + slug + "&include_page&_embed";
 
   const [state, loadMore] = fetchData(url, true);
   const { title, content, posttype } = normalizePosttype(state.item);
-  // metaCtx.setTitle(getTitle(state.item));
   useEffect(() => {
       jQuery('[data-ride="vc_carousel"]').each(function () {
         var $carousel = jQuery(this);
         $carousel.carousel($carousel.data());
       });
       metaCtx.setTranslation(location.pathname.includes("about", 1));
-
+      let catTitle = "";
+      if(posttype=="post"){
+        catTitle = "news & media";
+      }else{
+        catTitle = "page";
+      }
+      metaCtx.setTitle(catTitle);
     return () => {};
-  }, [content]);
+  }, [content, posttype]);
 
   return (
     <>
