@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useContext} from "react";
 import Slideshow from "../components/Slideshow";
 import Carousel from "../components/Carousel";
 import HorizontalSlider from "../components/HorizontalSlider";
