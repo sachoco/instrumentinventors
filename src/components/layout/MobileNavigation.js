@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
 import SearchForm from "./SearchForm";
 import LanguageSlect from "../LanguageSelect";
+import MetaContext from "../../store/meta-context";
 
 const MyLink = styled(NavLink)`
   &.active {
@@ -19,9 +20,9 @@ const MyLink = styled(NavLink)`
 `;
 
 const MobileNavigation = ({ menuItems, noreactrouter }) => {
-
   const [showMenu, setShowMenu] = useState(false);
   const [showSubMenu, setShowSubMenu] = useState(false);
+  const metaCtx = useContext(MetaContext);
 
   const onClickHandler = (e) => {
     showMenu ? setShowMenu(false) : setShowMenu(true);
@@ -102,87 +103,94 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
       >
         <div className="relative h-full p-8 bg-white flex flex-col justify-between">
           <nav className="flex-grow border-b-2 pb-8">
-
-              {noreactrouter ? (
-                <ul className="flex flex-col justify-around h-full  leading-10">
-                  <li className="text-center">
-                    <a className="relative hover:font-bold" href="/artists/">
-                      artists
-                    </a>
-                  </li>
-                  <li className="text-center">
-                    <a className="relative hover:font-bold" href="/hosted-progam/">
-                      hosted program
-                    </a>
-                  </li>
-                  <li className="text-center">
-                    <a className="relative hover:font-bold" href="/agency/">
-                      agency
-                    </a>
-                  </li>
-                  <li className="text-center">
-                    <a className="relative hover:font-bold" href="/education/">
-                      education
-                    </a>
-                  </li>
-                  <li className="text-center">
-                    <a className="relative hover:font-bold" href="/projects/?c=editions">
-                      editions
-                    </a>
-                  </li>
-                </ul>
-              ) : (
-                <ul className="flex flex-col justify-around h-full  leading-10">
-                  <li className="text-center">
-                    <MyLink
-                      activeClassName="font-bold active"
-                      className="relative hover:font-bold"
-                      to="/artists/"
-                    >
-                      artists
-                    </MyLink>
-                  </li>
-                  <li className="text-center">
-                    <MyLink
-                      activeClassName="font-bold active"
-                      className="relative hover:font-bold"
-                      to="/hosted-program/"
-                    >
-                      hosted program
-                    </MyLink>
-                  </li>
-                  <li className="text-center">
-                    <MyLink
-                      activeClassName="font-bold active"
-                      className="relative hover:font-bold"
-                      to="/agency/"
-                    >
-                      agency
-                    </MyLink>
-                  </li>
-                  <li className="text-center">
-                    <MyLink
-                      activeClassName="font-bold active"
-                      className="relative hover:font-bold"
-                      to="/education/"
-                    >
-                      education
-                    </MyLink>
-                  </li>
-                  <li className="text-center">
-                    <MyLink
-                      activeClassName="font-bold active"
-                      className="relative hover:font-bold"
-                      to="/projects/?c=editions"
-                    >
-                      editions
-                    </MyLink>
-                  </li>
-                  {/*<li className="text-center">
+            {noreactrouter ? (
+              <ul className="flex flex-col justify-around h-full  leading-10">
+                <li className="text-center">
+                  <a className="relative hover:font-bold" href="/artists/">
+                    artists
+                  </a>
+                </li>
+                <li className="text-center">
+                  <a
+                    className="relative hover:font-bold"
+                    href="/hosted-progam/"
+                  >
+                    hosted program
+                  </a>
+                </li>
+                <li className="text-center">
+                  <a className="relative hover:font-bold" href="/agency/">
+                    agency
+                  </a>
+                </li>
+                <li className="text-center">
+                  <a className="relative hover:font-bold" href="/education/">
+                    education
+                  </a>
+                </li>
+                <li className="text-center">
+                  <a
+                    className="relative hover:font-bold"
+                    href="/projects/?c=editions"
+                  >
+                    editions
+                  </a>
+                </li>
+              </ul>
+            ) : (
+              <ul className="flex flex-col justify-around h-full  leading-10">
+                <li className="text-center">
+                  <MyLink
+                    activeClassName="font-bold active"
+                    className="relative hover:font-bold"
+                    to="/artists/"
+                  >
+                    artists
+                  </MyLink>
+                </li>
+                <li className="text-center">
+                  <MyLink
+                    activeClassName="font-bold active"
+                    className="relative hover:font-bold"
+                    to="/hosted-program/"
+                  >
+                    hosted program
+                  </MyLink>
+                </li>
+                <li className="text-center">
+                  <MyLink
+                    activeClassName="font-bold active"
+                    className="relative hover:font-bold"
+                    to="/agency/"
+                  >
+                    agency
+                  </MyLink>
+                </li>
+                <li className="text-center">
+                  <MyLink
+                    activeClassName="font-bold active"
+                    className="relative hover:font-bold"
+                    to="/education/"
+                  >
+                    education
+                  </MyLink>
+                </li>
+                <li className="text-center">
+                  <MyLink
+                    activeClassName="font-bold active"
+                    className="relative hover:font-bold"
+                    to="/projects/?c=editions"
+                  >
+                    editions
+                  </MyLink>
+                </li>
+                {metaCtx.translation && (
+                  <li>
                     <LanguageSlect />
-                  </li>*/}
-                </ul>
-              )}
+                  </li>
+                )}
+              </ul>
+            )}
           </nav>
 
           <nav className="flex-grow py-10 border-b-2 ">

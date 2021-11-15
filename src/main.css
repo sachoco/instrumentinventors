@@ -68,6 +68,9 @@
     overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
   } */
+  .cursor-grabbing {
+    cursor: grabbing;
+  }
 }
 
 body {

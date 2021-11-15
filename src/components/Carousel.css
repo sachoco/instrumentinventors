@@ -8,4 +8,27 @@
       @apply block;
     }
   }
+  .slick-arrow {
+    @apply bg-white bg-opacity-50 opacity-0 transition-opacity hidden lg:block;
+    &.slick-disabled {
+      @apply hidden;
+    }
+    &.slick-prev {
+      @apply ml-5 transform -translate-x-full;
+    }
+    &.slick-next {
+      @apply mr-4 transform translate-x-full;
+    }
+    svg {
+      @apply inline-block;
+    }
+  }
+
+}
+.carousel-wrapper {
+  &.focused {
+    .slick-arrow {
+      @apply opacity-100;
+    }
+  }
 }

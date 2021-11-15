@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import fetchData from "./rest-api/fetchData";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -11,12 +11,15 @@ export default function Carousel({
   type = null,
   ...otherProps
 }) {
-  url = url + "&_fields=id,title,slug,formatted_date,acf,type,tags,featured_media,_links,_embedded";
+  url =
+    url +
+    "&_fields=id,title,slug,formatted_date,acf,type,tags,featured_media,_links,_embedded";
+  const [hover, setHover] = useState(false);
   const [state, loadMore] = fetchData(url);
 
   const settings = {
     dots: false,
-    arrows: false,
+    arrows: true,
     infinite: false,
     speed: 500,
     slidesToShow: 4,
@@ -54,18 +57,94 @@ export default function Carousel({
         loadMore();
       }
     },
+    prevArrow: <SliderArrow to="left" />,
+    nextArrow: <SliderArrow to="right" />,
+  };
+  const onMouseEnterHandler = (e) => {
+    setHover(true);
+  };
+  const onMouseLeaveHandler = (e) => {
+    setHover(false);
   };
   return (
     <>
       {state.noItem ? (
         "NO ITEM TO SHOW"
       ) : (
-        <Slider className="carousel" {...settings}>
-          {state.items.length > 0
-            ? state.items?.map((item, i) => <Item key={i} item={item} />)
-            : new Array(10).fill({}).map((item, i) => <Item key={i} />)}
-        </Slider>
+        <div
+          className={`carousel-wrapper ${hover ? "focused" : ""}`}
+          onMouseEnter={onMouseEnterHandler}
+          onMouseLeave={onMouseLeaveHandler}
+        >
+          <Slider
+            className={`carousel cursor-grabbing`}
+            {...settings}
+          >
+            {state.items.length > 0
+              ? state.items?.map((item, i) => <Item key={i} item={item} />)
+              : new Array(10).fill({}).map((item, i) => <Item key={i} />)}
+          </Slider>
+        </div>
       )}
     </>
   );
 }
+
+const SliderArrow = ({ className, to, onClick }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className={`text-black before:text-black button button--text button--icon h-full z-50 w-24 top-0 text-center  ${className}`}
+    aria-label={to}
+  >
+    {to == "right" ? (
+      <svg width="65px" height="29px" viewBox="0 0 65 29">
+        <g
+          id="Page-1"
+          stroke="none"
+          strokeWidth="1"
+          fill="none"
+          fillRule="evenodd"
+        >
+          <g
+            transform="translate(31.280500, 14.486000) scale(-1, 1) translate(-31.280500, -14.486000) translate(-0.000000, 1.000000)"
+            stroke="#000000"
+            strokeWidth="2"
+          >
+            <line
+              x1="62.561"
+              y1="13.486"
+              x2="2.45137244e-13"
+              y2="13.486"
+            ></line>
+            <polyline points="13.486 0 3.55271368e-15 13.486 13.486 26.972"></polyline>
+          </g>
+        </g>
+      </svg>
+    ) : (
+      <svg width="65px" height="29px" viewBox="0 0 65 29">
+        <g
+          id="Page-1"
+          stroke="none"
+          strokeWidth="1"
+          fill="none"
+          fillRule="evenodd"
+        >
+          <g
+            transform="translate(2.000000, 1.000000)"
+            stroke="#000000"
+            strokeWidth="2"
+          >
+            <line
+              x1="62.561"
+              y1="13.486"
+              x2="2.45137244e-13"
+              y2="13.486"
+            ></line>
+            <polyline points="13.486 0 3.55271368e-15 13.486 13.486 26.972"></polyline>
+          </g>
+        </g>
+      </svg>
+    )}
+  </button>
+);

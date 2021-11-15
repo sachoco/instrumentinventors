@@ -168,9 +168,6 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
                     editions
                   </MyLink>
                 </li>
-                {/* <li>
-                  <LanguageSlect />
-                </li> */}
               </ul>
               {metaCtx.translation && (
                 <ul className="hidden lg:flex justify-evenly items-center h-full w-24 border-l-2 ">
@@ -182,7 +179,7 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
             </>
           )}
 
-          <div className="flex lg:hidden justify-center items-center h-full ">
+          <div className="flex w-full lg:hidden justify-center items-center h-full ">
             <h2>{metaCtx.title}</h2>
           </div>
         </nav>
