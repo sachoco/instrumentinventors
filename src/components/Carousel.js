@@ -23,31 +23,35 @@ export default function Carousel({
     infinite: false,
     speed: 500,
     slidesToShow: 4,
-    slidesToScroll: 1,
+    slidesToScroll: 4,
     swipeToSlide: true,
     responsive: [
       {
         breakpoint: 1536,
         settings: {
           slidesToShow: 3,
+          slidesToScroll: 3,
         },
       },
       {
         breakpoint: 1024,
         settings: {
           slidesToShow: 2,
+          slidesToScroll: 2,
         },
       },
       {
         breakpoint: 768,
         settings: {
           slidesToShow: 1,
+          slidesToScroll: 1,
         },
       },
       {
         breakpoint: 640,
         settings: {
           slidesToShow: 1,
+          slidesToScroll: 1,
         },
       },
     ],
@@ -76,13 +80,20 @@ export default function Carousel({
           onMouseEnter={onMouseEnterHandler}
           onMouseLeave={onMouseLeaveHandler}
         >
-          <Slider
-            className={`carousel cursor-grabbing`}
-            {...settings}
-          >
+          <Slider className={`carousel cursor-grabbing`} {...settings}>
             {state.items.length > 0
               ? state.items?.map((item, i) => <Item key={i} item={item} />)
               : new Array(10).fill({}).map((item, i) => <Item key={i} />)}
+            {!state.loaded && (
+              <div className="h-64 ">
+                <div className="h-full flex flex-col justify-center items-center">
+                  <div className="flex justify-center items-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+                  </div>
+                  <div className="mt-3 text-xs inline-block">loading...</div>
+                </div>
+              </div>
+            )}
           </Slider>
         </div>
       )}
