@@ -188,7 +188,11 @@ function get_featured_items( $request ) {
     }
   }
   // Return all of our comment response data.
-  return new WP_REST_Response($data, 200);
+  $response = new WP_REST_Response($data, 200);
+  if(empty($data)){
+      $response->header('x-wp-total',0);
+  }
+  return $response;
 }
 
 

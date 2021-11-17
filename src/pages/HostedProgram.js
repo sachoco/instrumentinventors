@@ -12,16 +12,16 @@ const HostedProgram = () => (
 
     <Slideshow />
     <Block title="hosted events">
-      <Carousel url="wp/v2/agenda/?subcat=host&cat=event&_embed" />
+      <Carousel url="wp/v2/agenda/?subcat=host&cat=event" />
     </Block>
     <Block title="hosted workshops" bg={true}>
-      <Carousel url="wp/v2/agenda/?subcat=host&cat=workshop&_embed" />
+      <Carousel url="wp/v2/agenda/?subcat=host&cat=workshop" />
     </Block>
     <Block title="residencies">
-      <Carousel url="wp/v2/artist/?cat=resident&_embed" />
+      <Carousel url="wp/v2/artist/?cat=resident" />
     </Block>
     <Block title="hosted programs and series" bg={true}>
-      <Carousel url="wp/v2/project/?cat=curated_programs&subcat=host&_embed" />
+      <Carousel url="wp/v2/project/?cat=curated_programs&subcat=host" />
     </Block>
   </>
 );

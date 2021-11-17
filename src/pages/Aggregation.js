@@ -27,7 +27,7 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
     subcat:subcat,
     tags:tag
   });
-  url += '&_embed&per_page=12&_fields=id,title,slug,formatted_date,acf,type,tags,featured_media,_links,_embedded';
+  url += '&per_page=12&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii';
   const [state, loadMore] = fetchData(url,false,true,filter);
   const onFilterChange = (event) => {
     const { name, value } = event.target;

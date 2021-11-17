@@ -43,8 +43,10 @@ const fetchData = (url, single = false, concat = true, filter = null) => {
         }
       });
     }
-    if (cookies.lang == "nl") {
+    if (single&&cookies.lang == "nl") {
       rest_call_url += "&lang=" + cookies.lang;
+    }else{
+      // rest_call_url += "&lang=en";
     }
     console.log(rest_call_url);
     return Axios.get(rest_call_url).then(

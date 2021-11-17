@@ -7,13 +7,11 @@ import "./Carousel.css";
 import Item from "./Item";
 
 export default function Carousel({
-  url = "wp/v2/posts/?_embed",
+  url = "wp/v2/posts/?",
   type = null,
   ...otherProps
 }) {
-  url =
-    url +
-    "&_fields=id,title,slug,formatted_date,acf,type,tags,featured_media,_links,_embedded";
+  url += "&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii";
   const [hover, setHover] = useState(false);
   const [state, loadMore] = fetchData(url);
 
@@ -72,7 +70,7 @@ export default function Carousel({
   };
   return (
     <>
-      {state.noItem ? (
+      {state.items.length == 0 && state.noItem ? (
         "NO ITEM TO SHOW"
       ) : (
         <div

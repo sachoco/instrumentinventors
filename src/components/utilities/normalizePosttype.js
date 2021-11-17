@@ -1,8 +1,11 @@
 import he from "he";
 import parse from "html-react-parser";
 import NoImage from "../../assets/no-image.svg";
+import { useCookies } from "react-cookie";
 
 const normalizePosttype = (item) => {
+  const [cookies, setCookie] = useCookies(["lang"]);
+
   let returnObj = {
     title: "",
     content: "",
@@ -62,30 +65,52 @@ const normalizePosttype = (item) => {
       returnObj.meta3 = item.meta3;
 
     } else {
-      returnObj.title = item.title.rendered
+      if (cookies.lang == "nl"&&item.wpml_translations.nl_NL) {
+        returnObj.title = item.wpml_translations.nl_NL.post_title;
+      }else{
+        returnObj.title = item.title.rendered
         ? he.decode(item.title.rendered)
         : he.decode(item.title);
+      }
+
       returnObj.content = item.content && parse(item.content.rendered);
-      returnObj.image = item._embedded
-        ? {
-            full: item._embedded["wp:featuredmedia"]
-              ? item._embedded["wp:featuredmedia"][0].media_details?.sizes.full
-                  ?.source_url
-              : NoImage,
-            large: item._embedded["wp:featuredmedia"]
-              ? item._embedded["wp:featuredmedia"][0].media_details?.sizes.large
-                  ?.source_url
-              : NoImage,
-            medium: item._embedded["wp:featuredmedia"]
-              ? item._embedded["wp:featuredmedia"][0].media_details?.sizes
-                  .medium_large?.source_url
-              : NoImage,
-          }
-        : {
-            full: NoImage,
-            large: NoImage,
-            medium: NoImage,
-          };
+      // returnObj.image = item._embedded
+      //   ? {
+      //       full: item._embedded["wp:featuredmedia"]
+      //         ? item._embedded["wp:featuredmedia"][0].media_details?.sizes.full
+      //             ?.source_url
+      //         : NoImage,
+      //       large: item._embedded["wp:featuredmedia"]
+      //         ? item._embedded["wp:featuredmedia"][0].media_details?.sizes.large
+      //             ?.source_url
+      //         : NoImage,
+      //       medium: item._embedded["wp:featuredmedia"]
+      //         ? item._embedded["wp:featuredmedia"][0].media_details?.sizes
+      //             .medium_large?.source_url
+      //         : NoImage,
+      //     }
+      //   : {
+      //       full: NoImage,
+      //       large: NoImage,
+      //       medium: NoImage,
+      //     };
+      returnObj.image = item.iii.featured_image
+      ? {
+          full: item.iii.featured_image.full
+            ? item.iii.featured_image.full
+            : NoImage,
+          large: item.iii.featured_image.large
+          ? item.iii.featured_image.large
+          : NoImage,
+          medium: item.iii.featured_image.medium
+          ? item.iii.featured_image.medium
+          : NoImage,
+        }
+      : {
+          full: NoImage,
+          large: NoImage,
+          medium: NoImage,
+        };
       returnObj.link = "/" + item.type + "/" + item.slug;
       returnObj.posttype = item.type;
       returnObj.tag = item.tags.length > 0 ? item.tags : "no tag yet";
@@ -113,15 +138,21 @@ const normalizePosttype = (item) => {
         returnObj.meta3 = item.acf["host_|_circulation"];
         returnObj.archive_base = "agenda";
       } else {
-        returnObj.subcategory =
-          item._embedded && item._embedded["wp:term"]
-            ? item._embedded["wp:term"][0].map((t) => {
-                return { value: t.id, label: t.name };
-              })
-            : null;
+        // returnObj.subcategory =
+        //   item._embedded && item._embedded["wp:term"]
+        //     ? item._embedded["wp:term"][0].map((t) => {
+        //         return { value: t.id, label: t.name };
+        //       })
+        //     : null;
         // if(returnObj.subcategory){
         //   returnObj.subcat_link = "/posts/c="+item._embedded["wp:term"][0][0].term_id;
         // }
+        returnObj.subcategory =
+        item.iii.category
+          ? item.iii.category.map((cat) => {
+              return { value: cat.id, label: cat.name };
+            })
+          : null;
         returnObj.date = item.formatted_date;
         returnObj.archive_base = "posts";
       }

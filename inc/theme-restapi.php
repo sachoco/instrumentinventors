@@ -10,6 +10,10 @@ require_once 'rest-api/filter-item.php';
 require_once 'rest-api/get-featured.php';
 require_once 'rest-api/get-related.php';
 
+require_once 'rest-api/common.php';
+
+require_once 'rest-api/wpml.php';
+
 /**
  * Register the /wp-json/acf/v3/posts endpoint so it will be cached.
  */
