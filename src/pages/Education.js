@@ -15,7 +15,7 @@ const Education = () => {
   return (
     <>
       <Meta title="Education" />
-      <Slideshow url="iii/getFeatured/education" />
+      <Slideshow url="iii/getFeatured/education/?" />
       <Block title="hosted workshops">
         <Carousel url="wp/v2/agenda/?subcat=host&cat=workshop&_embed" />
       </Block>

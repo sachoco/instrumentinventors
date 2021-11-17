@@ -9,7 +9,7 @@ import Meta from "../components/layout/Meta";
 const Agency = () => (
   <>
     <Meta title="Agency" />
-    <Slideshow url="iii/getFeatured/agency" />
+    <Slideshow url="iii/getFeatured/agency/?" />
     <Block title="circulation events, workshops and residencies">
       <Carousel url="wp/v2/agenda/?subcat=circulation&_embed" />
     </Block>

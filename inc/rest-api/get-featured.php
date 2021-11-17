@@ -1,6 +1,8 @@
 <?php
 function get_featured_items( $request ) {
+
   $page = $request['page'];
+
   $items = [];
 
   if($page=="agency"){
