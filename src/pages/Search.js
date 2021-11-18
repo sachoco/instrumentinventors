@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import fetchData from "../components/rest-api/fetchData";
 
 import Block from "../components/layout/Block";
 import TileView from "../components/view/TileView";
+import MetaContext from "../store/meta-context";
 
 const Search = ({ ...otherProps }) => {
   const { search } = useLocation();
@@ -11,7 +12,11 @@ const Search = ({ ...otherProps }) => {
   const searchStr = queryParams.get("q");
   const url="wp/v2/search/?per_page=10&search="+searchStr;
   const [state, loadMore] = fetchData(url,false);
-
+  
+  const metaCtx = useContext(MetaContext);
+  useEffect(()=>{
+    metaCtx.setTranslation(false);
+  },[])
 
   return (
     <>

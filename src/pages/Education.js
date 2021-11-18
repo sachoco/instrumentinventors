@@ -23,7 +23,7 @@ const Education = () => {
         <Carousel url="wp/v2/agenda/?subcat=circulation&cat=workshop" />
       </Block>
       <Block title="workshop portfolio">
-        <Carousel url="wp/v2/project/?cat=workshop&subcat=host" />
+        <Carousel url="wp/v2/project/?cat=workshop" />
       </Block>
     </>
   );

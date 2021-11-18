@@ -16,7 +16,6 @@ const fetchData = (url, single = false, concat = true, filter = null) => {
   const [state, setState] = useState(initialState);
   useEffect(() => {
     const abortController = new AbortController();
-    abortController.abort();
     getItems(true);
     return () => {
       abortController.abort(); // cancel pending fetch request on component unmount
@@ -43,18 +42,21 @@ const fetchData = (url, single = false, concat = true, filter = null) => {
         }
       });
     }
-    if (single&&cookies.lang == "nl") {
+    if (cookies.lang == "nl") {
       rest_call_url += "&lang=" + cookies.lang;
-    }else{
-      // rest_call_url += "&lang=en";
     }
+    // if (single&&cookies.lang == "nl") {
+    //   rest_call_url += "&lang=" + cookies.lang;
+    // }else{
+    //   // rest_call_url += "&lang=en";
+    // }
     console.log(rest_call_url);
     return Axios.get(rest_call_url).then(
       (response) => {
         console.log(response);
         setState((prevState, props) => ({
           ...state,
-          item: response.data[0],
+          item: Array.isArray(response.data) ? response.data[0] : response.data,
           items: concat ? prevState.items.concat(response.data) : response.data,
           loaded: true,
           page: prevState.page + 1,

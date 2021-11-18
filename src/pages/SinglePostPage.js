@@ -24,7 +24,7 @@ const SinglePostPage = ({ ...otherProps }) => {
   const { p1, p2 } = useParams();
   const slug = p2 ? p2 : p1;
   const path = p2&&p1!="post" ? p1+"/"+p2 : p2; 
-  const url = "wp/v2/posts/?slug=" + slug + "&include_page&_embed";
+  const url = p1=="post" ? "wp/v2/posts/?slug=" + slug + "&include_page" : "iii/pages/" + path + "?";
 
   const [state, loadMore] = fetchData(url, true);
   const { title, content, posttype } = normalizePosttype(state.item);

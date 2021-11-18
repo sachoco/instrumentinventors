@@ -1,12 +1,18 @@
-import React from "react";
+import React, {useEffect, useContext} from "react";
 import Slideshow from "../components/Slideshow";
 import Carousel from "../components/Carousel";
 import HorizontalSlider from "../components/HorizontalSlider";
 
 import Block from "../components/layout/Block";
 import Meta from "../components/layout/Meta";
+import MetaContext from "../store/meta-context";
 
-const HostedProgram = () => (
+const HostedProgram = () => {
+  const metaCtx = useContext(MetaContext);
+  useEffect(()=>{
+    metaCtx.setTranslation(false);
+  },[])
+  return (
   <>
     <Meta title="Hosted Program" />
 
@@ -24,6 +30,6 @@ const HostedProgram = () => (
       <Carousel url="wp/v2/project/?cat=curated_programs&subcat=host" />
     </Block>
   </>
-);
+);}
 
 export default HostedProgram;

@@ -59,6 +59,7 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
     tags:tag
   }
   useEffect(()=>{
+    metaCtx.setTranslation(false);
     if (isInitialMount.current) {
        isInitialMount.current = false;
     } else {

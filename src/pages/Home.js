@@ -1,11 +1,17 @@
-import React from "react";
+import React, {useEffect, useContext} from "react";
 import Slideshow from "../components/Slideshow";
 import Carousel from "../components/Carousel";
 import HorizontalSlider from "../components/HorizontalSlider";
 import Block from "../components/layout/Block";
 import Meta from "../components/layout/Meta";
+import MetaContext from "../store/meta-context";
 
-const Home = () => (
+const Home = () => {
+  const metaCtx = useContext(MetaContext);
+  useEffect(()=>{
+    metaCtx.setTranslation(false);
+  },[])
+  return (
   <>
     <Meta title="Home" />
     <Slideshow />
@@ -43,5 +49,6 @@ const Home = () => (
     </Block>
   </>
 );
+}
 
 export default Home;

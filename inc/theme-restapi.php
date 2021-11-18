@@ -1,7 +1,7 @@
 <?php
-
-require_once 'rest-api/agenda.php';
 require_once 'rest-api/post.php';
+require_once 'rest-api/page.php';
+require_once 'rest-api/agenda.php';
 require_once 'rest-api/project.php';
 require_once 'rest-api/artist.php';
 require_once 'rest-api/search.php';
@@ -27,11 +27,12 @@ add_filter( 'wp_rest_cache/allowed_endpoints', 'wprc_add_acf_posts_endpoint', 10
 
 
 function wprc_add_iii_endpoint( $allowed_endpoints ) {
-    if ( ! isset( $allowed_endpoints[ 'iii' ] ) || ! in_array( 'menu', $allowed_endpoints[ 'iii' ] )|| ! in_array( 'related', $allowed_endpoints[ 'iii' ] )|| ! in_array( 'filterItems', $allowed_endpoints[ 'iii' ] )|| ! in_array( 'getFeatured', $allowed_endpoints[ 'iii' ] ) ) {
+    if ( ! isset( $allowed_endpoints[ 'iii' ] ) || ! in_array( 'menu', $allowed_endpoints[ 'iii' ] )|| ! in_array( 'related', $allowed_endpoints[ 'iii' ] )|| ! in_array( 'filterItems', $allowed_endpoints[ 'iii' ] )|| ! in_array( 'getFeatured', $allowed_endpoints[ 'iii' ] )|| ! in_array( 'page', $allowed_endpoints[ 'iii' ] ) ) {
         $allowed_endpoints[ 'iii' ][] = 'menu';
         $allowed_endpoints[ 'iii' ][] = 'related';
         $allowed_endpoints[ 'iii' ][] = 'filterItems';
         $allowed_endpoints[ 'iii' ][] = 'getFeatured';
+        $allowed_endpoints[ 'iii' ][] = 'page';
     }
     return $allowed_endpoints;
 }

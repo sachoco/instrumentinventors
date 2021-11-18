@@ -65,14 +65,17 @@ const normalizePosttype = (item) => {
       returnObj.meta3 = item.meta3;
 
     } else {
-      if (cookies.lang == "nl"&&item.wpml_translations.nl_NL) {
-        returnObj.title = item.wpml_translations.nl_NL.post_title;
-      }else{
-        returnObj.title = item.title.rendered
-        ? he.decode(item.title.rendered)
-        : he.decode(item.title);
-      }
-
+      // if (cookies.lang == "nl"&&item.wpml_translations.nl_NL) {
+      //   returnObj.title = item.wpml_translations.nl_NL.post_title;
+      // }else{
+      //   returnObj.title = item.title.rendered
+      //   ? he.decode(item.title.rendered)
+      //   : he.decode(item.title);
+      // }
+      returnObj.title = item.title.rendered
+      ? he.decode(item.title.rendered)
+      : he.decode(item.title);
+      
       returnObj.content = item.content && parse(item.content.rendered);
       // returnObj.image = item._embedded
       //   ? {

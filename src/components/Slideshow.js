@@ -11,7 +11,7 @@ export default function Slideshow({
   url = "wp/v2/agenda/?featured&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii",
   ...otherProps
 }) {
-  const [state] = fetchData(url, false, false);
+  const [state] = fetchData(url, true);
 
   var settings = {
     dots: true,

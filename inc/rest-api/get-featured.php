@@ -1,6 +1,12 @@
 <?php
 function get_featured_items( $request ) {
-
+  
+  // Change the request language
+  $lang = $request->get_param( 'lang' );
+  if($lang=="nl"){
+    do_action( 'wpml_switch_language', $lang );
+  }
+  
   $page = $request['page'];
 
   $items = [];
@@ -191,6 +197,11 @@ function get_featured_items( $request ) {
   $response = new WP_REST_Response($data, 200);
   if(empty($data)){
       $response->header('x-wp-total',0);
+  }
+
+  // back to the default language
+  if($lang=="nl"){
+    do_action( 'wpml_switch_language', "en" );
   }
   return $response;
 }
