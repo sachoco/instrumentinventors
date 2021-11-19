@@ -4,6 +4,7 @@ import MetaContext from "../store/meta-context";
 
 import fetchData from "../components/rest-api/fetchData";
 
+import HeaderImage from "../components/HeaderImage";
 import Carousel from "../components/Carousel";
 import HorizontalSlider from "../components/HorizontalSlider";
 
@@ -47,6 +48,8 @@ const SinglePostPage = ({ ...otherProps }) => {
   return (
     <>
       <Meta title={title} />
+
+      {state.item ? <HeaderImage item={state.item} /> : ""}
       <Block className="single-item-content ">
         {content}
 
@@ -55,7 +58,7 @@ const SinglePostPage = ({ ...otherProps }) => {
       </Block>
       {posttype &&
         <Block title="related" bg={true}>
-          <Carousel url={"iii/related/" + posttype + "/" + path +"/?"} />
+          <Carousel url={"iii/related/" + posttype + "/" + path +"/?"} related_item={true} />
         </Block>
       }
 

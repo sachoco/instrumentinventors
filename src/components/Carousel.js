@@ -9,9 +9,12 @@ import Item from "./Item";
 export default function Carousel({
   url = "wp/v2/posts/?",
   type = null,
+  related_item = false,
   ...otherProps
 }) {
-  url += "&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii";
+  if(!related_item){
+    url += "&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii";
+  }
   const [hover, setHover] = useState(false);
   const [state, loadMore] = fetchData(url);
 

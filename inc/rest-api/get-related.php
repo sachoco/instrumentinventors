@@ -1,5 +1,5 @@
 <?php
-
+ 
 function get_related($request)
 {
     $slug = $request['slug'];
@@ -11,7 +11,7 @@ function get_related($request)
     }
 
     $related_posts = get_field('related_posts', $id);
-
+    // var_dump($related_posts);
     //
     $data = [];
     if (!empty($related_posts)) {
