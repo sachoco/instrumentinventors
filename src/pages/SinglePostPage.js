@@ -24,7 +24,7 @@ const SinglePostPage = ({ ...otherProps }) => {
   const location = useLocation();
   const { p1, p2 } = useParams();
   const slug = p2 ? p2 : p1;
-  const path = p2&&p1!="post" ? p1+"/"+p2 : p2; 
+  const path = p2&&p1!="post" ? p1+"/"+p2 : p1; 
   const url = p1=="post" ? "wp/v2/posts/?slug=" + slug + "&include_page" : "iii/pages/" + path + "?";
 
   const [state, loadMore] = fetchData(url, true);
@@ -49,7 +49,7 @@ const SinglePostPage = ({ ...otherProps }) => {
     <>
       <Meta title={title} />
 
-      {state.item ? <HeaderImage item={state.item} /> : ""}
+      {state.item&&posttype=="post" ? <HeaderImage item={state.item} /> : ""}
       <Block className="single-item-content ">
         {content}
 

@@ -8,15 +8,19 @@ import Item from "./Item";
 
 export default function Carousel({
   url = "wp/v2/posts/?",
+  url2 = null,
   type = null,
   related_item = false,
   ...otherProps
 }) {
   if(!related_item){
     url += "&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii";
+    if(url2){
+      url2 += "&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii";
+    } 
   }
   const [hover, setHover] = useState(false);
-  const [state, loadMore] = fetchData(url);
+  const [state, loadMore] = fetchData(url, false, true, null, url2);
 
   const settings = {
     dots: false,
@@ -71,6 +75,9 @@ export default function Carousel({
   const onMouseLeaveHandler = (e) => {
     setHover(false);
   };
+  if(url2 && state.itemTotal<10){
+    loadMore();
+  }
   return (
     <>
       {state.items.length == 0 && state.noItem ? (

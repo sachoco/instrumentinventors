@@ -1521,6 +1521,16 @@ h1, h2, h3, h4, h5 {
   background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
 }
 
+.bg-gray-800 {
+  --tw-bg-opacity: 1;
+  background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
+}
+
+.bg-gray-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgba(17, 24, 39, var(--tw-bg-opacity));
+}
+
 .bg-yellow-100 {
   --tw-bg-opacity: 1;
   background-color: rgba(254, 243, 199, var(--tw-bg-opacity));
@@ -1559,6 +1569,14 @@ h1, h2, h3, h4, h5 {
 .hover\:bg-bg-filter:hover {
   --tw-bg-opacity: 1;
   background-color: rgba(152, 153, 153, var(--tw-bg-opacity));
+}
+
+.bg-opacity-30 {
+  --tw-bg-opacity: 0.3;
+}
+
+.bg-opacity-50 {
+  --tw-bg-opacity: 0.5;
 }
 
 .bg-overlay {
@@ -2314,4 +2332,4 @@ body {
 }
 
 
-/*# sourceMappingURL=noreact-7f353ea1.css.map*/
+/*# sourceMappingURL=noreact-4e78a858.css.map*/

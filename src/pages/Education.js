@@ -17,13 +17,13 @@ const Education = () => {
       <Meta title="Education" />
       <Slideshow url="iii/getFeatured/education/?" />
       <Block title="hosted workshops">
-        <Carousel url="wp/v2/agenda/?subcat=host&cat=workshop" />
+        <Carousel url="wp/v2/agenda/?subcat=host&pricat=workshop" />
       </Block>
       <Block title="circulation workshops" bg={true}>
-        <Carousel url="wp/v2/agenda/?subcat=circulation&cat=workshop" />
+        <Carousel url="wp/v2/agenda/?subcat=circulation&pricat=workshop" />
       </Block>
       <Block title="workshop portfolio">
-        <Carousel url="wp/v2/project/?cat=workshop" />
+        <Carousel url="wp/v2/project/?pricat=workshop" />
       </Block>
     </>
   );

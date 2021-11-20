@@ -5,10 +5,10 @@ function query_project($args, $request)
     // $args['orderby'] = 'meta_value_num';
     $args['meta_query'] = array('relation' => 'AND');
 
-    if (isset($request["cat"])) {
+    if (isset($request["pricat"])) {
         $args['meta_query'][] = array(
             'key' => 'category',
-            'value' => $request["cat"],
+            'value' => $request["pricat"],
             'compare' => 'LIKE'
         );
     }

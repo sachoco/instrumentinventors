@@ -1521,6 +1521,16 @@ h1, h2, h3, h4, h5 {
   background-color: rgba(255, 255, 255, var(--tw-bg-opacity));
 }
 
+.bg-gray-800 {
+  --tw-bg-opacity: 1;
+  background-color: rgba(31, 41, 55, var(--tw-bg-opacity));
+}
+
+.bg-gray-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgba(17, 24, 39, var(--tw-bg-opacity));
+}
+
 .bg-yellow-100 {
   --tw-bg-opacity: 1;
   background-color: rgba(254, 243, 199, var(--tw-bg-opacity));
@@ -1559,6 +1569,14 @@ h1, h2, h3, h4, h5 {
 .hover\:bg-bg-filter:hover {
   --tw-bg-opacity: 1;
   background-color: rgba(152, 153, 153, var(--tw-bg-opacity));
+}
+
+.bg-opacity-30 {
+  --tw-bg-opacity: 0.3;
+}
+
+.bg-opacity-50 {
+  --tw-bg-opacity: 0.5;
 }
 
 .bg-overlay {
@@ -2445,6 +2463,10 @@ body {
   -webkit-transform: translateX(var(--tw-translate-x)) translateY(var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
           transform: translateX(var(--tw-translate-x)) translateY(var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
   --tw-translate-x: 100%;
+}
+
+.carousel .slick-arrow.slick-next:before {
+  display: none;
 }
 
 .carousel .slick-arrow svg {
@@ -20325,4 +20347,4 @@ body ul.wpb_thumbnails-fluid li .entry-content :last-child{
 
 /* purgecss end ignore */
 
-/*# sourceMappingURL=main-91804034.css.map*/
+/*# sourceMappingURL=main-5096ca7c.css.map*/

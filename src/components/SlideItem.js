@@ -25,6 +25,7 @@ export default function SlideItem(props) {
         src={image.large}
         alt={title}
       />
+      <div className="absolute top-0 left-0 w-full h-full z-10 bg-gray-900 bg-opacity-30"></div>
       <div className="absolute z-10 w-full py-5 pl-8 pr-14 lg:py-24 lg:pl-24 lg:pr-24 bottom-0 text-white border-white">
         <span className="uppercase text-xs lg:text-base">Highlighted:</span>
         <h2 className="text-3xl lg:text-5xl lg:overflow-hidden lg:overflow-ellipsis lg:white outline-text">

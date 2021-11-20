@@ -4,8 +4,8 @@ function query_post($args, $request)
     if (isset($request['include_page'])) {
         $args['post_type'] = array('post', 'page');
     }
-    if (isset($request['cat'])) {
-        $args['cat'] = $request['cat'];
+    if (isset($request['pricat'])) {
+        $args['cat'] = $request['pricat'];
     }
     return $args;
 }

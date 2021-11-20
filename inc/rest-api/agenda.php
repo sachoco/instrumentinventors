@@ -4,12 +4,24 @@ function query_agenda($args, $request) {
   $args['orderby'] = 'meta_value_num';
   $args['meta_query'] = array('relation' => 'AND');
 
-    if(isset($request["cat"])) {
+    if(isset($request["pricat"])) {
       $args['meta_query'][] = array(
           'key' => 'category',
-          'value' => $request["cat"],
+          'value' => $request["pricat"],
           'compare' => 'LIKE'
       );
+    }
+    if(isset($request["in_pricat"])) {
+      $arr = array('relation' => 'OR');
+      $cats = explode(",",$request["in_pricat"]);
+        foreach($cats as $cat){
+          $arr[] = array(
+            'key' => 'category',
+            'value' => $cat,
+            'compare' => 'LIKE'
+        );
+      }
+      $args['meta_query'][] = $arr;
     }
     if(isset($request["subcat"])) {
       foreach( explode(",",$request["subcat"]) as $item ){

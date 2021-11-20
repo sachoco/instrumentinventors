@@ -18,6 +18,9 @@
     }
     &.slick-next {
       @apply mr-4 transform translate-x-full;
+      &:before {
+        @apply hidden;
+      }
     }
     svg {
       @apply inline-block;

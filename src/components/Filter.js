@@ -49,12 +49,12 @@ export default function Filter({ initialFilter, filter, ...props }) {
 		[y, showBox]
 	);
 
-	const renderFilterItems = (str,p='cat') => {
+	const renderFilterItems = (str,p='pricat') => {
 		const array = str.toString().split(",");
 		return array.map((item, i) => {
 			if(initialFilter.posttype=="project"&&p=="subcat"){
 				if(filterData.items.subcat){
-					var result = filterData.items.subcat[filter.cat].find(obj => {
+					var result = filterData.items.subcat[filter.pricat].find(obj => {
 						return obj.value == item
 					});
 					return (<div key={i} className="rounded-full text-sm leading-6 py-0 px-2 m-1 border border-white lowercase">
@@ -140,7 +140,7 @@ export default function Filter({ initialFilter, filter, ...props }) {
 					</div>
 					<div className="hidden lg:flex">
 						{renderFilterItems(initialFilter.posttype,'posttype')}
-						{filter?.cat && renderFilterItems(filter.cat,'cat')}
+						{filter?.pricat && renderFilterItems(filter.pricat,'pricat')}
 						{filter?.subcat && renderFilterItems(filter.subcat,'subcat')}
 						{filter?.tags && renderFilterItems(filter.tags,'tag')}
 					</div>
@@ -190,19 +190,19 @@ export default function Filter({ initialFilter, filter, ...props }) {
 										<TagSelectBox
 											label="Subcategory1"
 											options={filterData.items.cat}
-											defaultValue={initialFilter.cat}
+											defaultValue={initialFilter.pricat}
 											onChange={props.onFilterChange}
-											name="cat"
-											filterVal={filter.cat}
+											name="pricat"
+											filterVal={filter.pricat}
 										/>
 									) : (
 										<CatSelectBox
 											label="Subcategory1"
 											options={filterData.items.cat}
-											defaultValue={initialFilter.cat}
+											defaultValue={initialFilter.pricat}
 											onChange={props.onFilterChange}
-											name="cat"
-											filterVal={filter.cat}
+											name="pricat"
+											filterVal={filter.pricat}
 										/>
 									)}
 								</>
@@ -212,12 +212,12 @@ export default function Filter({ initialFilter, filter, ...props }) {
 						<>
 							{initialFilter.posttype == "project" ? (
 								<>
-									{filter.cat && filterData.items.subcat[filter.cat] && (
+									{filter.pricat && filterData.items.subcat[filter.pricat] && (
 										<div className="w-full lg:w-1/4 mt-5 lg:mt-0 lg:mr-5 ">
 										<label className="font-nav">subcategory 2</label>
 										<TagSelectBox
 											label="Subcategory2"
-											options={filterData.items.subcat[filter.cat]}
+											options={filterData.items.subcat[filter.pricat]}
 											defaultValue={initialFilter.subcat}
 											onChange={props.onFilterChange}
 											name="subcat"

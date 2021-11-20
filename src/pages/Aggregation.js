@@ -23,7 +23,7 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
   const subcat = queryParams.get("sc") ? queryParams.get("sc") : "";
   const tag = queryParams.get("t") ? queryParams.get("t") : "";
   const [filter, setFilter] = useState({
-    cat:cat,
+    pricat:cat,
     subcat:subcat,
     tags:tag
   });
@@ -54,7 +54,7 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
   }
   const initialFilter = {
     posttype : posttype,
-    cat:cat,
+    pricat:cat,
     subcat:subcat,
     tags:tag
   }
@@ -65,7 +65,7 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
     } else {
         // Your useEffect code here to be run on update
       let query = "?";
-      if(filter.cat&&filter.cat!=""){query+='c='+filter.cat}
+      if(filter.pricat&&filter.pricat!=""){query+='c='+filter.pricat}
       if(filter.subcat&&filter.subcat!=""){query+='&sc='+filter.subcat}
       if(filter.tag&&filter.tag!=""){query+='&t='+filter.tag}
 

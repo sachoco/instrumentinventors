@@ -5,7 +5,7 @@ import MobileNavigation from "./MobileNavigation";
 import { useLocation } from "react-router-dom";
 import MetaContext from "../../store/meta-context";
 import getTitle from "../utilities/getTitle";
-import LanguageSlect from "../LanguageSelect";
+import LanguageSelect from "../LanguageSelect";
 import fetchMenu from "../rest-api/fetchMenu";
 
 import styled from "styled-components";
@@ -172,7 +172,7 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
               {metaCtx.translation && (
                 <ul className="hidden lg:flex justify-evenly items-center h-full w-24 border-l-2 ">
                   <li>
-                    <LanguageSlect />
+                    <LanguageSelect />
                   </li>
                 </ul>
               )}
