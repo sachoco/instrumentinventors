@@ -128,7 +128,8 @@ const normalizePosttype = (item) => {
         returnObj.archive_base = "artists";
       } else if (item.type == "project") {
         returnObj.subcategory = [item.acf.category];
-        returnObj.meta1 = "author";
+        returnObj.meta1 = item.acf.authors ? item.acf.authors : "no authors value";
+        returnObj.meta2 = item.acf.year ? item.acf.year : "no year value";
         returnObj.date = item.acf.year;
         returnObj.archive_base = "projects";
       } else if (item.type == "agenda") {
@@ -136,8 +137,8 @@ const normalizePosttype = (item) => {
         returnObj.date = item.acf.date_until
           ? `${item.acf.date_from} - ${item.acf.date_until}`
           : `${item.acf.date_from}`;
-        returnObj.meta1 = item.acf.venue ? item.acf.venue : "venue";
-        returnObj.meta2 = item.acf.city ? item.acf.city : "city";
+        returnObj.meta1 = item.acf.venue ? item.acf.venue : "no venue value";
+        returnObj.meta2 = item.acf.city ? item.acf.city : "no city value";
         returnObj.meta3 = item.acf["host_|_circulation"];
         returnObj.archive_base = "agenda";
       } else {

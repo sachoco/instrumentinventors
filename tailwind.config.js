@@ -1,7 +1,7 @@
 const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
-  mode: 'jit',
+  // mode: 'jit',
   purge: ["./**/*.php", "./src/**/*.js"],
   // darkMode: false, // or 'media' or 'class'
 
@@ -89,6 +89,10 @@ module.exports = {
       },
       minHeight: {
         "full+2px": "calc(100% + 2px)",
+        "12": "3rem",
+        "16": "4rem",
+        "24": "6rem",
+        "80": "20rem",
       },
       transitionProperty: {
         'width': 'width',
@@ -128,17 +132,20 @@ module.exports = {
 
   variants: {
     extend: {
+      fontWeight: ["hover"],
+      width: ["group-hover"],
       height: ["group-hover"],
       minHeight: ["group-hover"],
       minWidth: ["group-hover"],
+      maxWidth: ["group-hover"],
       fontSize: ["group-hover"],
-      fontWeight: ["hover"],
       display: ["group-hover"],
       opacity: ["group-hover"],
       transitionDelay: ["group-hover"],
       animation: ["group-hover"],
       visibility: ["group-hover"],
       strokeWidth: ["group-hover"],
+      margin: ["group-hover"],
     },
   },
   plugins: [

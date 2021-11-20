@@ -28,14 +28,14 @@ export default function Carousel({
     swipeToSlide: true,
     responsive: [
       {
-        breakpoint: 1536,
+        breakpoint: 1780,
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
         },
       },
       {
-        breakpoint: 1024,
+        breakpoint: 1280,
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
