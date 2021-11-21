@@ -1,7 +1,7 @@
 import React from "react";
 import ListItem from "../ListItem";
 
-export default function ListView({ items = null, ...otherProps }) {
+export default function ListView({ items = null, posttype, ...otherProps }) {
   const dummyItems = new Array(6).fill({});
 
   return (
@@ -13,16 +13,42 @@ export default function ListView({ items = null, ...otherProps }) {
             <div className="hidden lg:block px-4 py-1 w-48 flex-grow-0">
               subcategory
             </div>
-            <div className="hidden lg:block px-4 py-1 min-w-300px flex-grow">
+            {
+              posttype=="artist"||posttype=="agenda"||posttype=="posts" ?
+              <div className=" px-4 leading-3 lg:leading-normal lg:py-1 w-48 ">
+                date
+              </div>
+              : null
+            }
+            {
+              posttype=="agenda" ?
+              <div className=" px-4 leading-3 lg:leading-normal lg:py-1 w-48 ">
+                city
+              </div>
+              : null
+            }
+            {
+              posttype=="project" ?
+              <>
+                <div className=" px-4 leading-3 lg:leading-normal lg:py-1 w-48 ">
+                  author
+                </div>
+                <div className=" px-4 leading-3 lg:leading-normal lg:py-1 w-48 ">
+                  year
+                </div>
+              </>
+              : null
+            }
+            <div className="hidden lg:block px-4 py-1 min-w-100px flex-grow">
               tags
             </div>
           </div>
           <div className="hidden lg:block " style={{ width: "32px" }}></div>
         </div>
         {items.length > 0
-          ? items?.map((item, i) => <ListItem key={i} item={item} />)
+          ? items?.map((item, i) => <ListItem key={i} item={item} posttype={posttype} />)
           : dummyItems.map((item, i) => (
-              <ListItem key={i} className="w-1/3 pr-5 pb-5" />
+              <ListItem key={i} className="" />
             ))}
       </div>
     </>

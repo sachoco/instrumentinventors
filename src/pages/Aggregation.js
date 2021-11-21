@@ -83,9 +83,9 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
         {state.noItem ? (
           "NO ITEM TO SHOW"
         ) : viewCtx.mode == "tile" ? (
-          <TileView items={state.items} />
+          <TileView items={state.items} posttype={posttype} />
         ) : (
-          <ListView items={state.items} />
+          <ListView items={state.items} posttype={posttype} />
         )}
       </Block>
       {state.hasMore && (

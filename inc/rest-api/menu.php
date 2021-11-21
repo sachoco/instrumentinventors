@@ -11,6 +11,8 @@ function get_menu()
 {
     $menus = array(); //wp_get_nav_menus();
     $menu_slug = get_nav_menu_locations();
+    // var_dump($menu_slug);
+
     foreach ($menu_slug as $key => $value) {
         $items = wp_get_nav_menu_items($value);
         if (is_array($items)) {

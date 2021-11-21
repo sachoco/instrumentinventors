@@ -83,6 +83,7 @@ module.exports = {
         "input-email": "295px",
       },
       minWidth: {
+        "100px": "100px",
         "300px": "300px",
         "24": "6rem",
         "80": "20rem",
