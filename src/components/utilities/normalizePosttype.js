@@ -76,7 +76,12 @@ const normalizePosttype = (item) => {
       ? he.decode(item.title.rendered)
       : he.decode(item.title);
       
-      returnObj.content = item.content && parse(item.content.rendered);
+      if(item.content){
+        returnObj.content = item.content.rendered 
+        ? parse(item.content.rendered)
+        : parse(item.content)
+      }
+
       // returnObj.image = item._embedded
       //   ? {
       //       full: item._embedded["wp:featuredmedia"]
@@ -97,7 +102,7 @@ const normalizePosttype = (item) => {
       //       large: NoImage,
       //       medium: NoImage,
       //     };
-      returnObj.image = item.iii.featured_image
+      returnObj.image = item.iii?.featured_image
       ? {
           full: item.iii.featured_image.full
             ? item.iii.featured_image.full
@@ -116,7 +121,7 @@ const normalizePosttype = (item) => {
         };
       returnObj.link = "/" + item.type + "/" + item.slug;
       returnObj.posttype = item.type;
-      returnObj.tag = item.tags.length > 0 ? item.tags : "no tag yet";
+      returnObj.tag = item.tags?.length > 0 ? item.tags : "no tag yet";
 
       if (item.type == "artist") {
         returnObj.subcategory = item.acf.badges;
@@ -152,7 +157,7 @@ const normalizePosttype = (item) => {
         //   returnObj.subcat_link = "/posts/c="+item._embedded["wp:term"][0][0].term_id;
         // }
         returnObj.subcategory =
-        item.iii.category
+        item.iii?.category
           ? item.iii.category.map((cat) => {
               return { value: cat.id, label: cat.name };
             })

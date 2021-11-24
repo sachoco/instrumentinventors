@@ -1,0 +1,86 @@
+import { useEffect, useState } from "react";
+import Axios from "axios";
+import { useCookies } from "react-cookie";
+
+const fetchPages = () => {
+	const pages = [
+        {"title":"Mission","path":"\/about\/mission\/"},
+        {"title":"Program Themes","path":"\/about\/program-themes\/"},
+        {"title":"Residencies","path":"\/about\/residencies\/"},
+        {"title":"Agency","path":"\/about\/agency\/"},
+        {"title":"Education","path":"\/about\/education\/"},
+        {"title":"Workspace","path":"\/about\/workspace\/"},
+        {"title":"Organisation","path":"\/about\/organisation\/"},
+        {"title":"Partners","path":"\/about\/partners\/"},
+        {"title":"Transparency","path":"\/about\/transparency\/"},
+        {"title":"Apply for a residency","path":"\/get-involved\/apply-for-residency\/"},
+        {"title":"iii workspace membership","path":"\/get-involved\/iii-workspace-membership\/"},
+        {"title":"Propose an activity","path":"\/get-involved\/propose-an-activity\/"},
+        {"title":"Project space rental","path":"\/get-involved\/project-space-rental\/"},
+        {"title":"Internships","path":"\/get-involved\/internships\/"}
+    ];
+
+    let rest_call_url = wpApiSettings.root + "iii/pages";
+	const [cookies, setCookie] = useCookies(["lang"]);
+
+	const initialState = {
+		items: [],
+		loaded: false,
+		error: "",
+	};
+
+	const [state, setState] = useState(initialState);
+	useEffect(() => {
+		const abortController = new AbortController();
+
+        // getNumPages().then(numPosts => {getItems(numPosts)})
+        getItems(pages)
+		return () => {
+			abortController.abort(); // cancel pending fetch request on component unmount
+		};
+	}, [pages]);
+
+	const getItems = (pages) => {
+		setState({
+			...state,
+			loaded: false,
+		});
+
+		const requests = []
+        pages.forEach(function (page) {
+            let url = `${rest_call_url}${page.path}?_fields=id,title,slug,content`;
+            if (cookies.lang == "nl") {
+                url += "&lang=nl";
+            }
+			const request = Axios.get(url);
+ 
+			console.log(`${rest_call_url}${page.path}?`);
+			requests.push(request)
+        });
+
+		return Axios.all(requests).then(
+			(response) => {
+				const collection = response.map(res => res.data)
+                console.log(collection.flat());
+				setState((prevState, props) => ({
+                    ...state,
+                    items: collection.flat(),
+                    loaded: true,
+                }));
+			},
+			(error) => {
+				console.log("error")
+				console.log(error);
+				setState((prevState, props) => ({
+					...state,
+					error: error.toJSON().message,
+					loaded: true,
+				}));
+			}
+		);
+	};
+
+	return state.items;
+};
+
+export default fetchPages;

@@ -6,8 +6,10 @@ import Overlay from "./Overlay";
 import SidebarNavigation from "./SidebarNavigation";
 import fetchMenu from "../rest-api/fetchMenu";
 
-const Layout = (props) => {
-  const menuItems = fetchMenu();
+
+
+const Layout = ({menuItems, ...props}) => {
+  // const menuItems = fetchMenu();
   return (
     <>
       <Navigation menuItems={menuItems} />

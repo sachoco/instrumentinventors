@@ -46,6 +46,7 @@ class WPML_REST_API {
 		// http://www.roysivan.com/wp-api-v2-adding-fields-to-all-post-types/#.VsH0e5MrLcM
 
 		$post_types = get_post_types( array( 'public' => true, 'exclude_from_search' => false ), 'names' );
+		array_push($post_types, 'search-result');
 		foreach( $post_types as $post_type ) {
 			$this->register_api_field($post_type);
 		}

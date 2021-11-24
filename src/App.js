@@ -11,13 +11,17 @@ import HostedProgram from "./pages/HostedProgram";
 import Agency from "./pages/Agency";
 import Education from "./pages/Education";
 import Search from "./pages/Search";
-
+import fetchPages from "./components/rest-api/fetchPages";
+import fetchMenu from "./components/rest-api/fetchMenu";
 
 
 const App = () => {
+  const menuItems = fetchMenu();
+  const pages = fetchPages(menuItems.items);
+
   return (
     <>
-      <Layout>
+      <Layout menuItems={menuItems}>
         <Switch>
           <Route path="/" exact component={Home} />
           <Route
@@ -71,12 +75,6 @@ const App = () => {
             render={(props) => <Single {...props} posttype="product" />}
           />
           <Route
-            path="/search/"
-            render={(props) => (
-              <Search {...props} />
-            )}
-          />
-          <Route
             path="/posts/"
             exact
             render={(props) => (
@@ -89,8 +87,18 @@ const App = () => {
             )}
           />
           <Route
+            path="/post/:slug"
+            render={(props) => <Single {...props} posttype="posts" />}
+          />
+          <Route
+            path="/search/"
+            render={(props) => (
+              <Search {...props} />
+            )}
+          />
+          <Route
             path="/:p1/:p2?"
-            render={(props) => <SinglePostPage {...props} />}
+            render={(props) => <SinglePostPage {...props} pages={pages} />}
           />
         </Switch>
       </Layout>

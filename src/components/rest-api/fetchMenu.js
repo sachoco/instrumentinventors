@@ -16,10 +16,10 @@ const fetchMenu = (url="iii/menu") => {
 
   const getItems = () => {
     let rest_call_url = wpApiSettings.root + url;
-
+    console.log(rest_call_url)
     return Axios.get(rest_call_url).then(
       (response) => {
-        // console.log(response.data);
+        console.log(response.data);
         setState({
           items: response.data,
         });

@@ -4,11 +4,13 @@ import React from "react";
 import { render } from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import { CookiesProvider } from "react-cookie";
-import App from "./App";
 import { ViewContextProvider } from "./store/view-context";
 import { MetaContextProvider } from "./store/meta-context";
 import { ThemeProvider } from "@mui/material/styles";
 import iiiTheme from "./themes/iiiTheme";
+
+import App from "./App";
+
 // document.addEventListener('DOMContentLoaded', () => {
 const entry = document.querySelector("#root");
 // render(<App />, entry);

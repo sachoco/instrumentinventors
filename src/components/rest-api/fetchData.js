@@ -1,7 +1,6 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Axios from "axios";
 import { useCookies } from "react-cookie";
-import { getBottomNavigationActionUtilityClass } from "@mui/material";
 
 const fetchData = (url, single = false, concat = true, filter = null, url2=null) => {
   let _url = url;

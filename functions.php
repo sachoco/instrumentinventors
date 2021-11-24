@@ -178,3 +178,35 @@ function bidirectional_acf_update_value( $value, $post_id, $field  ) {
 }
 
 add_filter('acf/update_value/name=related_posts', 'bidirectional_acf_update_value', 10, 3);
+
+
+function export_page_in_json( $post_id, $post, $update ) {
+	WPBMap::addAllMappedShortcodes();
+	$output = array();
+	$path = parse_url(esc_url(get_permalink($post->ID)),PHP_URL_PATH);
+	$output["id"]=$post_id;
+	$output["title"]=$post->post_title;
+	$output["content"]=apply_filters( 'the_content', $post->post_content );
+	$output["type"]=$post->post_type;
+	$output['path'] = $path;
+    $data = json_encode($output);
+	
+    $upload_dir = wp_get_upload_dir(); // set to save in the /wp-content/uploads folder
+    $file_name =  'data.json';
+    // $save_path = $upload_dir['basedir'] . '/data/' . $file_name;
+
+
+    $save_path = ABSPATH . 'data/page' . stripslashes($path) . $file_name;
+	$dirname = dirname($save_path);
+	if (!is_dir($dirname)) {
+		mkdir($dirname, 0755, true);
+	 }
+	// var_dump($save_path);
+	// var_dump($post);
+    $f = fopen($save_path, "w"); //if json file doesn't gets saved, comment this and uncomment the one below
+    //$f = @fopen( $save_path , "w" ) or die(print_r(error_get_last(),true)); //if json file doesn't gets saved, uncomment this to check for errors
+    fwrite($f, $data);
+    fclose($f);
+}
+
+add_action('save_post_page', 'export_page_in_json', 10,3);

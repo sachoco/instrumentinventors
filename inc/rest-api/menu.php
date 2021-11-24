@@ -20,8 +20,7 @@ function get_menu()
         }
     }
     return $menus;
-    // $x = wp_get_nav_menu_items('about-menu');
-    // $x = wp_get_nav_menu_items('about-menu');
+
     // $x = wp_get_nav_menu_items('about-menu');
     // $menu = array();
     // $submenu = array();
@@ -42,7 +41,7 @@ function get_menu()
 }
 function extract_from_menu($menu)
 {
-    return array("title" => $menu->title, "path" => parse_url($menu->url)['path']);
+    return array("page_id" => get_post_meta( $menu->ID, '_menu_item_object_id', true ), "title" => $menu->title, "path" => parse_url($menu->url)['path']);
 }
 function get_index($menu, $parent_id)
 {

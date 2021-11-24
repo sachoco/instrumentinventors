@@ -70,9 +70,11 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
 				<div className="max-w-3xl  font-bold lg:font-normal text-base lg:text-2xl"></div>
 				<div className="mt-10 mx-auto max-w-3xl"></div>
 			</Block>
+			{state.item &&
 			<Block title="related" bg={true}>
 				<Carousel url={related_url} related_item={true} />
 			</Block>
+			}
 			<div className="px-24 pb-10 bg-bg-lighter-gray">
 				<button className="relative">
 					<svg
