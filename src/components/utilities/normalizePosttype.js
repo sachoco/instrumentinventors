@@ -11,7 +11,7 @@ const normalizePosttype = (item) => {
     content: "",
     image: {},
     link: "",
-    tag: "",
+    tag: he.decode("&nbsp;"),
     subcategory: [],
     archive_base: "",
     subcat_link: "",
@@ -101,7 +101,7 @@ const normalizePosttype = (item) => {
         };
       returnObj.link = "/" + item.type + "/" + item.slug;
       returnObj.posttype = item.type;
-      returnObj.tag = item.iii.tags?.length > 0 ? item.iii.tags : "no tag yet";
+      returnObj.tag = (Array.isArray(item.iii.tags)&&item.iii.tags?.length > 0) ? item.iii.tags : "no tag yet";
 
       if (item.type == "artist") {
         returnObj.subcategory = item.acf.badges;
