@@ -38,7 +38,7 @@ export default function Item(props) {
 					<div className="border-t-2">{meta1}</div>
 					<div className="border-t-2">{meta2}</div>
 					<div className="border-t-2 border-b-2">
-						{tag && 
+						{Array.isArray(tag)&&tag.length>0  && 
 							tag.map((obj, i)=>(i>0 ? ", "+obj.name : obj.name))
 						}
 					</div>

@@ -74,7 +74,7 @@ export default function ListItem(props) {
 						: null
 					}
 					<div className="border-l-2 px-4 leading-3 lg:leading-normal lg:py-1 min-w-100px flex-grow">
-						{tag && 
+						{Array.isArray(tag)&&tag.length>0  && 
 							tag.map((obj, i)=>(i>0 ? ", "+obj.name : obj.name))
 						}
 					</div>
