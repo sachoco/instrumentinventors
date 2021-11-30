@@ -67,7 +67,7 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
       let query = "?";
       if(filter.pricat&&filter.pricat!=""){query+='c='+filter.pricat}
       if(filter.subcat&&filter.subcat!=""){query+='&sc='+filter.subcat}
-      if(filter.tag&&filter.tag!=""){query+='&t='+filter.tag}
+      if(filter.tags&&filter.tags!=""){query+='&t='+filter.tags}
 
       history.push({
         search: query,

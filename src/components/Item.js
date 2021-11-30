@@ -37,7 +37,11 @@ export default function Item(props) {
 					<div className="mt-1 text-xl min-h-16 flex items-end"><span>{title}</span></div>
 					<div className="border-t-2">{meta1}</div>
 					<div className="border-t-2">{meta2}</div>
-					<div className="border-t-2 border-b-2">{tag}</div>
+					<div className="border-t-2 border-b-2">
+						{tag && 
+							tag.map((obj, i)=>(i>0 ? ", "+obj.name : obj.name))
+						}
+					</div>
 				</div>
 				{/* <div className="transition-all group-hover:text-3xl overflow-hidden whitespace-pre">
 					{title}

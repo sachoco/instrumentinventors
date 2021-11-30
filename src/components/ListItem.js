@@ -7,7 +7,7 @@ import Skeleton from "@mui/material/Skeleton";
 
 export default function ListItem(props) {
 	const { item, className, posttype } = props;
-  	let history = useHistory();
+		let history = useHistory();
 
 	const {
 		title,
@@ -31,15 +31,15 @@ export default function ListItem(props) {
 					<div className="lg:font-bold pr-4 text-lg lg:text-2xl w-full lg:w-350px ">
 						{title}
 					</div>
-					<div className="border-l-2 px-4 leading-3 lg:leading-normal lg:py-1 w-48 flex-grow-0">
-            {/* {subcategory.length > 0 ? subcategory?.map((cat, i) =>
-							<span key={i}>
-							{i>0 && ', '}
-							{cat.label}
-							</span>
+					<div className="border-l-2 px-4 leading-3 lg:leading-normal lg:py-1 w-28 flex-grow-0">
+						{/* {subcategory.length > 0 ? subcategory?.map((cat, i) =>
+						<span key={i}>
+						{i>0 && ', '}
+						{cat.label}
+						</span>
 						)
 							: ""} */}
-            {subcategory.length > 0 ? subcategory?.map((cat, i) =>
+								{subcategory.length > 0 ? subcategory?.map((cat, i) =>
 							<span key={i}>
 							{i>0 && ', '}
 							<Link to={'/'+archive_base+'/?c='+cat.value}>{cat.label}</Link>
@@ -48,33 +48,35 @@ export default function ListItem(props) {
 							: ""}
 					</div>
 					{
-            posttype=="artist"||posttype=="agenda"||posttype=="posts" ?
+						posttype=="artist"||posttype=="agenda"||posttype=="posts" ?
 						<div className="border-l-2 px-4 leading-3 lg:leading-normal lg:py-1 w-48 ">
 							{date}
 						</div>
 						: null
 					}
-          {
-            posttype=="agenda" ?
-						<div className="border-l-2 px-4 leading-3 lg:leading-normal lg:py-1 w-48 ">
-							{meta2}
-						</div>
-						: null
-					}
-          {
-            posttype=="project" ?
-            <>
+						{
+							posttype=="agenda" ?
 						<div className="border-l-2 px-4 leading-3 lg:leading-normal lg:py-1 w-48 ">
 							{meta1}
 						</div>
-            <div className="border-l-2 px-4 leading-3 lg:leading-normal lg:py-1 w-48 ">
+						: null
+					}
+						{
+							posttype=="project" ?
+							<>
+						<div className="border-l-2 px-4 leading-3 lg:leading-normal lg:py-1 w-48 ">
+							{meta1}
+						</div>
+							<div className="border-l-2 px-4 leading-3 lg:leading-normal lg:py-1 w-48 ">
 							{meta2}
 						</div>
-            </>
+							</>
 						: null
 					}
 					<div className="border-l-2 px-4 leading-3 lg:leading-normal lg:py-1 min-w-100px flex-grow">
-						{tag}
+						{tag && 
+							tag.map((obj, i)=>(i>0 ? ", "+obj.name : obj.name))
+						}
 					</div>
 				</div>
 				<div style={{ width: "32px" }}>

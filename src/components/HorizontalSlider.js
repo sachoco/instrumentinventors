@@ -19,7 +19,7 @@ export default function HorizontalSlider({
 
 	const ref = useRef();
 
-  const [state, loadMore] = fetchData(url, false, true, null, url2);
+		const [state, loadMore] = fetchData(url, false, true, null, url2);
 
 	const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -49,7 +49,7 @@ export default function HorizontalSlider({
 						onScroll={onScrollHandler}
 						className="flex flex-nowrap overflow-x-scroll hide-scroll-bar scroll-snap-x overscroll-x-none scroll-padding-x-24"
 					> */}
-          <div
+						<div
 						ref={ref}
 						onScroll={onScrollHandler}
 						className="flex flex-nowrap px-24 overflow-x-scroll hide-scroll-bar overscroll-x-none scroll-padding-x-24"
@@ -62,7 +62,7 @@ export default function HorizontalSlider({
 									item={item}
 								/>
 								))
-							: new Array(10)
+							: new Array(5)
 								.fill({})
 								.map((item, i) => (
 									<Item
@@ -70,7 +70,7 @@ export default function HorizontalSlider({
 										className="min-w-80 mr-6 scroll-align-start"
 									/>
 								))}
-            {!state.loaded && (
+									{!state.loaded && (
 							<div className="h-64 min-w-80 mr-6">
 								<div className="h-full flex flex-col justify-center items-center">
 									<div className="flex justify-center items-center">

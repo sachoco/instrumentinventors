@@ -82,26 +82,6 @@ const normalizePosttype = (item) => {
         : parse(item.content)
       }
 
-      // returnObj.image = item._embedded
-      //   ? {
-      //       full: item._embedded["wp:featuredmedia"]
-      //         ? item._embedded["wp:featuredmedia"][0].media_details?.sizes.full
-      //             ?.source_url
-      //         : NoImage,
-      //       large: item._embedded["wp:featuredmedia"]
-      //         ? item._embedded["wp:featuredmedia"][0].media_details?.sizes.large
-      //             ?.source_url
-      //         : NoImage,
-      //       medium: item._embedded["wp:featuredmedia"]
-      //         ? item._embedded["wp:featuredmedia"][0].media_details?.sizes
-      //             .medium_large?.source_url
-      //         : NoImage,
-      //     }
-      //   : {
-      //       full: NoImage,
-      //       large: NoImage,
-      //       medium: NoImage,
-      //     };
       returnObj.image = item.iii?.featured_image
       ? {
           full: item.iii.featured_image.full
@@ -121,7 +101,7 @@ const normalizePosttype = (item) => {
         };
       returnObj.link = "/" + item.type + "/" + item.slug;
       returnObj.posttype = item.type;
-      returnObj.tag = item.tags?.length > 0 ? item.tags : "no tag yet";
+      returnObj.tag = item.iii.tags?.length > 0 ? item.iii.tags : "no tag yet";
 
       if (item.type == "artist") {
         returnObj.subcategory = item.acf.badges;
@@ -131,31 +111,35 @@ const normalizePosttype = (item) => {
             : `${item.acf.date_from}`;
         }
         returnObj.archive_base = "artists";
+
       } else if (item.type == "project") {
         returnObj.subcategory = [item.acf.category];
         returnObj.meta1 = item.acf.authors ? item.acf.authors : "no authors value";
         returnObj.meta2 = item.acf.year ? item.acf.year : "no year value";
         returnObj.date = item.acf.year;
         returnObj.archive_base = "projects";
+
       } else if (item.type == "agenda") {
         returnObj.subcategory = [item.acf.category];
         returnObj.date = item.acf.date_until
           ? `${item.acf.date_from} - ${item.acf.date_until}`
           : `${item.acf.date_from}`;
-        returnObj.meta1 = item.acf.venue ? item.acf.venue : "no venue value";
-        returnObj.meta2 = item.acf.city ? item.acf.city : "no city value";
+
+        let location = "";
+        if(!item.acf.venue&&!item.acf.city){
+          location = item.acf.location[0].location;
+        }else if(item.acf.venue&&item.acf.city){
+          location = item.acf.venue + ", " + item.acf.city;
+        }else{
+          location = item.acf.venue + item.acf.city;
+        }
+        returnObj.meta1 = location;//item.acf.venue ? item.acf.venue : "no venue value";
+        // returnObj.meta2 = item.acf.city ? item.acf.city : "no city value";
         returnObj.meta3 = item.acf["host_|_circulation"];
         returnObj.archive_base = "agenda";
+
       } else {
-        // returnObj.subcategory =
-        //   item._embedded && item._embedded["wp:term"]
-        //     ? item._embedded["wp:term"][0].map((t) => {
-        //         return { value: t.id, label: t.name };
-        //       })
-        //     : null;
-        // if(returnObj.subcategory){
-        //   returnObj.subcat_link = "/posts/c="+item._embedded["wp:term"][0][0].term_id;
-        // }
+
         returnObj.subcategory =
         item.iii?.category
           ? item.iii.category.map((cat) => {

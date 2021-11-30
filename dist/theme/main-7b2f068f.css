@@ -1064,6 +1064,10 @@ h1, h2, h3, h4, h5 {
   width: 6rem;
 }
 
+.w-28 {
+  width: 7rem;
+}
+
 .w-32 {
   width: 8rem;
 }
@@ -20675,4 +20679,4 @@ html[xmlns] .flexslider .slides{
 
 /* purgecss end ignore */
 
-/*# sourceMappingURL=main-da740f26.css.map*/
+/*# sourceMappingURL=main-7b2f068f.css.map*/

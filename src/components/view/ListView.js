@@ -10,8 +10,8 @@ export default function ListView({ items = null, posttype, ...otherProps }) {
         <div className="flex items-center border-b-2 py-4 px-2 font-title">
           <div className="flex justify-between items-center flex-grow">
             <div className="hidden lg:block pr-4 w-350px">name</div>
-            <div className="hidden lg:block px-4 py-1 w-48 flex-grow-0">
-              subcategory
+            <div className="hidden lg:block px-4 py-1 w-28 flex-grow-0">
+              type
             </div>
             {
               posttype=="artist"||posttype=="agenda"||posttype=="posts" ?
@@ -23,7 +23,7 @@ export default function ListView({ items = null, posttype, ...otherProps }) {
             {
               posttype=="agenda" ?
               <div className=" px-4 leading-3 lg:leading-normal lg:py-1 w-48 ">
-                city
+                location
               </div>
               : null
             }
