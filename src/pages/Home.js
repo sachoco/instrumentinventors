@@ -16,16 +16,16 @@ const Home = () => {
     <Meta title="Home" />
     <Slideshow />
     <Block title="hosted program">
-      <Carousel url="wp/v2/agenda/?subcat=host&upcoming" url2="wp/v2/project/?pricat=curated_programs&subcat=host" />
+      <HorizontalSlider url="wp/v2/agenda/?subcat=host&upcoming" url2="wp/v2/project/?pricat=curated_programs&subcat=host" />
     </Block>
     <Block title="circulation program" bg={true}>
-      <Carousel url="wp/v2/agenda/?subcat=circulation&upcoming" url2="wp/v2/agenda/?in_pricat=workshop,residency&subcat=circulation&past" />
+      <HorizontalSlider url="wp/v2/agenda/?subcat=circulation&upcoming" url2="wp/v2/agenda/?in_pricat=workshop,residency&subcat=circulation&past" />
     </Block>
     <Block title="projects">
-      <Carousel url="wp/v2/project/?" />
+      <HorizontalSlider url="wp/v2/project/?" />
     </Block>
     <Block title="news & media" bg={true}>
-      <Carousel url="wp/v2/posts/?" />
+      <HorizontalSlider url="wp/v2/posts/?" />
     </Block>
     <Block title="about iii">
       <p className="max-w-prose">

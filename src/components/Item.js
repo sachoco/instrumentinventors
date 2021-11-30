@@ -1,10 +1,14 @@
 import React, { useState, useRef } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+
 import { Link } from "react-router-dom";
 import normalizePosttype from "./utilities/normalizePosttype";
 import Skeleton from "@mui/material/Skeleton";
 
 export default function Item(props) {
 	const { item, className } = props;
+	let history = useHistory();
+
 	const {
 		title,
 		image,
@@ -17,9 +21,12 @@ export default function Item(props) {
 		meta1,
 		meta2,
 	} = normalizePosttype(item);
-
+ 
+	const onClickHandler = (link) => {
+		history.push(link);
+	}
 	const itemBox = (
-		<div className="group overflow-hidden relative pb-64 border-2 border-black">
+		<div onClick={(e)=>onClickHandler(link)} className="group overflow-hidden relative pb-64 border-2 border-black cursor-pointer">
 			<img
 				src={image.medium}
 				alt={title}

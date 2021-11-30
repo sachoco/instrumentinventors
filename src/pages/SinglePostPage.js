@@ -61,7 +61,7 @@ const SinglePostPage = ({ pages, ...otherProps }) => {
       </Block>
       {/* {posttype && item &&
         <Block title="related" bg={true}>
-          <Carousel url={"iii/related/" + posttype + "/" + path +"/?"} related_item={true} />
+          <HorizontalSlider url={"iii/related/" + posttype + "/" + path +"/?"} related_item={true} />
         </Block>
       } */}
 

@@ -6,6 +6,8 @@ import { BrowserRouter } from "react-router-dom";
 import { CookiesProvider } from "react-cookie";
 import { ViewContextProvider } from "./store/view-context";
 import { MetaContextProvider } from "./store/meta-context";
+import ScrollToTop from "./components/utilities/ScrollToTop"
+
 import { ThemeProvider } from "@mui/material/styles";
 import iiiTheme from "./themes/iiiTheme";
 
@@ -17,6 +19,7 @@ const entry = document.querySelector("#root");
 
 render(
   <BrowserRouter basename={"/"}>
+    <ScrollToTop />
     <CookiesProvider>
       <ThemeProvider theme={iiiTheme}>
         <MetaContextProvider>

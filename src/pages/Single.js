@@ -13,6 +13,14 @@ import Meta from "../components/layout/Meta";
 import normalizePosttype from "../components/utilities/normalizePosttype";
 import getTitle from "../components/utilities/getTitle";
 
+import "../assets/vc/assets/css/js_composer.min.css";
+import "../assets/vc/assets/js/dist/js_composer_front.min.js";
+import "../assets/vc/assets/lib/vc_carousel/css/vc_carousel.min.css";
+import "../assets/vc/assets/lib/vc_carousel/js/vc_carousel.min.js";
+import "../assets/vc/assets/lib/vc_carousel/js/transition.min.js";
+import "../assets/vc/assets/lib/flexslider/jquery.flexslider.min.js";
+import "../assets/vc/assets/lib/flexslider/flexslider.min.css";
+
 const Single = ({ posttype = "posts", ...otherProps }) => {
 	const metaCtx = useContext(MetaContext);
 	const { slug } = useParams();
@@ -24,14 +32,30 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
 	useEffect(()=>{
 		metaCtx.setTitle(posttype);
 		metaCtx.setTranslation(false);
-
+		jQuery('[data-ride="vc_carousel"]').each(function () {
+			var $carousel = jQuery(this);
+			$carousel.carousel($carousel.data());
+		});
+		jQuery(".wpb_flexslider").each(function(){
+			var this_element=jQuery(this), 
+				sliderTimeout=1e3*parseInt(this_element.attr("data-interval"),10),
+				sliderFx=this_element.attr("data-flex_fx"),
+				slideshow=0==sliderTimeout?!1:!0;
+			this_element.is(":visible")&&this_element.flexslider({
+				animation:sliderFx,
+				slideshow:slideshow,
+				slideshowSpeed:sliderTimeout,
+				sliderSpeed:800,
+				smoothHeight:!0
+			})
+		})
 	},[state])
 	return (
 		<>
 			<Meta title={title} />
 
 			{state.item ? <HeaderImage item={state.item} /> : ""}
-			<div className="px-16 lg:px-24 pt-10">
+			{/* <div className="px-16 lg:px-24 pt-10">
 				<button className="relative">
 					<svg
 						className="absolute"
@@ -62,7 +86,7 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
 					</svg>
 					back to {posttype}
 				</button>
-			</div>
+			</div> */}
 
 			<Block className="single-item-content ">
 				{content}
@@ -72,10 +96,10 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
 			</Block>
 			{state.item &&
 			<Block title="related" bg={true}>
-				<Carousel url={related_url} related_item={true} />
+				<HorizontalSlider url={related_url} related_item={true} />
 			</Block>
 			}
-			<div className="px-24 pb-10 bg-bg-lighter-gray">
+			{/* <div className="px-24 pb-10 bg-bg-lighter-gray">
 				<button className="relative">
 					<svg
 						className="absolute"
@@ -106,7 +130,7 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
 					</svg>
 					back to {posttype}
 				</button>
-			</div>
+			</div> */}
 		</>
 	);
 };

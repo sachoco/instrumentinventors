@@ -7,7 +7,7 @@ import Skeleton from "@mui/material/Skeleton";
 
 export default function ListItem(props) {
 	const { item, className, posttype } = props;
-  let history = useHistory();
+  	let history = useHistory();
 
 	const {
 		title,
@@ -21,9 +21,9 @@ export default function ListItem(props) {
 		meta3,
 	} = normalizePosttype(item);
 
-  const onClickHandler = (link) => {
-    history.push(link);
-  }
+	const onClickHandler = (link) => {
+		history.push(link);
+	}
 	const itemBox = (
 		<div onClick={(e)=>onClickHandler(link)} className={className}>
 			<div className="flex flex-nowrap items-center border-b-2 py-2 lg:py-4 px-2 hover:bg-bg-filter cursor-pointer">

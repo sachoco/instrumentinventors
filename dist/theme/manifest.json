@@ -1,12 +1,12 @@
 {
-  "main.css": "theme/main-9d3c632e.css",
-  "main.css.map": "theme/main-9d3c632e.css.map",
-  "main.js": "theme/main-c5867eb7.js",
-  "main.js.map": "theme/main-c5867eb7.js.map",
+  "main.css": "theme/main-da740f26.css",
+  "main.css.map": "theme/main-da740f26.css.map",
+  "main.js": "theme/main-c399ebcc.js",
+  "main.js.map": "theme/main-c399ebcc.js.map",
   "noreact.css": "theme/noreact-002b39c8.css",
   "noreact.css.map": "theme/noreact-002b39c8.css.map",
-  "noreact.js": "theme/noreact-7891d3a6.js",
-  "noreact.js.map": "theme/noreact-7891d3a6.js.map",
+  "noreact.js": "theme/noreact-a1534505.js",
+  "noreact.js.map": "theme/noreact-a1534505.js.map",
   "runtime.js": "theme/runtime-c29d24d5.js",
   "runtime.js.map": "theme/runtime-c29d24d5.js.map",
   "theme/assets/Antipol Extended Bold.otf": "theme/assets/Antipol%20Extended%20Bold-47719189.otf",
@@ -49,6 +49,10 @@
   "theme/assets/control.png": "theme/assets/control-dfb75b7d.png",
   "theme/assets/exclamation.png": "theme/assets/exclamation-71276f5a.png",
   "theme/assets/fire.png": "theme/assets/fire-1d195fd2.png",
+  "theme/assets/flexslider-icon.eot": "theme/assets/flexslider-icon-0c4bb125.eot",
+  "theme/assets/flexslider-icon.svg": "theme/assets/flexslider-icon-c4ebafe3.svg",
+  "theme/assets/flexslider-icon.ttf": "theme/assets/flexslider-icon-c6c9e9e5.ttf",
+  "theme/assets/flexslider-icon.woff": "theme/assets/flexslider-icon-b5aefbb7.woff",
   "theme/assets/flickr.png": "theme/assets/flickr-b41c22f9.png",
   "theme/assets/heart.png": "theme/assets/heart-31edca86.png",
   "theme/assets/info.png": "theme/assets/info-202df9ff.png",
@@ -77,32 +81,32 @@
   "theme/assets/video.png": "theme/assets/video-df20b626.png",
   "vendors~main.css": "theme/vendors~main-dbe03e4f.css",
   "vendors~main.css.map": "theme/vendors~main-dbe03e4f.css.map",
-  "vendors~main.js": "theme/vendors~main-a51ea0ce.js",
-  "vendors~main.js.map": "theme/vendors~main-a51ea0ce.js.map",
-  "vendors~main~noreact.js": "theme/vendors~main~noreact-277564e7.js",
-  "vendors~main~noreact.js.map": "theme/vendors~main~noreact-277564e7.js.map",
+  "vendors~main.js": "theme/vendors~main-a3c82cdc.js",
+  "vendors~main.js.map": "theme/vendors~main-a3c82cdc.js.map",
+  "vendors~main~noreact.js": "theme/vendors~main~noreact-067ac893.js",
+  "vendors~main~noreact.js.map": "theme/vendors~main~noreact-067ac893.js.map",
   "wpackioEp": {
     "main": {
       "assets": {
         "js": [
           "theme/runtime-c29d24d5.js",
-          "theme/vendors~main~noreact-277564e7.js",
-          "theme/vendors~main-a51ea0ce.js",
-          "theme/main-c5867eb7.js"
+          "theme/vendors~main~noreact-067ac893.js",
+          "theme/vendors~main-a3c82cdc.js",
+          "theme/main-c399ebcc.js"
         ],
         "js.map": [
           "theme/runtime-c29d24d5.js.map",
-          "theme/vendors~main~noreact-277564e7.js.map",
-          "theme/vendors~main-a51ea0ce.js.map",
-          "theme/main-c5867eb7.js.map"
+          "theme/vendors~main~noreact-067ac893.js.map",
+          "theme/vendors~main-a3c82cdc.js.map",
+          "theme/main-c399ebcc.js.map"
         ],
         "css": [
           "theme/vendors~main-dbe03e4f.css",
-          "theme/main-9d3c632e.css"
+          "theme/main-da740f26.css"
         ],
         "css.map": [
           "theme/vendors~main-dbe03e4f.css.map",
-          "theme/main-9d3c632e.css.map"
+          "theme/main-da740f26.css.map"
         ]
       }
     },
@@ -110,13 +114,13 @@
       "assets": {
         "js": [
           "theme/runtime-c29d24d5.js",
-          "theme/vendors~main~noreact-277564e7.js",
-          "theme/noreact-7891d3a6.js"
+          "theme/vendors~main~noreact-067ac893.js",
+          "theme/noreact-a1534505.js"
         ],
         "js.map": [
           "theme/runtime-c29d24d5.js.map",
-          "theme/vendors~main~noreact-277564e7.js.map",
-          "theme/noreact-7891d3a6.js.map"
+          "theme/vendors~main~noreact-067ac893.js.map",
+          "theme/noreact-a1534505.js.map"
         ],
         "css": [
           "theme/noreact-002b39c8.css"
