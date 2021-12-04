@@ -16,6 +16,7 @@ const normalizePosttype = (item) => {
     archive_base: "",
     subcat_link: "",
     date: "",
+    website: "",
     meta1: he.decode("&nbsp;"),
     meta2: he.decode("&nbsp;"),
     meta3: he.decode("&nbsp;"),
@@ -105,11 +106,13 @@ const normalizePosttype = (item) => {
 
       if (item.type == "artist") {
         returnObj.subcategory = item.acf.badges;
-        if (returnObj.subcategory == "resident") {
-          returnObj.date = item.acf.date_until
+        // if (returnObj.subcategory.value == "resident") {
+        if (item.acf.date_from) {
+            returnObj.date = item.acf.date_until
             ? `${item.acf.date_from} - ${item.acf.date_until}`
             : `${item.acf.date_from}`;
         }
+        returnObj.website == item.acf.website && item.acf.website;
         returnObj.archive_base = "artists";
 
       } else if (item.type == "project") {

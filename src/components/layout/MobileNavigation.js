@@ -180,6 +180,14 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                     activeClassName="font-bold active"
                     className="relative hover:font-bold"
                     to="/projects/?c=editions"
+                    isActive={(match, location) => {
+                      if (!match) {
+                        return false;
+                      }
+                      const queryParams = new URLSearchParams(location.search);
+                      const cat = queryParams.get("c") ? queryParams.get("c") : "";
+                      return cat == "editions";
+                    }}
                   >
                     editions
                   </MyLink>

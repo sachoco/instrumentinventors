@@ -14,6 +14,7 @@ export default function HeaderImage({ item, ...otherProps }) {
     image,
     subcategory,
     link,
+    website,
     tag,
     date,
     meta1,
@@ -88,6 +89,9 @@ export default function HeaderImage({ item, ...otherProps }) {
                   ))
                 : ""}
             </span>
+            {website.trim()!="" && (
+              <a href={website} target="_blank"><span className="border-2 bg-white py-2 px-4 mr-2">{website}</span></a>
+            )}
             {date && (
               <span className="border-2 bg-white py-2 px-4 mr-2">{date}</span>
             )}
@@ -98,11 +102,14 @@ export default function HeaderImage({ item, ...otherProps }) {
               <span className="border-2 bg-white py-2 px-4 mr-2">{meta2}</span>
             )}
             {meta3.trim()!="" && (
-              <span className="border-2 bg-white py-2 px-4 mr-2">{meta2}</span>
+              <span className="border-2 bg-white py-2 px-4 mr-2">{meta3}</span>
             )}
-            {tag && (
-              <span className="border-2 bg-white py-2 px-4 mr-2">{tag}</span>
-            )}
+            {Array.isArray(tag)&&tag.length>0  ?
+							tag.map((obj, i)=>(
+                <span key={i} className="border-2 bg-white py-2 px-4 mr-2">{obj.name}</span>
+              ))
+							: tag
+						}
           </div>
         </div>
       </div>

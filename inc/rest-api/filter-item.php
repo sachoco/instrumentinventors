@@ -1,19 +1,6 @@
 <?php
 add_action('rest_api_init', function () {
 
-    register_rest_route('iii', '/related\/(?P<posttype>[a-z0-9,+]+(?:-[a-z0-9,+]+)*)\/(?P<slug>[a-z0-9,+]+(?:-[a-z0-9,+]+)*)', array(
-        'methods' => 'GET',
-        'callback' => 'get_related',
-        'args' => array(
-            'posttype' => array(
-                'requred' => true
-            ),
-            'slug' => array(
-                'required' => true
-            ),
-        ),
-        'permission_callback' => '__return_true',
-    ));
     register_rest_route('iii', '/filterItems\/(?P<posttype>[a-z0-9,+]+(?:-[a-z0-9,+]+)*)', array(
         'methods' => 'GET',
         'callback' => 'get_filter_items',
@@ -48,7 +35,12 @@ function get_filter_items( $request ) {
           'taxonomy' => 'category',
           'hide_empty' => true,
         ) );
-        $data['cat'] = array_map('format_data', $cat);
+        var_dump($cat);
+        $data['cat'] = [];
+        foreach($cat as $c){
+          array_push($data['cat'], array("value"=>$c->term_id,"name"=>$c->name));
+        }
+        // $data['cat'] = array_map('format_data', $cat);
         $tag = get_terms_per_post_type( 'post_tag', array( 'post_type' => 'post' ) );
         $data['tag'] = array_map('format_data', $tag);
   

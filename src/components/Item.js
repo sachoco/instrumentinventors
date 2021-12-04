@@ -66,6 +66,7 @@ export default function Item(props) {
 					</div>
 					<div className="absolute bottom-0 right-0 px-5 py-2 z-20 transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible">
 					<Link to={link}>more info</Link>
+					{/* <a href={link}>more info</a> */}
 				</div> 
 				</div>
 			</div>

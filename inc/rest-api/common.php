@@ -86,7 +86,7 @@ class III_REST_API {
             $output["category"] = false;
         }
         
-        $output["path"] = parse_url(esc_url(get_permalink($post->ID)),PHP_URL_PATH);
+        $output["path"] = parse_url(esc_url(get_permalink($postId)),PHP_URL_PATH);
 
         return $output;
 	}
