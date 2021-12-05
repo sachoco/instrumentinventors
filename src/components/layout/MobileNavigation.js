@@ -30,6 +30,10 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
   const onToggleSubmenu = (cat) => {
     showSubMenu ? setShowSubMenu(false) : setShowSubMenu(cat);
   };
+  const onMenuClick = (e) => {
+    setShowMenu(false)
+    setShowSubMenu(false)
+  }
   return (
     <div className="relative w-full h-full">
       <button
@@ -143,7 +147,8 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                   <MyLink
                     activeClassName="font-bold active"
                     className="relative hover:font-bold"
-                    to="/artists/"
+                    to='/artists/'
+                    onClick={onMenuClick}
                   >
                     artists
                   </MyLink>
@@ -153,6 +158,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                     activeClassName="font-bold active"
                     className="relative hover:font-bold"
                     to="/hosted-program/"
+                    onClick={onMenuClick}
                   >
                     hosted program
                   </MyLink>
@@ -162,6 +168,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                     activeClassName="font-bold active"
                     className="relative hover:font-bold"
                     to="/agency/"
+                    onClick={onMenuClick}
                   >
                     agency
                   </MyLink>
@@ -171,6 +178,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                     activeClassName="font-bold active"
                     className="relative hover:font-bold"
                     to="/education/"
+                    onClick={onMenuClick}
                   >
                     education
                   </MyLink>
@@ -180,6 +188,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                     activeClassName="font-bold active"
                     className="relative hover:font-bold"
                     to="/projects/?c=editions"
+                    onClick={onMenuClick}
                     isActive={(match, location) => {
                       if (!match) {
                         return false;
@@ -193,8 +202,8 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                   </MyLink>
                 </li>
                 {metaCtx.translation && (
-                  <li>
-                    <LanguageSlect />
+                  <li className="text-center">
+                    <LanguageSlect onClick={onMenuClick} />
                   </li>
                 )}
               </ul>
@@ -292,6 +301,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                             activeClassName="font-bold active"
                             className="relative hover:font-bold"
                             to={item.path}
+                            onClick={onMenuClick}
                           >
                             {item.title}
                           </MyLink>
@@ -317,6 +327,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                             activeClassName="font-bold active"
                             className="relative hover:font-bold"
                             to={item.path}
+                            onClick={onMenuClick}
                           >
                             {item.title}
                           </MyLink>

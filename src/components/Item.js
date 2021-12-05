@@ -26,7 +26,9 @@ export default function Item(props) {
 		history.push(link);
 	}
 	const itemBox = (
-		<div onClick={(e)=>onClickHandler(link)} className="group overflow-hidden relative pb-64 border-2 border-black cursor-pointer">
+		<div  className="group overflow-hidden relative pb-64 border-2 border-black ">
+
+		{/* <Link to={link} > */}
 			<img
 				src={image.medium}
 				alt={title}
@@ -39,8 +41,15 @@ export default function Item(props) {
 					<div className="border-t-2">{meta2}</div>
 					<div className="border-t-2 border-b-2">
 						{Array.isArray(tag)&&tag.length>0  ?
-							tag.map((obj, i)=>(i>0 ? ", "+obj.name : obj.name))
-							: tag
+							tag.map((obj, i)=>(
+								<span key={i}>
+								{i > 0 && ", "}
+								<Link to={"/" + archive_base + "/?t=" + obj.id}>
+								{obj.name}
+								</Link>
+								</span>
+							))
+  							: tag
 						}
 					</div>
 				</div>
@@ -94,6 +103,7 @@ export default function Item(props) {
 				<div className="border-t-2">{meta2}</div>
 				<div className="border-t-2 border-b-2">{tag}</div>
 			</div> */}
+		{/* </Link> */}
 		</div>
 	);
 

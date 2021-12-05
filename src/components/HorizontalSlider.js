@@ -19,21 +19,50 @@ export default function HorizontalSlider({
 
 	const ref = useRef();
 
-		const [state, loadMore] = fetchData(url, false, true, null, url2);
+	const [state, loadMore] = fetchData(url, false, true, null, url2);
+	const [hover, setHover] = useState(false);
+	const [canScrollNext, setCanScrollNext] = useState(true);
+	const [canScrollPrev, setCanScrollPrev] = useState(false);
 
 	const [scrollPosition, setScrollPosition] = useState(0);
 
 	const onScrollHandler = (e) => {
 		// console.log(ref)
+		
+		const scrolWidth = ref.current.scrollWidth;
+		const scrolPosition = ref.current.scrollLeft + ref.current.clientWidth;
+		// console.log("scrolPosition: "+scrolPosition);
+		// console.log("scrolWidth: "+scrolWidth);
+		// console.log("clientWidth: "+ref.current.clientWidth);
+		// console.log("scrollLeft: "+ref.current.scrollLeft);
+		ref.current.scrollLeft==0 ? setCanScrollPrev(false) : setCanScrollPrev(true);
+		scrolPosition==scrolWidth ? setCanScrollNext(false) : setCanScrollNext(true);
+
+		
 		if (state.hasMore && state.loaded) {
-			const scrolWidth = ref.current.scrollWidth;
-			const scrolPosition = ref.current.scrollLeft + ref.current.clientWidth;
-			// console.log(scrolPosition/scrolWidth);
 			if (scrolPosition / scrolWidth > 0.66) {
 				console.log("loading more items");
 				loadMore();
 			}
 		}
+	};
+	const onMouseEnterHandler = (e) => {
+		setHover(true);
+	};
+	const onMouseLeaveHandler = (e) => {
+		setHover(false);
+	};
+	const onArrowClickHandler = (direction) => {
+		const scrolWidth = ref.current.scrollWidth;
+		const scrolPosition = ref.current.scrollLeft + ref.current.clientWidth;
+		const numItems = ref.current.childElementCount;
+		// console.log(scrolWidth / numItems);
+		if(direction=="next"){
+			ref.current.scrollBy({ left: "+"+ref.current.clientWidth, behavior: 'smooth' })
+		}else{
+			ref.current.scrollBy({ left: "-"+ref.current.clientWidth, behavior: 'smooth' })
+		}
+
 	};
 	if(url2 && state.itemTotal<10){
 		loadMore();
@@ -43,13 +72,81 @@ export default function HorizontalSlider({
 			{state.items.length == 0 && state.noItem ? (
 				"NO ITEM TO SHOW"
 			) : (
-				<div className="relative -mx-24">
+				<div 
+					className="relative -mx-24" 
+					onMouseEnter={onMouseEnterHandler}
+					onMouseLeave={onMouseLeaveHandler}
+				>
+					{hover && (
+						<>
+						{canScrollPrev &&
+							<button
+								onClick={(e)=>onArrowClickHandler("prev")} 
+								className="absolute flex justify-center items-center z-50 top-0 left-0 bg-white h-full w-20 bg-opacity-70"
+							>
+								<svg className="transform scale-75" width="65px" height="29px" viewBox="0 0 65 29">
+									<g
+									id="Page-1"
+									stroke="none"
+									strokeWidth="1"
+									fill="none"
+									fillRule="evenodd"
+									>
+									<g
+										transform="translate(2.000000, 1.000000)"
+										stroke="#000000"
+										strokeWidth="2"
+									>
+										<line
+										x1="62.561"
+										y1="13.486"
+										x2="2.45137244e-13"
+										y2="13.486"
+										></line>
+										<polyline points="13.486 0 3.55271368e-15 13.486 13.486 26.972"></polyline>
+									</g>
+									</g>
+								</svg>
+							</button>
+						}
+						{canScrollNext &&
+							<button 
+								onClick={(e)=>onArrowClickHandler("next")} 
+								className="absolute flex justify-center items-center z-50 top-0 right-0 bg-white h-full w-20 bg-opacity-70"
+							>
+								<svg className="transform scale-75" width="65px" height="29px" viewBox="0 0 65 29">
+									<g
+									id="Page-1"
+									stroke="none"
+									strokeWidth="1"
+									fill="none"
+									fillRule="evenodd"
+									>
+									<g
+										transform="translate(31.280500, 14.486000) scale(-1, 1) translate(-31.280500, -14.486000) translate(-0.000000, 1.000000)"
+										stroke="#000000"
+										strokeWidth="2"
+									>
+										<line
+										x1="62.561"
+										y1="13.486"
+										x2="2.45137244e-13"
+										y2="13.486"
+										></line>
+										<polyline points="13.486 0 3.55271368e-15 13.486 13.486 26.972"></polyline>
+									</g>
+									</g>
+								</svg>
+							</button>
+						}
+						</>
+					)}
 					{/* <div
 						ref={ref}
 						onScroll={onScrollHandler}
 						className="flex flex-nowrap overflow-x-scroll hide-scroll-bar scroll-snap-x overscroll-x-none scroll-padding-x-24"
 					> */}
-						<div
+					<div
 						ref={ref}
 						onScroll={onScrollHandler}
 						className="flex flex-nowrap px-24 overflow-x-scroll hide-scroll-bar overscroll-x-none scroll-padding-x-24"

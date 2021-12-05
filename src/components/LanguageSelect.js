@@ -23,6 +23,7 @@ export default function LanguageSelect(props) {
     history.push({
       search: query,
     });
+    props.onClick && props.onClick()
   };
   useEffect(() => {
     console.log(initLang);
