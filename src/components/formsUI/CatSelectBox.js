@@ -13,15 +13,19 @@ export default function CatSelectBox({
   ...props
 }) {
   const formatDefaultValue = (str) => {
-    if (str) {
-      return options.find((obj) => {
+    if (str&&str!="") {
+      const val = options.find((obj) => {
         return obj.value == str;
       });
+      if(val===undefined){
+        return null;
+      }else{
+        return val
+      }     
     } else {
       return null;
     }
   };
-  const [value, setValue] = useState(defaultValue);
   const handleChange = (event, values) => {
     // setValue(values);
 

@@ -16,9 +16,9 @@ const category = [
 	{ value: "posts", name: "News & Media" },
 ];
 
-export default function Filter({ initialFilter, filter, ...props }) {
+export default function Filter({ filter, ...props }) {
 	const viewCtx = useContext(ViewContext);
-	const filterData = fetchFilterItems(initialFilter.posttype);
+	const filterData = fetchFilterItems(filter.posttype);
 	const [showBox, setShowBox] = useState(false);
 	const onClickHandler = (e) => {
 		showBox ? setShowBox(false) : setShowBox(true);
@@ -49,31 +49,37 @@ export default function Filter({ initialFilter, filter, ...props }) {
 		[y, showBox]
 	);
 
-	const renderFilterItems = (str,p='pricat') => {
-		const array = str.toString().split(",");
-		return array.map((item, i) => {
-			if(initialFilter.posttype=="project"&&p=="subcat"){
-				if(filterData.items.subcat){
-					var result = filterData.items.subcat[filter.pricat].find(obj => {
+	const renderFilterItems = (str,p='cat') => {
+		// console.log(str)
+		if(str&&filterData.items){
+			const array = str.toString().split(",");
+			return array.map((item, i) => {
+				if(filter.posttype=="project"&&p=="subcat"){
+					if(filterData.items.subcat){
+						var result = filterData.items.subcat[filter.pricat].find(obj => {
+							return obj.value == item
+						});
+						return (<div key={i} className="rounded-full text-sm leading-6 py-0 px-2 m-1 border border-white lowercase">
+							{result.name}
+						</div>)
+					}
+				}else if(p!="posttype"&&filterData.items[p]){
+					var result = filterData.items[p].find(obj => {
 						return obj.value == item
 					});
-					return (<div key={i} className="rounded-full text-sm leading-6 py-0 px-2 m-1 border border-white lowercase">
+					if(result){
+						return (<div key={i} className="rounded-full text-sm leading-6 py-0 px-2 m-1 border border-white lowercase">
 						{result.name}
+						</div>)
+					}
+					
+				}else {
+					return (<div key={i} className="rounded-full text-sm leading-6 py-0 px-2 m-1 border border-white lowercase">
+						{item}
 					</div>)
 				}
-			}else if(p!="posttype"&&filterData.items[p]){
-				var result = filterData.items[p].find(obj => {
-					return obj.value == item
-				});
-				return (<div key={i} className="rounded-full text-sm leading-6 py-0 px-2 m-1 border border-white lowercase">
-					{result.name}
-				</div>)
-			}else {
-				return (<div key={i} className="rounded-full text-sm leading-6 py-0 px-2 m-1 border border-white lowercase">
-					{item}
-				</div>)
-			}
-		})
+			})
+		}
 	};
 	useEffect(() => {
 		setY(window.scrollY);
@@ -139,8 +145,8 @@ export default function Filter({ initialFilter, filter, ...props }) {
 						</button>
 					</div>
 					<div className="hidden lg:flex">
-						{renderFilterItems(initialFilter.posttype,'posttype')}
-						{filter?.pricat && renderFilterItems(filter.pricat,'pricat')}
+						{renderFilterItems(filter.posttype,'posttype')}
+						{filter?.pricat && renderFilterItems(filter.pricat,'cat')}
 						{filter?.subcat && renderFilterItems(filter.subcat,'subcat')}
 						{filter?.tags && renderFilterItems(filter.tags,'tag')}
 					</div>
@@ -177,7 +183,7 @@ export default function Filter({ initialFilter, filter, ...props }) {
 							<SelectBox
 								label="Category"
 								options={category}
-								defaultValue={initialFilter.posttype}
+								defaultValue={filter.posttype}
 								onChange={props.onCatChange}
 								name="posttype"
 							/>
@@ -186,11 +192,10 @@ export default function Filter({ initialFilter, filter, ...props }) {
 							<label className="font-nav">subcategory 1</label>
 							{filterData.items?.cat && (
 								<>
-									{initialFilter.posttype == "artist" ? (
+									{filter.posttype == "artist" ? (
 										<TagSelectBox
 											label="Subcategory1"
 											options={filterData.items.cat}
-											defaultValue={initialFilter.pricat}
 											onChange={props.onFilterChange}
 											name="pricat"
 											filterVal={filter.pricat}
@@ -199,7 +204,6 @@ export default function Filter({ initialFilter, filter, ...props }) {
 										<CatSelectBox
 											label="Subcategory1"
 											options={filterData.items.cat}
-											defaultValue={initialFilter.pricat}
 											onChange={props.onFilterChange}
 											name="pricat"
 											filterVal={filter.pricat}
@@ -210,7 +214,7 @@ export default function Filter({ initialFilter, filter, ...props }) {
 						</div>
 						{filterData.items?.subcat && (
 						<>
-							{initialFilter.posttype == "project" ? (
+							{filter.posttype == "project" ? (
 								<>
 									{filter.pricat && filterData.items.subcat[filter.pricat] && (
 										<div className="w-full lg:w-1/4 mt-5 lg:mt-0 lg:mr-5 ">
@@ -218,7 +222,6 @@ export default function Filter({ initialFilter, filter, ...props }) {
 										<TagSelectBox
 											label="Subcategory2"
 											options={filterData.items.subcat[filter.pricat]}
-											defaultValue={initialFilter.subcat}
 											onChange={props.onFilterChange}
 											name="subcat"
 											filterVal={filter.subcat}
@@ -233,7 +236,6 @@ export default function Filter({ initialFilter, filter, ...props }) {
 										<TagSelectBox
 											label="Subcategory2"
 											options={filterData.items.subcat}
-											defaultValue={initialFilter.subcat}
 											onChange={props.onFilterChange}
 											name="subcat"
 											filterVal={filter.subcat}
@@ -250,7 +252,6 @@ export default function Filter({ initialFilter, filter, ...props }) {
 								<TagSelectBox
 									label="Tag"
 									options={filterData.items.tag}
-									defaultValue={initialFilter.tags}
 									onChange={props.onFilterChange}
 									name="tags"
 									filterVal={filter.tags}

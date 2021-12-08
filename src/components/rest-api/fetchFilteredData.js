@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Axios from "axios";
 import { useCookies } from "react-cookie";
 
-const fetchData = (url, single = false, concat = true, filter = null, url2=null) => {
+const fetchFilteredData = (url, single = false, concat = true, filter = null, url2=null) => {
 	let _url = url;
 	const initialState = {
 		items: [],
@@ -11,7 +11,7 @@ const fetchData = (url, single = false, concat = true, filter = null, url2=null)
 		hasMore: false,
 		page: 1,
 		noItem: false,
-			itemTotal: null,
+		itemTotal: null,
 	};
 	const [cookies, setCookie] = useCookies(["lang"]);
 
@@ -22,7 +22,7 @@ const fetchData = (url, single = false, concat = true, filter = null, url2=null)
 		return () => {
 			abortController.abort(); // cancel pending fetch request on component unmount
 		};
-	}, [url, filter, cookies]);
+	}, [filter, cookies]);
 
 	const getItems = (init = false) => {
 		if (init) {
@@ -94,4 +94,4 @@ const fetchData = (url, single = false, concat = true, filter = null, url2=null)
 	return [state, loadMore];
 };
 
-export default fetchData;
+export default fetchFilteredData;

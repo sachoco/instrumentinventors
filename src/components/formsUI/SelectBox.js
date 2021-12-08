@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -24,6 +24,9 @@ export default function SelectBox({ label, defaultValue = "", onChange, options,
     }
 
   };
+  useEffect(()=>{
+    setValue(defaultValue);
+  },[defaultValue])
   return (
     <Box sx={{ minWidth: 120 }}>
       <FormControl fullWidth>

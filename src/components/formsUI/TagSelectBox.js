@@ -22,7 +22,6 @@ export default function TagSelectBox({
       return [];
     }
   };
-  const [values, setValues] = useState(formatDefaultValue(defaultValue));
   const handleChange = (event, values) => {
     // setValues(values);
     let return_values = "";

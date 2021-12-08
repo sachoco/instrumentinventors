@@ -71,10 +71,6 @@ const App = () => {
             render={(props) => <Single {...props} posttype="project" />}
           />
           <Route
-            path="/product/:slug"
-            render={(props) => <Single {...props} posttype="product" />}
-          />
-          <Route
             path="/posts/"
             exact
             render={(props) => (

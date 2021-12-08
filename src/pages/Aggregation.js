@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
-import fetchData from "../components/rest-api/fetchData";
+import fetchData from "../components/rest-api/fetchFilteredData";
 
 import Block from "../components/layout/Block";
 import TileView from "../components/view/TileView";
@@ -23,23 +23,32 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
   const subcat = queryParams.get("sc") ? queryParams.get("sc") : "";
   const tag = queryParams.get("t") ? queryParams.get("t") : "";
   const [filter, setFilter] = useState({
+    posttype : posttype,
     pricat:cat,
     subcat:subcat,
     tags:tag
   });
+ 
   url += '&per_page=12&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii';
   const [state, loadMore] = fetchData(url,false,true,filter);
   const onFilterChange = (event) => {
     const { name, value } = event.target;
-    setFilter({
-      ...filter,
-      [name]: value,
+
+    // setFilter({...filter, [name]: value});
+
+    const _filter = {...filter, [name]: value}
+
+    let query = "?";
+    if(_filter.pricat&&_filter.pricat!=""){query+='c='+_filter.pricat}
+    if(_filter.subcat&&_filter.subcat!=""){query+='&sc='+_filter.subcat}
+    if(_filter.tags&&_filter.tags!=""){query+='&t='+_filter.tags}
+
+    history.push({
+      search: query,
     });
   }
   const onCatChange = (event) => {
     const { name, value } = event.target;
-    // console.log(value)
-    setFilter({});
 
     if(value=="artist"){
       history.push("/artists/");
@@ -52,32 +61,39 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
     }
 
   }
-  const initialFilter = {
-    posttype : posttype,
-    pricat:cat,
-    subcat:subcat,
-    tags:tag
-  }
+
+  // useEffect(()=>{
+  //   if (isInitialMount.current) {
+  //      isInitialMount.current = false;
+  //      metaCtx.setTranslation(false);
+  //      console.log("isInitialMount")
+  //   } else {
+  //       // Your useEffect code here to be run on update
+  //     console.log(filter)
+
+  //     // let query = "?";
+  //     // if(filter.pricat&&filter.pricat!=""){query+='c='+filter.pricat}
+  //     // if(filter.subcat&&filter.subcat!=""){query+='&sc='+filter.subcat}
+  //     // if(filter.tags&&filter.tags!=""){query+='&t='+filter.tags}
+
+  //     // history.push({
+  //     //   search: query,
+  //     // });
+  //   }
+
+  // },[filter])
+
   useEffect(()=>{
-    metaCtx.setTranslation(false);
-    if (isInitialMount.current) {
-       isInitialMount.current = false;
-    } else {
-        // Your useEffect code here to be run on update
-      let query = "?";
-      if(filter.pricat&&filter.pricat!=""){query+='c='+filter.pricat}
-      if(filter.subcat&&filter.subcat!=""){query+='&sc='+filter.subcat}
-      if(filter.tags&&filter.tags!=""){query+='&t='+filter.tags}
-
-      history.push({
-        search: query,
-      });
-    }
-
-  },[filter])
+    setFilter({
+      posttype : posttype,
+      pricat:cat,
+      subcat:subcat,
+      tags:tag
+    });
+  },[url,search])
   return (
     <>
-      <Filter onCatChange={onCatChange} onFilterChange={onFilterChange} initialFilter={initialFilter} filter={filter} />
+      <Filter onCatChange={onCatChange} onFilterChange={onFilterChange} filter={filter} />
 
       <Block className="mt-16">
         {state.noItem ? (
