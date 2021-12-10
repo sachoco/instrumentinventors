@@ -5,19 +5,19 @@ import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
 import Aggregation from "./pages/Aggregation";
 import Single from "./pages/Single";
-import SinglePostPage from "./pages/SinglePostPage";
+import SinglePage from "./pages/SinglePage";
 
 import HostedProgram from "./pages/HostedProgram";
 import Agency from "./pages/Agency";
 import Education from "./pages/Education";
 import Search from "./pages/Search";
-import fetchPages from "./components/rest-api/fetchPages";
+import loadPages from "./components/rest-api/loadPages";
 import fetchMenu from "./components/rest-api/fetchMenu";
 
 
 const App = () => {
   const menuItems = fetchMenu();
-  const pages = fetchPages(menuItems.items);
+  const pages = loadPages(menuItems.items);
 
   return (
     <>
@@ -94,7 +94,7 @@ const App = () => {
           />
           <Route
             path="/:p1/:p2?"
-            render={(props) => <SinglePostPage {...props} pages={pages} />}
+            render={(props) => <SinglePage {...props} pages={pages} />}
           />
         </Switch>
       </Layout>

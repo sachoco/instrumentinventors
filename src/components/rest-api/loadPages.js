@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Axios from "axios";
 import { useCookies } from "react-cookie";
 
-const fetchPages = (menu) => {
+const loadPages = (menu) => {
 
 	const [cookies, setCookie] = useCookies(["lang"]);
 
@@ -69,4 +69,4 @@ const fetchPages = (menu) => {
 	return state.items;
 };
 
-export default fetchPages;
+export default loadPages;

@@ -30,7 +30,13 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
 	const {title, content} = normalizePosttype(state.item);
 
 	useEffect(()=>{
-		metaCtx.setTitle(posttype);
+		let catTitle = "";
+		if(posttype=="post"){
+			catTitle = "news & media";
+		}else{
+			catTitle = posttype;
+		}
+		metaCtx.setTitle(catTitle);
 		metaCtx.setTranslation(false);
 		jQuery('[data-ride="vc_carousel"]').each(function () {
 			var $carousel = jQuery(this);

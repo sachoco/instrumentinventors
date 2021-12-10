@@ -1,8 +1,8 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router";
 import MetaContext from "../store/meta-context";
 
-import fetchData from "../components/rest-api/fetchData";
+import fetchPage from "../components/rest-api/fetchPage";
 import fetchJson from "../components/rest-api/fetchJson";
 
 import HeaderImage from "../components/HeaderImage";
@@ -20,33 +20,34 @@ import "../assets/vc/assets/lib/vc_carousel/css/vc_carousel.min.css";
 import "../assets/vc/assets/lib/vc_carousel/js/vc_carousel.min.js";
 import "../assets/vc/assets/lib/vc_carousel/js/transition.min.js";
 
-const SinglePostPage = ({ pages, ...otherProps }) => {
+const SinglePage = ({ pages, ...otherProps }) => {
   const metaCtx = useContext(MetaContext);
   const location = useLocation();
   const { p1, p2 } = useParams();
   const slug = p2 ? p2 : p1;
   const path = p2&&p1!="post" ? p1+"/"+p2 : p1; 
-  const url = p1=="post" ? "wp/v2/posts/?slug=" + slug + "&include_page" : "iii/pages/" + path + "?";
-
-  // const [state, loadMore] = fetchData(url, true);
+  const state = fetchPage({path:path, loadedPages:pages});
   // const state = fetchJson("/data/page/"+path+"/data.json");
 
-  const item = pages.find(obj => obj.iii.path.includes(path) );
-  const { title, content, posttype } = normalizePosttype(item);
+  const { title, content, posttype } = normalizePosttype(state.item);
   useEffect(() => {
-      jQuery('[data-ride="vc_carousel"]').each(function () {
-        var $carousel = jQuery(this);
-        $carousel.carousel($carousel.data());
-      });
-      metaCtx.setTranslation(location.pathname.includes("about", 1));
-      let catTitle = "";
-      if(posttype=="post"){
-        catTitle = "news & media";
-      }else{
-        catTitle = "page";
-      }
-      metaCtx.setTitle(catTitle);
-    return () => {};
+    const abortController = new AbortController();
+
+    jQuery('[data-ride="vc_carousel"]').each(function () {
+      var $carousel = jQuery(this);
+      $carousel.carousel($carousel.data());
+    });
+    metaCtx.setTranslation(location.pathname.includes("about", 1));
+    let catTitle = "";
+    if(posttype=="post"){
+      catTitle = "news & media";
+    }else{
+      catTitle = "page";
+    }
+    metaCtx.setTitle(catTitle);
+    return () => {
+			abortController.abort(); // cancel pending fetch request on component unmount
+		};
   }, [content, posttype]);
 
   return (
@@ -69,4 +70,4 @@ const SinglePostPage = ({ pages, ...otherProps }) => {
   );
 };
 
-export default SinglePostPage;
+export default SinglePage;
