@@ -130,7 +130,9 @@ const normalizePosttype = (item) => {
 
         let location = "";
         if(!item.acf.venue&&!item.acf.city){
-          location = item.acf.location[0].location;
+          if(item.acf.location){
+            location = item.acf.location[0].location;
+          }
         }else if(item.acf.venue&&item.acf.city){
           location = item.acf.venue + ", " + item.acf.city;
         }else{
