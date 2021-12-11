@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useContext } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
-import fetchData from "../components/rest-api/fetchFilteredData";
+import fetchFilteredData from "../components/rest-api/fetchFilteredData";
 
 import Block from "../components/layout/Block";
 import TileView from "../components/view/TileView";
@@ -30,12 +30,18 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
   });
  
   url += '&per_page=12&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii';
-  const [state, loadMore] = fetchData(url,false,true,filter);
+  let url2 = null;
+  if(posttype=="artist"&&cat==""&&tag==""){
+    url2 = url+"&past";
+    url += "&current"; 
+  }
+  const [state, loadMore] = fetchFilteredData(url,false,true,filter,url2);
   const onFilterChange = (event) => {
     const { name, value } = event.target;
 
     // setFilter({...filter, [name]: value});
 
+    
     const _filter = {...filter, [name]: value}
 
     let query = "?";
@@ -46,6 +52,7 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
     history.push({
       search: query,
     });
+    
   }
   const onCatChange = (event) => {
     const { name, value } = event.target;
@@ -84,12 +91,34 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
   // },[filter])
 
   useEffect(()=>{
-    setFilter({
-      posttype : posttype,
-      pricat:cat,
-      subcat:subcat,
-      tags:tag
-    });
+    const abortController = new AbortController();
+		let catTitle = "";
+		if(posttype=="post"){
+			catTitle = "news & media";
+		}else{
+			catTitle = posttype;
+		}
+		metaCtx.setTitle(catTitle+" Archive");
+
+
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      metaCtx.setTranslation(false);
+      
+
+    }else{
+    
+      setFilter({
+        posttype : posttype,
+        pricat:cat,
+        subcat:subcat,
+        tags:tag
+      });
+
+    }
+    return () => {
+			abortController.abort(); // cancel pending fetch request on component unmount
+		};
   },[url,search])
   return (
     <>
@@ -104,7 +133,7 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
           <ListView items={state.items} posttype={posttype} />
         )}
       </Block>
-      {state.hasMore && (
+      {(state.hasMore||state.hasMoreUrl) && (
         <p className="mb-16 text-center">
           <button
             className="inline-block bg-white hover:bg-black hover:text-white border-black border-2 text-black py-1 px-6 font-title disabled:opacity-50 disabled:cursor-wait disabled:bg-black disabled:text-white"

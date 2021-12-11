@@ -4,6 +4,8 @@ import { useCookies } from "react-cookie";
 
 const fetchFilteredData = (url, single = false, concat = true, filter = null, url2=null) => {
 	let _url = url;
+	let _hasMoreUrl = false;
+	if(url2){ _hasMoreUrl = true }
 	const initialState = {
 		items: [],
 		loaded: false,
@@ -12,6 +14,7 @@ const fetchFilteredData = (url, single = false, concat = true, filter = null, ur
 		page: 1,
 		noItem: false,
 		itemTotal: null,
+		hasMoreUrl: false,
 	};
 	const [cookies, setCookie] = useCookies(["lang"]);
 
@@ -67,6 +70,7 @@ const fetchFilteredData = (url, single = false, concat = true, filter = null, ur
 						response.headers["x-wp-totalpages"] > prevState.page ? true : false,
 					noItem: response.headers["x-wp-total"] == 0 ? true : false,
 						itemTotal: response.headers["x-wp-total"],
+					hasMoreUrl: _hasMoreUrl
 				}));
 			},
 			(error) => {
@@ -86,6 +90,7 @@ const fetchFilteredData = (url, single = false, concat = true, filter = null, ur
 				getItems().then(() => {})
 			}else if(url2){
 				_url=url2;
+				_hasMoreUrl = false;
 				getItems().then(()=>{})
 			}
 		} 

@@ -1,8 +1,11 @@
 <?php
 function query_project($args, $request)
 {
-    // $args['meta_key'] = 'year';
-    // $args['orderby'] = 'meta_value_num';
+    $args['meta_key'] = 'year';
+    $args['orderby'] = array( 
+        'meta_value_num' => 'DESC',
+        'date' => 'DESC',
+    );
     $args['meta_query'] = array('relation' => 'AND');
 
     if (isset($request["pricat"])) {

@@ -7,6 +7,9 @@ function query_post($args, $request)
     if (isset($request['pricat'])) {
         $args['cat'] = $request['pricat'];
     }
+    $args['orderby'] = array( 
+        'date' => 'DESC',
+    );
     return $args;
 }
 add_filter('rest_post_query', 'query_post', 10, 2);

@@ -72,6 +72,82 @@ function admin_artist_filter( $query )
 }
 add_filter( 'parse_query', 'admin_artist_filter' );
 
+
+/*
+ * Add Menu Order field to artist
+ */
+
+add_action('admin_init', 'iii_add_artist_page_attributes');
+function iii_add_artist_page_attributes(){
+    add_post_type_support( 'artist', 'page-attributes' );
+}
+/**
+* add order column to admin listing screen
+*/
+function add_new_artist_column($post_columns) {
+	$post_columns['menu_order'] = "Order";
+	return $post_columns;
+}
+add_action('manage_edit-artist_columns', 'add_new_artist_column');
+/**
+* show custom order column values
+*/
+function show_order_column($name){
+	global $post;
+  
+	switch ($name) {
+	  case 'menu_order':
+		$order = $post->menu_order;
+		echo $order;
+		break;
+	 default:
+		break;
+	 }
+}
+add_action('manage_artist_posts_custom_column','show_order_column');
+/**
+* make column sortable
+*/
+function order_column_register_sortable($columns){
+	$columns['menu_order'] = 'menu_order';
+	return $columns;
+}
+add_filter('manage_edit-artist_sortable_columns','order_column_register_sortable');
+  
+
+
+
+
+function menu_order_update_value( $value, $post_id, $field  ) {
+	$menu_order = 0;
+	
+	if(in_array("resident",$value)){
+		$menu_order = 3;
+	}else if(in_array("iii_member",$value)){
+		$menu_order = 2;
+	}else if(in_array("workspace_member",$value)){
+		$menu_order = 1;
+	}
+	// var_dump($value);
+	$post = array(
+		'ID'           => $post_id,
+		'menu_order' => $menu_order,
+	);
+	// Update the post into the database
+	wp_update_post( $post );
+	// return
+    return $value;
+
+}
+
+add_filter('acf/update_value/name=badges', 'menu_order_update_value', 10, 3);
+
+
+
+
+
+
+
 // Add the Artist Meta Boxes
 
 function add_artist_metaboxes() {

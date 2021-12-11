@@ -39,7 +39,7 @@ export default function Item(props) {
 					<div className="mt-1 text-xl min-h-16 flex items-end"><span>{title}</span></div>
 					<div className="border-t-2">{meta1}</div>
 					<div className="border-t-2">{meta2}</div>
-					<div className="border-t-2 border-b-2">
+					<div className="border-t-2 border-b-2 overflow-hidden overflow-ellipsis whitespace-pre ">
 						{Array.isArray(tag)&&tag.length>0  ?
 							tag.map((obj, i)=>(
 								<span key={i}>
