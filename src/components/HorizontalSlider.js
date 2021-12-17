@@ -155,7 +155,7 @@ export default function HorizontalSlider({
 							? state.items?.map((item, i) => (
 								<Item
 									key={i}
-									className="min-w-80 mr-6 scroll-align-start"
+									className="min-w-64 sm:min-w-80 mr-6 scroll-align-start"
 									item={item}
 								/>
 								))
@@ -164,11 +164,11 @@ export default function HorizontalSlider({
 								.map((item, i) => (
 									<Item
 										key={i}
-										className="min-w-80 mr-6 scroll-align-start"
+										className="min-w-64 sm:min-w-80 mr-6 scroll-align-start"
 									/>
 								))}
-									{!state.loaded && (
-							<div className="h-64 min-w-80 mr-6">
+						{!state.loaded && (
+							<div className="h-64 min-w-64 sm:min-w-80 mr-6">
 								<div className="h-full flex flex-col justify-center items-center">
 									<div className="flex justify-center items-center">
 										<div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>

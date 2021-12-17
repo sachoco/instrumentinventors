@@ -33,17 +33,12 @@ const normalizePosttype = (item) => {
       returnObj.image = item.featured_image
         ? { medium: item.featured_image, large: item.featured_image }
         : { medium: NoImage, large: NoImage };
-      item.search_result
-        ? (returnObj.link = item.url
-            .replace("http://", "")
-            .replace("https://", "")
-            .split(/[/?#]/)[1])
-        : (returnObj.link =
-            "/" +
-            item.url
-              .replace("http://", "")
-              .replace("https://", "")
-              .split(/[/?#](.+)/)[1]);
+      returnObj.link =
+        "/" +
+        item.url
+        .replace("http://", "")
+        .replace("https://", "")
+        .split(/[/?#](.+)/)[1];
       returnObj.subcategory = item.subtype;
       returnObj.tag = item.tags?.length > 0 ? item.tags : "no tag yet";
       returnObj.posttype = item.subtype;
@@ -61,9 +56,11 @@ const normalizePosttype = (item) => {
       returnObj.tag = item.tags?.length > 0 ? item.tags : "no tag yet";
       returnObj.posttype = item.post_type;
       returnObj.date = item.date;
-      returnObj.meta1 = item.meta1;
-      returnObj.meta2 = item.meta2;
-      returnObj.meta3 = item.meta3;
+      returnObj.meta1 = item.meta1 ? item.meta1 : "";
+      returnObj.meta2 = item.meta2 ? item.meta2 : "";
+      returnObj.meta3 = item.meta3 ? item.meta3 : "";
+      returnObj.subcategory = item.subcategory;
+      returnObj.archive_base = item.archive_base;
 
     } else {
       // if (cookies.lang == "nl"&&item.wpml_translations.nl_NL) {
@@ -112,7 +109,7 @@ const normalizePosttype = (item) => {
             ? `${item.acf.date_from} - ${item.acf.date_until}`
             : `${item.acf.date_from}`;
         }
-        returnObj.website == item.acf.website && item.acf.website;
+        returnObj.website = item.acf.website && item.acf.website;
         returnObj.archive_base = "artists";
 
       } else if (item.type == "project") {
@@ -148,7 +145,7 @@ const normalizePosttype = (item) => {
         returnObj.subcategory =
         item.iii?.category
           ? item.iii.category.map((cat) => {
-              return { value: cat.id, label: cat.name };
+              return { value: cat.id, label: he.decode(cat.name) };
             })
           : null;
         returnObj.date = item.formatted_date;

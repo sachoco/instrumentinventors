@@ -87,6 +87,8 @@ module.exports = {
         "300px": "300px",
         "24": "6rem",
         "80": "20rem",
+        "72": "18rem",
+        "64": "16rem",
       },
       minHeight: {
         "full+2px": "calc(100% + 2px)",

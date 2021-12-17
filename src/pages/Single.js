@@ -60,83 +60,33 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
 		<>
 			<Meta title={title} />
 
-			{state.item ? <HeaderImage item={state.item} /> : ""}
-			{/* <div className="px-16 lg:px-24 pt-10">
-				<button className="relative">
-					<svg
-						className="absolute"
-						style={{ left: "-40px", top: "7px" }}
-						width="28px"
-						height="13px"
-						viewBox="0 0 28 13"
-					>
-						<g
-							id="Group"
-							transform="translate(2.000000, 1.000000)"
-							stroke="#000000"
-							strokeWidth="2"
-						>
-							<line
-								x1="25.977"
-								y1="5.599"
-								x2="0"
-								y2="5.599"
-								id="Line_130"
-							></line>
-							<polyline
-								id="Path_31324"
-								points="5.601 0 0.000999999999 5.6 5.601 11.2"
-							></polyline>
-						</g>
-						;
-					</svg>
-					back to {posttype}
-				</button>
-			</div> */}
+			{state.item ? 
+				<>
+					<HeaderImage item={state.item} /> 
+					<Block className="single-item-content ">
+						{content}
+						<div className="max-w-3xl  font-bold lg:font-normal text-base lg:text-2xl"></div>
+						<div className="mt-10 mx-auto max-w-3xl"></div>
+					</Block>
 
-			<Block className="single-item-content ">
-				{content}
-
-				<div className="max-w-3xl  font-bold lg:font-normal text-base lg:text-2xl"></div>
-				<div className="mt-10 mx-auto max-w-3xl"></div>
-			</Block>
-			{state.item &&
-			<Block title="related" bg={true}>
-				<HorizontalSlider url={related_url} related_item={true} />
-			</Block>
+					<Block title="related" bg={true}>
+						<HorizontalSlider url={related_url} related_item={true} />
+					</Block>
+				</>
+				: 
+				<>
+					{!state.loaded && (
+						<div className="h-64 min-w-64 sm:min-w-80 mr-6">
+							<div className="h-full flex flex-col justify-center items-center">
+								<div className="flex justify-center items-center">
+									<div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+								</div>
+								<div className="mt-3 text-xs inline-block">loading...</div>
+							</div>
+						</div>
+					)}
+				</>
 			}
-			{/* <div className="px-24 pb-10 bg-bg-lighter-gray">
-				<button className="relative">
-					<svg
-						className="absolute"
-						style={{ left: "-40px", top: "7px" }}
-						width="28px"
-						height="13px"
-						viewBox="0 0 28 13"
-					>
-						<g
-							id="Group"
-							transform="translate(2.000000, 1.000000)"
-							stroke="#000000"
-							strokeWidth="2"
-						>
-							<line
-								x1="25.977"
-								y1="5.599"
-								x2="0"
-								y2="5.599"
-								id="Line_130"
-							></line>
-							<polyline
-								id="Path_31324"
-								points="5.601 0 0.000999999999 5.6 5.601 11.2"
-							></polyline>
-						</g>
-						;
-					</svg>
-					back to {posttype}
-				</button>
-			</div> */}
 		</>
 	);
 };

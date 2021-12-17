@@ -53,19 +53,34 @@ const SinglePage = ({ pages, ...otherProps }) => {
   return (
     <>
       <Meta title={title} />
+			{state.item ? 
+				<>
+        <Block className="single-item-content ">
+          {content}
 
-      <Block className="single-item-content ">
-        {content}
-
-        <div className="max-w-3xl  font-bold lg:font-normal text-base lg:text-2xl"></div>
-        <div className="mt-10 mx-auto max-w-3xl"></div>
-      </Block>
-      {/* {posttype && item &&
-        <Block title="related" bg={true}>
-          <HorizontalSlider url={"iii/related/" + posttype + "/" + path +"/?"} related_item={true} />
+          <div className="max-w-3xl  font-bold lg:font-normal text-base lg:text-2xl"></div>
+          <div className="mt-10 mx-auto max-w-3xl"></div>
         </Block>
-      } */}
-
+        {/* {posttype && item &&
+          <Block title="related" bg={true}>
+            <HorizontalSlider url={"iii/related/" + posttype + "/" + path +"/?"} related_item={true} />
+          </Block>
+        } */}
+        </>
+				: 
+				<>
+					{!state.loaded && (
+						<div className="h-64 min-w-64 sm:min-w-80 mr-6">
+							<div className="h-full flex flex-col justify-center items-center">
+								<div className="flex justify-center items-center">
+									<div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+								</div>
+								<div className="mt-3 text-xs inline-block">loading...</div>
+							</div>
+						</div>
+					)}
+				</>
+			}
     </>
   );
 };

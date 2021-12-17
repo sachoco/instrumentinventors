@@ -170,10 +170,15 @@ function get_featured_items( $request ) {
             $post_data['date'] = $post_data['date_from'];
           }
         }
+        $post_data['archive_base'] = "artists";
+
       } else if ($post->post_type == "project") {
         $post_data['subcategory'] = get_field('category', $post->ID);
-        $post_data['meta1'] = "author";
+        $post_data['meta1'] = get_field('authors', $post->ID);
+        $post_data['meta2'] = get_field('year', $post->ID);
         $post_data['date'] = get_field('year', $post->ID);
+        $post_data['archive_base'] = "projects";
+
       } else if ($post->post_type == "agenda") {
         $post_data['subcategory'] = get_field('category', $post->ID);
         $post_data['date_from'] = get_field('date_from', $post->ID);
@@ -186,9 +191,13 @@ function get_featured_items( $request ) {
         $post_data['meta1'] = get_field('venue', $post->ID);
         $post_data['meta2'] = get_field('city', $post->ID);
         $post_data['meta3'] = get_field('host_|_circulation', $post->ID);
+        $post_data['archive_base'] = "agenda";
+
       } else {
         $post_data['date'] = $post->post_date;
-        $post_data['subcategory'] = "---";
+        $post_data['subcategory'] = "";
+        $post_data['archive_base'] = "posts";
+
       }
       array_push($data,  $post_data );
     }

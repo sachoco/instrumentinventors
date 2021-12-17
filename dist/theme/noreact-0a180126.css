@@ -1112,8 +1112,8 @@ h1, h2, h3, h4, h5 {
   min-width: 0px;
 }
 
-.min-w-80 {
-  min-width: 20rem;
+.min-w-64 {
+  min-width: 16rem;
 }
 
 .min-w-100px {
@@ -1671,11 +1671,6 @@ h1, h2, h3, h4, h5 {
   padding-right: 2.5rem;
 }
 
-.px-16 {
-  padding-left: 4rem;
-  padding-right: 4rem;
-}
-
 .px-24 {
   padding-left: 6rem;
   padding-right: 6rem;
@@ -1716,10 +1711,6 @@ h1, h2, h3, h4, h5 {
   padding-bottom: 2.5rem;
 }
 
-.pt-10 {
-  padding-top: 2.5rem;
-}
-
 .pt-14 {
   padding-top: 3.5rem;
 }
@@ -1750,10 +1741,6 @@ h1, h2, h3, h4, h5 {
 
 .pb-8 {
   padding-bottom: 2rem;
-}
-
-.pb-10 {
-  padding-bottom: 2.5rem;
 }
 
 .pb-64 {
@@ -2106,6 +2093,9 @@ body {
 }
 
 @media (min-width: 640px) {
+  .sm\:min-w-80 {
+    min-width: 20rem;
+  }
 }
 
 @media (min-width: 768px) {
@@ -2233,11 +2223,6 @@ body {
     padding: 6rem;
   }
 
-  .lg\:px-24 {
-    padding-left: 6rem;
-    padding-right: 6rem;
-  }
-
   .lg\:py-1 {
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
@@ -2340,4 +2325,4 @@ body {
 }
 
 
-/*# sourceMappingURL=noreact-aed70067.css.map*/
+/*# sourceMappingURL=noreact-0a180126.css.map*/
