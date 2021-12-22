@@ -1,7 +1,5 @@
 import React, {useEffect, useContext} from "react";
 import Slideshow from "../components/Slideshow";
-import Carousel from "../components/Carousel";
-import HorizontalSlider from "../components/HorizontalSlider";
 
 import Block from "../components/layout/Block";
 import Meta from "../components/layout/Meta";
@@ -17,18 +15,14 @@ const HostedProgram = () => {
     <Meta title="Hosted Program" />
 
     <Slideshow />
-    <Block title="hosted events">
-      <HorizontalSlider url="wp/v2/agenda/?subcat=host&pricat=event" />
-    </Block>
-    <Block title="hosted workshops" bg={true}>
-      <HorizontalSlider url="wp/v2/agenda/?subcat=host&pricat=workshop" />
-    </Block>
-    <Block title="residencies">
-      <HorizontalSlider url="wp/v2/artist/?pricat=resident" />
-    </Block>
-    <Block title="hosted programs and series" bg={true}>
-      <HorizontalSlider url="wp/v2/project/?pricat=curated_programs&subcat=host" />
-    </Block>
+    <Block title="hosted events" carousel url="wp/v2/agenda/?subcat=host&pricat=event" />
+      
+    <Block title="hosted workshops" bg={true} carousel url="wp/v2/agenda/?subcat=host&pricat=workshop" />
+     
+    <Block title="residencies" carousel url="wp/v2/artist/?pricat=resident" />
+
+    <Block title="hosted programs and series" bg={true} carousel url="wp/v2/project/?pricat=curated_programs&subcat=host" />
+
   </>
 );}
 

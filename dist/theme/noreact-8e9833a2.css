@@ -876,6 +876,10 @@ h1, h2, h3, h4, h5 {
   margin-right: -1.25rem;
 }
 
+.-mr-24 {
+  margin-right: -6rem;
+}
+
 .mb-1 {
   margin-bottom: 0.25rem;
 }
@@ -1014,6 +1018,10 @@ h1, h2, h3, h4, h5 {
 
 .h-1 {
   height: 0.25rem;
+}
+
+.h-8 {
+  height: 2rem;
 }
 
 .h-14 {
@@ -2199,12 +2207,20 @@ body {
     flex-wrap: nowrap;
   }
 
+  .lg\:items-center {
+    align-items: center;
+  }
+
   .lg\:justify-start {
     justify-content: flex-start;
   }
 
   .lg\:justify-between {
     justify-content: space-between;
+  }
+
+  .lg\:gap-6 {
+    gap: 1.5rem;
   }
 
   .lg\:overflow-hidden {
@@ -2325,4 +2341,4 @@ body {
 }
 
 
-/*# sourceMappingURL=noreact-0a180126.css.map*/
+/*# sourceMappingURL=noreact-8e9833a2.css.map*/

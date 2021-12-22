@@ -1,7 +1,5 @@
-import React, {useEffect, useContext} from "react";
+import React, { useEffect, useContext } from "react";
 import Slideshow from "../components/Slideshow";
-import Carousel from "../components/Carousel";
-import HorizontalSlider from "../components/HorizontalSlider";
 
 import Block from "../components/layout/Block";
 import Meta from "../components/layout/Meta";
@@ -9,22 +7,31 @@ import MetaContext from "../store/meta-context";
 
 const Education = () => {
   const metaCtx = useContext(MetaContext);
-  useEffect(()=>{
+  useEffect(() => {
     metaCtx.setTranslation(true);
-  },[])
+  }, []);
   return (
     <>
       <Meta title="Education" />
       <Slideshow url="iii/getFeatured/education/?" />
-      <Block title="hosted workshops">
-        <HorizontalSlider url="wp/v2/agenda/?subcat=host&pricat=workshop" />
-      </Block>
-      <Block title="circulation workshops" bg={true}>
-        <HorizontalSlider url="wp/v2/agenda/?subcat=circulation&pricat=workshop" />
-      </Block>
-      <Block title="workshop portfolio">
-        <HorizontalSlider url="wp/v2/project/?pricat=workshop" />
-      </Block>
+      <Block
+        title="hosted workshops"
+        carousel
+        url="wp/v2/agenda/?subcat=host&pricat=workshop"
+      />
+
+      <Block
+        title="circulation workshops"
+        bg={true}
+        carousel
+        url="wp/v2/agenda/?subcat=circulation&pricat=workshop"
+      />
+
+      <Block
+        title="workshop portfolio"
+        carousel
+        url="wp/v2/project/?pricat=workshop"
+      />
     </>
   );
 };
