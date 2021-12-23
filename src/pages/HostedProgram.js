@@ -14,7 +14,7 @@ const HostedProgram = () => {
   <>
     <Meta title="Hosted Program" />
 
-    <Slideshow />
+    <Slideshow url="iii/getFeatured/hostedprogram/?" />
     <Block title="hosted events" carousel url="wp/v2/agenda/?subcat=host&pricat=event" />
       
     <Block title="hosted workshops" bg={true} carousel url="wp/v2/agenda/?subcat=host&pricat=workshop" />

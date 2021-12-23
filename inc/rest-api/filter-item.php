@@ -35,10 +35,10 @@ function get_filter_items( $request ) {
           'taxonomy' => 'category',
           'hide_empty' => true,
         ) );
-        var_dump($cat);
+        // var_dump($cat);
         $data['cat'] = [];
         foreach($cat as $c){
-          array_push($data['cat'], array("value"=>$c->term_id,"name"=>$c->name));
+          array_push($data['cat'], array("value"=>$c->term_id,"name"=>html_entity_decode($c->name)));
         }
         // $data['cat'] = array_map('format_data', $cat);
         $tag = get_terms_per_post_type( 'post_tag', array( 'post_type' => 'post' ) );

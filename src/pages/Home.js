@@ -13,7 +13,7 @@ const Home = () => {
     <>
       <Meta title="Home" />
 
-      <Slideshow />
+      <Slideshow url="iii/getFeatured/home/?" />
 
       <Block
         title="hosted program"

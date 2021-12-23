@@ -12,50 +12,95 @@ function get_featured_items($request)
 
   $items = [];
 
-  if ($page == "agency") {
-    //   $args = array(
-    //     'post_type' => array('agenda'),
-    //     // $args['meta_key'] = 'date_from';
-    //     // $args['orderby'] = 'meta_value_num';
-    //     // $args['order'] = 'ASC';
-    //     'meta_query' => array(
-    //       'relation' => 'AND',
-    //       array(
-    //         'relation' => 'OR',
-    //         array(
-    //           'key' => 'date_from',
-    //           'value' => date("Ymd", strtotime("now")),
-    //           'type' => 'NUMERIC',
-    //           'compare' => '>='
-    //         ),
-    //         array(
-    //           'key' => 'date_until',
-    //           'value' => date("Ymd", strtotime("now")),
-    //           'type' => 'NUMERIC',
-    //           'compare' => '>='
-    //         )
-    //       ),
-    //       array(
-    //         'key'     => 'host_|_circulation',
-    //         'value'   => 'circulation',
-    //         'compare' => 'LIKE',
-    //       )
-    //     )
-    //   );
-    //   $agenda_items = new WP_Query( $args );
+  if ($page == "home") {
+    $args = array(
+      'post_type' => array('post','artist','agenda','project'),
+      'ignore_sticky_posts' => 1,
+      'meta_query' => array(
+        'relation' => 'AND',
+        // array(
+        //   'key' => 'is_featured_homepage',
+        //   'compare' => 'EXISTS',
+        //   'value' => ''
+        // ),
+        array(
+          'key' => 'is_featured_homepage',
+          'value' => true,
+          'compare' => '=='
+        )
+      )
+    );
+    $featured_items = new WP_Query($args);
+    $items = $featured_items->posts;
 
+  } elseif ($page == "hostedprogram") {
+    $args = array(
+      'post_type' => array('agenda'),
+      'meta_query' => array(
+        'relation' => 'AND',
+        array(
+          'key' => 'host_|_circulation',
+          'value' => "host",
+          'compare' => 'LIKE'
+        ),
+        array(
+          'key' => 'is_featured_hostedprogram',
+          'value' => true,
+          'compare' => '=='
+        )
+      )
+    );
+    $agenda_items = new WP_Query($args);
+    $items = $agenda_items->posts;
 
+  } elseif ($page == "agency") {
     $args = array(
       'post_type' => array('project'),
       'meta_query' => array(
         'relation' => 'OR',
         array(
-          'key' => 'host_|_circulation',
-          'value' => "circulation",
-          'compare' => 'LIKE'
+          'relation' => 'AND',
+          array(
+            'key' => 'category',
+            'value' => 'curated_programs',
+            'compare' => 'LIKE'
+          ),
+          array(
+            'key' => 'host_|_circulation',
+            'value' => "circulation",
+            'compare' => 'LIKE'
+          ),
+          array(
+            'key' => 'is_highlighted',
+            'value' => true,
+            'compare' => '=='
+          )
         ),
         array(
           'relation' => 'AND',
+          array(
+            'key' => 'category',
+            'value' => 'artworks',
+            'compare' => 'LIKE'
+          ),
+          array(
+            'key' => 'is_agency',
+            'value' => true,
+            'compare' => '=='
+          ),
+          array(
+            'key' => 'is_highlighted',
+            'value' => true,
+            'compare' => '=='
+          )
+        ),
+        array(
+          'relation' => 'AND',
+          array(
+            'key' => 'category',
+            'value' => 'workshops',
+            'compare' => 'LIKE'
+          ),
           array(
             'key' => 'is_agency',
             'value' => true,
@@ -93,38 +138,8 @@ function get_featured_items($request)
 
     // $items = array_merge($agenda_items->posts,$project_items->posts,$artist_items->posts );
     $items = array_merge($project_items->posts, $artist_items->posts);
-  } else if ($page == "education") {
-    // $args = array(
-    //   'post_type' => array('agenda'),
-    //   // $args['meta_key'] = 'date_from';
-    //   // $args['orderby'] = 'meta_value_num';
-    //   // $args['order'] = 'ASC';
-    //   'meta_query' => array(
-    //     'relation' => 'AND',
-    //     array(
-    //       'relation' => 'OR',
-    //       array(
-    //         'key' => 'date_from',
-    //         'value' => date("Ymd", strtotime("now")),
-    //         'type' => 'NUMERIC',
-    //         'compare' => '>='
-    //       ),
-    //       array(
-    //         'key' => 'date_until',
-    //         'value' => date("Ymd", strtotime("now")),
-    //         'type' => 'NUMERIC',
-    //         'compare' => '>='
-    //       )
-    //     ),
-    //     array(
-    //       'key'     => 'category',
-    //       'value'   => 'workshop',
-    //       'compare' => 'LIKE',
-    //     )
-    //   )
-    // );
-    // $agenda_items = new WP_Query( $args );
 
+  } elseif ($page == "education") {
 
     $args = array(
       'post_type' => array('project'),
@@ -144,8 +159,25 @@ function get_featured_items($request)
     );
     $project_items = new WP_Query($args);
 
-    // $items = array_merge($agenda_items->posts,$project_items->posts );
-    $items = $project_items->posts;
+    $args = array(
+      'post_type' => array('agenda'),
+      'meta_query' => array(
+        'relation' => 'AND',
+        array(
+          'key' => 'category',
+          'value' => 'workshops',
+          'compare' => 'LIKE'
+        ),
+        array(
+          'key' => 'is_featured_education',
+          'value' => true,
+          'compare' => '=='
+        )
+      )
+    );
+    $agenda_items = new WP_Query($args);
+
+    $items = array_merge($agenda_items->posts, $project_items->posts);
   }
 
 
