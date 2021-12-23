@@ -1,47 +1,48 @@
 <?php
-function get_featured_items( $request ) {
-  
+function get_featured_items($request)
+{
+
   // Change the request language
-  $lang = $request->get_param( 'lang' );
-  if($lang=="nl"){
-    do_action( 'wpml_switch_language', $lang );
+  $lang = $request->get_param('lang');
+  if ($lang == "nl") {
+    do_action('wpml_switch_language', $lang);
   }
-  
+
   $page = $request['page'];
 
   $items = [];
 
-  if($page=="agency"){
-  //   $args = array(
-  //     'post_type' => array('agenda'),
-  //     // $args['meta_key'] = 'date_from';
-  //     // $args['orderby'] = 'meta_value_num';
-  //     // $args['order'] = 'ASC';
-  //     'meta_query' => array(
-  //       'relation' => 'AND',
-  //       array(
-  //         'relation' => 'OR',
-  //         array(
-  //           'key' => 'date_from',
-  //           'value' => date("Ymd", strtotime("now")),
-  //           'type' => 'NUMERIC',
-  //           'compare' => '>='
-  //         ),
-  //         array(
-  //           'key' => 'date_until',
-  //           'value' => date("Ymd", strtotime("now")),
-  //           'type' => 'NUMERIC',
-  //           'compare' => '>='
-  //         )
-  //       ),
-  //       array(
-  //         'key'     => 'host_|_circulation',
-  //         'value'   => 'circulation',
-  //         'compare' => 'LIKE',
-  //       )
-  //     )
-  //   );
-  //   $agenda_items = new WP_Query( $args );
+  if ($page == "agency") {
+    //   $args = array(
+    //     'post_type' => array('agenda'),
+    //     // $args['meta_key'] = 'date_from';
+    //     // $args['orderby'] = 'meta_value_num';
+    //     // $args['order'] = 'ASC';
+    //     'meta_query' => array(
+    //       'relation' => 'AND',
+    //       array(
+    //         'relation' => 'OR',
+    //         array(
+    //           'key' => 'date_from',
+    //           'value' => date("Ymd", strtotime("now")),
+    //           'type' => 'NUMERIC',
+    //           'compare' => '>='
+    //         ),
+    //         array(
+    //           'key' => 'date_until',
+    //           'value' => date("Ymd", strtotime("now")),
+    //           'type' => 'NUMERIC',
+    //           'compare' => '>='
+    //         )
+    //       ),
+    //       array(
+    //         'key'     => 'host_|_circulation',
+    //         'value'   => 'circulation',
+    //         'compare' => 'LIKE',
+    //       )
+    //     )
+    //   );
+    //   $agenda_items = new WP_Query( $args );
 
 
     $args = array(
@@ -69,7 +70,7 @@ function get_featured_items( $request ) {
 
       )
     );
-    $project_items = new WP_Query( $args );
+    $project_items = new WP_Query($args);
 
 
     $args = array(
@@ -88,143 +89,138 @@ function get_featured_items( $request ) {
         )
       )
     );
-    $artist_items = new WP_Query( $args );
+    $artist_items = new WP_Query($args);
 
     // $items = array_merge($agenda_items->posts,$project_items->posts,$artist_items->posts );
-    $items = array_merge($project_items->posts,$artist_items->posts );
+    $items = array_merge($project_items->posts, $artist_items->posts);
+  } else if ($page == "education") {
+    // $args = array(
+    //   'post_type' => array('agenda'),
+    //   // $args['meta_key'] = 'date_from';
+    //   // $args['orderby'] = 'meta_value_num';
+    //   // $args['order'] = 'ASC';
+    //   'meta_query' => array(
+    //     'relation' => 'AND',
+    //     array(
+    //       'relation' => 'OR',
+    //       array(
+    //         'key' => 'date_from',
+    //         'value' => date("Ymd", strtotime("now")),
+    //         'type' => 'NUMERIC',
+    //         'compare' => '>='
+    //       ),
+    //       array(
+    //         'key' => 'date_until',
+    //         'value' => date("Ymd", strtotime("now")),
+    //         'type' => 'NUMERIC',
+    //         'compare' => '>='
+    //       )
+    //     ),
+    //     array(
+    //       'key'     => 'category',
+    //       'value'   => 'workshop',
+    //       'compare' => 'LIKE',
+    //     )
+    //   )
+    // );
+    // $agenda_items = new WP_Query( $args );
 
-  }else if($page=="education"){
-      // $args = array(
-      //   'post_type' => array('agenda'),
-      //   // $args['meta_key'] = 'date_from';
-      //   // $args['orderby'] = 'meta_value_num';
-      //   // $args['order'] = 'ASC';
-      //   'meta_query' => array(
-      //     'relation' => 'AND',
-      //     array(
-      //       'relation' => 'OR',
-      //       array(
-      //         'key' => 'date_from',
-      //         'value' => date("Ymd", strtotime("now")),
-      //         'type' => 'NUMERIC',
-      //         'compare' => '>='
-      //       ),
-      //       array(
-      //         'key' => 'date_until',
-      //         'value' => date("Ymd", strtotime("now")),
-      //         'type' => 'NUMERIC',
-      //         'compare' => '>='
-      //       )
-      //     ),
-      //     array(
-      //       'key'     => 'category',
-      //       'value'   => 'workshop',
-      //       'compare' => 'LIKE',
-      //     )
-      //   )
-      // );
-      // $agenda_items = new WP_Query( $args );
 
-
-      $args = array(
-        'post_type' => array('project'),
-        'meta_query' => array(
-          'relation' => 'AND',
-          array(
-            'key' => 'category',
-            'value' => 'workshops',
-            'compare' => 'LIKE'
-          ),
-          array(
-            'key' => 'is_highlighted',
-            'value' => true,
-            'compare' => '=='
-          )
+    $args = array(
+      'post_type' => array('project'),
+      'meta_query' => array(
+        'relation' => 'AND',
+        array(
+          'key' => 'category',
+          'value' => 'workshops',
+          'compare' => 'LIKE'
+        ),
+        array(
+          'key' => 'is_highlighted',
+          'value' => true,
+          'compare' => '=='
         )
-      );
-      $project_items = new WP_Query( $args );
+      )
+    );
+    $project_items = new WP_Query($args);
 
-      // $items = array_merge($agenda_items->posts,$project_items->posts );
-      $items = $project_items->posts;
-    }
+    // $items = array_merge($agenda_items->posts,$project_items->posts );
+    $items = $project_items->posts;
+  }
 
 
   $data = [];
-  if ( ! empty( $items ) ) {
-    foreach ( $items as $post ) {
+  if (!empty($items)) {
+    foreach ($items as $post) {
       $post_data['id'] = $post->ID;
       $post_data['title'] = $post->post_title;
       $post_data['post_type'] = $post->post_type;
       $post_data['tag'] = get_the_tags($post->ID);
       $post_data['url'] = esc_url(get_permalink($post->ID));
-      $post_data['featured_image'] = get_the_post_thumbnail_url($post->ID,'large');
+      $post_data['featured_image'] = get_the_post_thumbnail_url($post->ID, 'large');
       $post_data['featured_result'] = true;
       if ($post->post_type == "artist") {
         $post_data['subcategory'] = get_field('badges', $post->ID);
         $post_data['date_from'] = get_field('date_from', $post->ID);
         $post_data['date_until'] = get_field('date_until', $post->ID);
-        if ($post_data['subcategory'] == "resident") {
-          if($post_data['date_from']){
-            $post_data['date'] = $post_data['date_from'].' - ' .$post_data['date_until'];
-          }else{
-            $post_data['date'] = $post_data['date_from'];
-          }
+        // if ($post_data['subcategory'] == "resident") {
+        if ($post_data['date_from']) {
+          $post_data['date'] = $post_data['date_from'] . ' - ' . $post_data['date_until'];
+        } else {
+          $post_data['date'] = $post_data['date_from'] . ' - ongoing';
         }
+        // }
         $post_data['archive_base'] = "artists";
-
       } else if ($post->post_type == "project") {
         $post_data['subcategory'] = get_field('category', $post->ID);
         $post_data['meta1'] = get_field('authors', $post->ID);
         $post_data['meta2'] = get_field('year', $post->ID);
         $post_data['date'] = get_field('year', $post->ID);
         $post_data['archive_base'] = "projects";
-
       } else if ($post->post_type == "agenda") {
         $post_data['subcategory'] = get_field('category', $post->ID);
         $post_data['date_from'] = get_field('date_from', $post->ID);
         $post_data['date_until'] = get_field('date_until', $post->ID);
-        if($post_data['date_until']){
-          $post_data['date'] = $post_data['date_from'].' - ' .$post_data['date_until'];
-        }else{
+        if ($post_data['date_until']) {
+          $post_data['date'] = $post_data['date_from'] . ' - ' . $post_data['date_until'];
+        } else {
           $post_data['date'] = $post_data['date_from'];
         }
         $post_data['meta1'] = get_field('venue', $post->ID);
         $post_data['meta2'] = get_field('city', $post->ID);
         $post_data['meta3'] = get_field('host_|_circulation', $post->ID);
         $post_data['archive_base'] = "agenda";
-
       } else {
         $post_data['date'] = $post->post_date;
         $post_data['subcategory'] = "";
         $post_data['archive_base'] = "posts";
-
       }
-      array_push($data,  $post_data );
+      array_push($data,  $post_data);
     }
   }
   // Return all of our comment response data.
   $response = new WP_REST_Response($data, 200);
-  if(empty($data)){
-      $response->header('x-wp-total',0);
+  if (empty($data)) {
+    $response->header('x-wp-total', 0);
   }
 
   // back to the default language
-  if($lang=="nl"){
-    do_action( 'wpml_switch_language', "en" );
+  if ($lang == "nl") {
+    do_action('wpml_switch_language', "en");
   }
   return $response;
 }
 
 
-add_action( 'rest_api_init', function () {
-    register_rest_route( 'iii', '/getFeatured\/(?P<page>[a-z0-9,+]+(?:-[a-z0-9,+]+)*)', array(
-        'methods' => 'GET',
-        'callback' => 'get_featured_items',
-        'args' => array(
-            'page' => array(
-              'requred' => true
-            ),
-          ),
-        'permission_callback' => '__return_true',
-    ) );
-} );
+add_action('rest_api_init', function () {
+  register_rest_route('iii', '/getFeatured\/(?P<page>[a-z0-9,+]+(?:-[a-z0-9,+]+)*)', array(
+    'methods' => 'GET',
+    'callback' => 'get_featured_items',
+    'args' => array(
+      'page' => array(
+        'requred' => true
+      ),
+    ),
+    'permission_callback' => '__return_true',
+  ));
+});

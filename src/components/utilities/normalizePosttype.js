@@ -107,7 +107,7 @@ const normalizePosttype = (item) => {
         if (item.acf.date_from) {
             returnObj.date = item.acf.date_until
             ? `${item.acf.date_from} - ${item.acf.date_until}`
-            : `${item.acf.date_from}`;
+            : `${item.acf.date_from} - ongoing`;
         }
         returnObj.website = item.acf.website && item.acf.website;
         returnObj.archive_base = "artists";

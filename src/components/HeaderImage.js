@@ -79,78 +79,110 @@ export default function HeaderImage({ item, ...otherProps }) {
             </span>*/}
             {subcategory.length > 0
               ? subcategory?.map((cat, i) => (
-                  <span key={i} className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">
+                  <span
+                    key={i}
+                    className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2"
+                  >
                     <Link to={"/" + archive_base + "/?c=" + cat.value}>
                       {cat.label}
                     </Link>
                   </span>
                 ))
               : ""}
-            {website.trim()!="" && (
-              <span className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2"><a href={website} target="_blank" className='inline-block '>{website}</a></span>
-            )}
             {date && (
-              <span className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">{date}</span>
+              <span className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">
+                {date}
+              </span>
             )}
-            {meta1.trim()!="" && (
-              <span className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">{meta1}</span>
+            {website.trim() != "" && (
+              <span className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">
+                <a href={website} target="_blank" className="inline-block ">
+                  {website}
+                </a>
+              </span>
             )}
-            {meta2.trim()!="" && (
-              <span className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">{meta2}</span>
+            {meta1.trim() != "" && (
+              <span className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">
+                {meta1}
+              </span>
             )}
-            {meta3.trim()!="" && (
-              <span className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">{meta3}</span>
+            {meta2.trim() != "" && (
+              <span className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">
+                {meta2}
+              </span>
             )}
-            {Array.isArray(tag)&&tag.length>0  ?
-							tag.map((obj, i)=>(
-                <span key={i} className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">
-                  <Link to={"/" + archive_base + "/?t=" + obj.id}>
-                    {obj.name}
-                  </Link>
-                </span>
-              ))
-							: tag
-						}
+            {meta3.trim() != "" && (
+              <span className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">
+                {meta3}
+              </span>
+            )}
+            {Array.isArray(tag) && tag.length > 0
+              ? tag.map((obj, i) => (
+                  <span
+                    key={i}
+                    className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2"
+                  >
+                    <Link to={"/" + archive_base + "/?t=" + obj.id}>
+                      {obj.name}
+                    </Link>
+                  </span>
+                ))
+              : tag}
           </div>
         </div>
       </div>
       <div className="lg:hidden relative w-full bg-bg-light-gray border-t-2 border-b-2">
         <h2 className="text-lg text-white bg-bg-gray px-6 py-3">{title}</h2>
         <div className=" text-black p-6 border-t-2 text-xs">
-            {subcategory.length > 0
-              ? subcategory?.map((cat, i) => (
-                  <span key={i} className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">
-                    <Link to={"/" + archive_base + "/?c=" + cat.value}>
-                      {cat.label}
-                    </Link>
-                  </span>
-                ))
-              : ""}
-            {website.trim()!="" && (
-              <a href={website} target="_blank"><span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">{website}</span></a>
-            )}
-            {date && (
-              <span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">{date}</span>
-            )}
-            {meta1.trim()!="" && (
-              <span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">{meta1}</span>
-            )}
-            {meta2.trim()!="" && (
-              <span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">{meta2}</span>
-            )}
-            {meta3.trim()!="" && (
-              <span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">{meta3}</span>
-            )}
-            {Array.isArray(tag)&&tag.length>0  ?
-							tag.map((obj, i)=>(
+          {subcategory.length > 0
+            ? subcategory?.map((cat, i) => (
+                <span
+                  key={i}
+                  className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2"
+                >
+                  <Link to={"/" + archive_base + "/?c=" + cat.value}>
+                    {cat.label}
+                  </Link>
+                </span>
+              ))
+            : ""}
+
+          {date && (
+            <span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">
+              {date}
+            </span>
+          )}
+          {website.trim() != "" && (
+            <a href={website} target="_blank">
+              <span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">
+                {website}
+              </span>
+            </a>
+          )}
+          {meta1.trim() != "" && (
+            <span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">
+              {meta1}
+            </span>
+          )}
+          {meta2.trim() != "" && (
+            <span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">
+              {meta2}
+            </span>
+          )}
+          {meta3.trim() != "" && (
+            <span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">
+              {meta3}
+            </span>
+          )}
+          {Array.isArray(tag) && tag.length > 0
+            ? tag.map((obj, i) => (
                 <span key={i} className="border-2 bg-white py-2 px-4 mr-2">
                   <Link to={"/" + archive_base + "/?t=" + obj.id}>
                     {obj.name}
                   </Link>
                 </span>
               ))
-							: tag
-						}
+            : tag}
         </div>
       </div>
     </>
