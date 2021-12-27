@@ -3,7 +3,7 @@ import { useCookies } from "react-cookie";
 import { useLocation, useHistory } from "react-router-dom";
 
 export default function LanguageSelect(props) {
-  const [cookies, setCookie] = useCookies(["lang"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["lang"]);
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const initLang = queryParams.get("lang") ? queryParams.get("lang") : "";
@@ -30,6 +30,10 @@ export default function LanguageSelect(props) {
     if (initLang) {
       setCookie("lang", initLang, { path: "/" });
       setLang(initLang);
+    }else{
+      // removeCookie("lang");
+      setCookie("lang", "en", { path: "/" });
+      setLang("en");
     }
   }, [initLang]);
   return (

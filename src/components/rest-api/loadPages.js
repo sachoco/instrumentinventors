@@ -28,7 +28,7 @@ const loadPages = (menu) => {
 
 		rest_call_url += "&include=" + ids;
 
-		if (cookies.lang == "nl") {
+		if (cookies.lang) {
 			rest_call_url += "&lang=" + cookies.lang;
 		}
 		console.log(rest_call_url);

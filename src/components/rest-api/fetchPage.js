@@ -12,7 +12,7 @@ const fetchPage = ({path, loadedPages}) => {
 	};
 	const [cookies, setCookie] = useCookies(["lang"]);
 	const { pathname } = useLocation();
-
+ 
 	const [state, setState] = useState(initialState);
 	useEffect(() => {
 		const abortController = new AbortController();
@@ -32,13 +32,13 @@ const fetchPage = ({path, loadedPages}) => {
 		return () => {
 			abortController.abort(); // cancel pending fetch request on component unmount
 		};
-	}, [path, loadedPages, cookies]);
+	}, [path, loadedPages]);
 
 	const getItems = () => {
 		setState(initialState);
 		let rest_call_url = wpApiSettings.root + url;
 
-		if (cookies.lang == "nl") {
+		if (cookies.lang) {
 			rest_call_url += "&lang=" + cookies.lang;
 		}
 		console.log(rest_call_url);
