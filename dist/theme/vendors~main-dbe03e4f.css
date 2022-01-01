@@ -7,7 +7,7 @@
  * @link UNLICENSED
  * @license UNLICENSED
  * 
- * Copyright (c) 2021 satopin
+ * Copyright (c) 2022 satopin
  * 
  * This software is released under the UNLICENSED License
  * https://opensource.org/licenses/UNLICENSED

@@ -69,9 +69,7 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
 						<div className="mt-10 mx-auto max-w-3xl"></div>
 					</Block>
 
-					<Block title="related" bg={true}>
-						<HorizontalSlider url={related_url} related_item={true} />
-					</Block>
+					<Block title="related" bg={true} carousel url={related_url} related_item={true} />
 				</>
 				: 
 				<>

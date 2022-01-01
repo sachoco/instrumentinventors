@@ -51,11 +51,10 @@ export default function HorizontalSlider({
         loadMore();
       }
     }
-	if(onScroll) {
-		let scrollValue = e.nativeEvent.srcElement.scrollLeft
-		onScroll(scrollValue)
-	}
-
+    if (onScroll) {
+      let scrollValue = e.nativeEvent.srcElement.scrollLeft;
+      onScroll(scrollValue);
+    }
   };
   const onMouseEnterHandler = (e) => {
     setHover(true);

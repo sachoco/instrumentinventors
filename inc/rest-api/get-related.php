@@ -13,9 +13,48 @@ function get_related($request)
     $related_posts = get_field('related_posts', $id);
     // var_dump($related_posts);
     //
+
     $data = [];
     if (!empty($related_posts)) {
-        foreach ($related_posts as $post) {
+        $artist_array = array_filter($related_posts, function($post){
+            if (isset($post->post_type)) {
+                if ($post->post_type == 'artist') return true;
+            }
+            return false;
+        });
+        if(!empty($artist_array)){
+            usort($artist_array, fn($a, $b) => strcmp($a->post_name, $b->post_name));
+        }
+        $project_array = array_filter($related_posts, function($post){
+            if (isset($post->post_type)) {
+                if ($post->post_type == 'project') return true;
+            }
+            return false;
+        });
+        if(!empty($project_array)){
+            usort($project_array, fn($a, $b) => get_field('year',$b->ID) - get_field('year',$a->ID));
+        }
+        $news_array = array_filter($related_posts, function($post){
+            if (isset($post->post_type)) {
+                if ($post->post_type == 'post') return true;
+            }
+            return false;
+        });
+        if(!empty($news_array)){
+            usort($news_array, fn($a, $b) => -1 * strcmp($a->post_date, $b->post_date));
+        }
+        $agenda_array = array_filter($related_posts, function($post){
+            if (isset($post->post_type)) {
+                if ($post->post_type == 'agenda') return true;
+            }
+            return false;
+        });
+        if(!empty($agenda_array)){
+            usort($agenda_array, fn($a, $b) => strtotime(get_field('date_from',$b->ID)) - strtotime(get_field('date_from',$a->ID)));
+        }
+        $related_posts_array = array_merge($artist_array,$project_array,$news_array,$agenda_array);
+
+        foreach ($related_posts_array as $post) {
             $post_data['id'] = $post->ID;
             $post_data['title'] = $post->post_title;
             $post_data['subtype'] = $post->post_type;
@@ -23,6 +62,13 @@ function get_related($request)
             $post_data['url'] = esc_url(get_permalink($post->ID));
             $post_data['featured_image'] = get_the_post_thumbnail_url($post->ID, 'medium_large');
             $post_data['related_result'] = true;
+            if($post->post_type=='project'){
+                $post_data['date'] = get_field('year',$post->ID);
+            }elseif($post->post_type=='post'){
+                $post_data['date'] = $post->post_date;
+            }elseif($post->post_type=='agenda'){
+                $post_data['date'] = get_field('date_from',$post->ID);
+            }
             array_push($data,  $post_data);
         }
     }

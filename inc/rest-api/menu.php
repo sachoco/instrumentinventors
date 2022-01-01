@@ -1,24 +1,24 @@
 <?php
 
-add_action( 'rest_api_init', function () {
-    register_rest_route( 'iii', '/menu', array(
+add_action('rest_api_init', function () {
+    register_rest_route('iii', '/menu', array(
         'methods' => 'GET',
         'callback' => 'get_menu',
         'permission_callback' => '__return_true',
-    ) );
-} );
+    ));
+});
 
 function get_menu()
 {
-    $available_languages = wpml_get_active_languages_filter('', array('skip_missing' => false, ) );
-    if ( isset( $_REQUEST['lang'] ) ) {
+    $available_languages = wpml_get_active_languages_filter('', array('skip_missing' => false,));
+    if (isset($_REQUEST['lang'])) {
         $lang = $_REQUEST['lang'];
-    }else {
+    } else {
         $lang = "en";
     }
 
-    if ( isset( $lang ) && in_array( $lang, array_keys( $available_languages ) ) ) {
-        do_action( 'wpml_switch_language', $lang );
+    if (isset($lang) && in_array($lang, array_keys($available_languages))) {
+        do_action('wpml_switch_language', $lang);
     }
 
     $menus = array(); //wp_get_nav_menus();
@@ -29,12 +29,12 @@ function get_menu()
     foreach ($menu_slug as $key => $value) {
         $items = wp_get_nav_menu_items($value);
         if (is_array($items)) {
-                // var_dump($items);
+            // var_dump($items);
 
             $menus[$key] = array_map('extract_from_menu', $items);
         }
     }
-    do_action( 'wpml_switch_language', ICL_LANGUAGE_CODE );
+    do_action('wpml_switch_language', ICL_LANGUAGE_CODE);
 
     return $menus;
 
@@ -60,7 +60,7 @@ function extract_from_menu($menu)
 {
     $path     = isset(parse_url($menu->url)['path']) ? parse_url($menu->url)['path'] : '';
     $query    = isset(parse_url($menu->url)['query']) ? '?' . parse_url($menu->url)['query'] : '';
-    return array("page_id" => get_post_meta( $menu->ID, '_menu_item_object_id', true ), "title" => $menu->title, "path" => $path.$query, "type" => $menu->type, "type_label" => $menu->type_label);
+    return array("page_id" => get_post_meta($menu->ID, '_menu_item_object_id', true), "title" => $menu->title, "path" => $path . $query, "type" => $menu->type, "type_label" => $menu->type_label);
 }
 function get_index($menu, $parent_id)
 {
