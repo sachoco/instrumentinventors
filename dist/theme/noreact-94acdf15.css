@@ -811,6 +811,11 @@ h1, h2, h3, h4, h5 {
   margin-bottom: 0.5rem;
 }
 
+.my-4 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 .my-5 {
   margin-top: 1.25rem;
   margin-bottom: 1.25rem;
@@ -1405,6 +1410,10 @@ h1, h2, h3, h4, h5 {
 
 .items-center {
   align-items: center;
+}
+
+.items-baseline {
+  align-items: baseline;
 }
 
 .justify-start {
@@ -2114,6 +2123,11 @@ body {
 }
 
 @media (min-width: 1024px) {
+  .lg\:my-2 {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
   .lg\:mt-0 {
     margin-top: 0px;
   }
@@ -2239,6 +2253,11 @@ body {
     padding: 6rem;
   }
 
+  .lg\:px-24 {
+    padding-left: 6rem;
+    padding-right: 6rem;
+  }
+
   .lg\:py-1 {
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
@@ -2249,9 +2268,9 @@ body {
     padding-bottom: 1rem;
   }
 
-  .lg\:py-24 {
-    padding-top: 6rem;
-    padding-bottom: 6rem;
+  .lg\:py-16 {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
   }
 
   .lg\:pt-24 {
@@ -2262,8 +2281,8 @@ body {
     padding-right: 6rem;
   }
 
-  .lg\:pb-1\/3 {
-    padding-bottom: 33%;
+  .lg\:pb-2\/5 {
+    padding-bottom: 40%;
   }
 
   .lg\:pl-24 {
@@ -2278,9 +2297,9 @@ body {
     text-align: right;
   }
 
-  .lg\:text-base {
-    font-size: 1rem;
-    line-height: 1.5rem;
+  .lg\:text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 
   .lg\:text-2xl {
@@ -2341,4 +2360,4 @@ body {
 }
 
 
-/*# sourceMappingURL=noreact-8e9833a2.css.map*/
+/*# sourceMappingURL=noreact-94acdf15.css.map*/

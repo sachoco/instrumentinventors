@@ -74,7 +74,7 @@ const fetchData = (
               : 1,
           hasMore:
             response.headers["x-wp-totalpages"] > prevState.page ? true : false,
-          noItem: response.headers["x-wp-total"] == 0 ? true : false,
+          noItem: response.headers["x-wp-total"] == 0 && !url2 ? true : false,
           itemTotal: response.headers["x-wp-total"],
         }));
       },

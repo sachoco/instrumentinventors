@@ -16,7 +16,7 @@ const Block = ({
   return (
     <div
       className={
-        "px-8 py-10 lg:p-24 " +
+        "px-8 py-10 lg:px-24 lg:py-16 " +
         (bg ? "bg-bg-lighter-gray " : "") +
         otherProps.className
       }

@@ -29,7 +29,7 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
     tags:tag
   });
  
-  url += '&per_page=12&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii';
+  url += '&per_page=24&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii';
   let url2 = null;
   if(posttype=="artist"&&cat==""&&tag==""){
     url2 = url+"&past";

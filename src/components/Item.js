@@ -63,14 +63,14 @@ export default function Item(props) {
 				<div className="absolute bottom-0 right-0 px-5 py-2 z-20 transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible">
 					<Link to={link}>more info</Link>
 				</div> */}
-				<div className="flex w-full">
+				<div className="flex w-full items-baseline">
 					{/* <div className="flex-grow max-w-full overflow-hidden overflow-ellipsis whitespace-pre mr-2 mt-0 transition-all group-hover:absolute top-0 group-hover:whitespace-normal group-hover:delay-200 group-hover:mt-8">
 						{title}
 					</div> */}
 					<div className="flex-grow max-w-full overflow-hidden overflow-ellipsis whitespace-pre mr-2 transition-all group-hover:max-w-0 group-hover:mr-0 duration-2000">
 						{title}
 					</div>
-					<div className="group-hover:flex-grow whitespace-nowrap">
+					<div className="group-hover:flex-grow whitespace-nowrap text-sm">
 						{date}
 					</div>
 					<div className="absolute bottom-0 right-0 px-5 py-2 z-20 transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible">
@@ -79,7 +79,7 @@ export default function Item(props) {
 				</div> 
 				</div>
 			</div>
-			<div className="absolute z-20 top-0 right-0 bg-white border-b-2 border-l-2 px-5 py-2">
+			<div className="absolute z-20 top-0 right-0 bg-white border-b-2 border-l-2 px-4 py-2 text-sm">
 				{typeof subcategory === "string" ? (
 					subcategory
 				) : (

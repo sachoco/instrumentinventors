@@ -2,18 +2,20 @@
   display: flex;
 }
 .slick-dots {
-  @apply absolute w-10 lg:w-auto lg:text-right top-5 right-14 lg:top-auto lg:bottom-20 lg:right-20;
+  @apply absolute w-10 lg:w-auto lg:text-right top-5 right-14 lg:top-auto lg:bottom-5 lg:right-24;
   li {
-    @apply block lg:inline-block;
+    @apply block lg:inline-block w-2 h-2;
     button {
+      @apply w-2 h-2;
       &:before {
-        @apply text-white text-xs lg:text-base;
+        @apply text-white text-xs lg:text-base w-2 h-2 border-2 rounded-full border-white filter opacity-100;
+        content: '';
       }
     }
     &.slick-active {
       button {
         &:before {
-          @apply text-white;
+          @apply text-white bg-white filter opacity-100;
         }
       }
     }
