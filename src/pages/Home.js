@@ -20,6 +20,7 @@ const Home = () => {
         carousel
         url="wp/v2/agenda/?subcat=host&upcoming"
         url2="wp/v2/project/?pricat=curated_programs&subcat=host"
+        debug
       />
 
       <Block

@@ -9,6 +9,7 @@ export default function HorizontalSlider({
   type = null,
   related_item = false,
   onScroll = null,
+  debug = false,
   ...otherProps
 }) {
   if (!related_item) {
@@ -21,8 +22,8 @@ export default function HorizontalSlider({
   }
 
   const ref = useRef();
-
-  const [state, loadMore] = fetchData(url, false, true, null, url2);
+  
+  const [state, loadMore] = fetchData(url, false, true, null, url2, debug);
   const [hover, setHover] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(true);
   const [canScrollPrev, setCanScrollPrev] = useState(false);

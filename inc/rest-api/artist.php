@@ -53,10 +53,22 @@ function query_artist($args, $request)
 	}else if(isset($request["past"])) {
 		$args['meta_key'] = 'date_until';
 		$args['meta_query'][] = array(
-            'key' => 'date_until',
-            'value' => date("Ymd", strtotime("now")),
-            'type' => 'NUMERIC',
-            'compare' => '<'
+			'relation' => 'AND',
+			array(
+				'key' => 'date_until',
+				'value' => date("Ymd", strtotime("now")),
+				'type' => 'NUMERIC',
+				'compare' => '<'
+			),
+			array(
+				'key' => 'date_until',
+				'value' => '',
+				'compare' => '!='
+		    ),
+			array(
+				'key' => 'date_until',
+				'compare' => 'EXISTS'
+			),
 		);
         $args['orderby'] = array( 
 			'meta_value_num' => 'DESC',

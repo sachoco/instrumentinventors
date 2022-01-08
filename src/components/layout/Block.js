@@ -9,6 +9,7 @@ const Block = ({
   url = null,
   url2 = null,
   related_item = false,
+  debug = false,
   ...otherProps
 }) => {
   const [scrollSine, setScrollSine] = useState(0);
@@ -27,7 +28,7 @@ const Block = ({
           <Wave waveType="sine" scrollX={scrollSine} />
         </div>
       )}
-      {carousel && <HorizontalSlider url={url} url2={url2} related_item={related_item} onScroll={ (value) => setScrollSine(value) } />}
+      {carousel && <HorizontalSlider debug={debug} url={url} url2={url2} related_item={related_item} onScroll={ (value) => setScrollSine(value) } />}
       {otherProps.children}
     </div>
   );

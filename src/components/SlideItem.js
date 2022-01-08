@@ -47,16 +47,18 @@ export default function SlideItem(props) {
 					<Marquee gradient={false} speed={1}>
 					{(subcategory&&!Array.isArray(subcategory)) ? 
 						<span className="mr-2">
-							<Link to={"/" + archive_base + "/?c=" + subcategory.value}>
+							{/* <Link to={"/" + archive_base + "/?c=" + subcategory.value}>
 								{subcategory.label}
-							</Link>
+							</Link> */}
+							{subcategory.label}
 						</span>
 					: subcategory.length > 0
 						? subcategory?.map((cat, i) => (
 							<span key={i} className="mr-2">
-								<Link to={"/" + archive_base + "/?c=" + cat.value}>
+								{/* <Link to={"/" + archive_base + "/?c=" + cat.value}>
 									{cat.label}
-								</Link>
+								</Link> */}
+								{cat.label}
 							</span>
 							))
 						: ""}

@@ -7,9 +7,9 @@ const fetchData = (
   single = false,
   concat = true,
   filter = null,
-  url2 = null
+  url2 = null,
+  debug = false
 ) => {
-  let _url = url;
   const initialState = {
     items: [],
     loaded: false,
@@ -22,6 +22,8 @@ const fetchData = (
   const [cookies, setCookie] = useCookies(["lang"]);
 
   const [state, setState] = useState(initialState);
+  const [query, setQuery] = useState(url);
+
   useEffect(() => {
     const abortController = new AbortController();
     getItems(true);
@@ -39,12 +41,12 @@ const fetchData = (
         loaded: false,
       });
     }
-    let rest_call_url = wpApiSettings.root + _url;
+    let rest_call_url = wpApiSettings.root + query;
     if (!single) {
       rest_call_url = rest_call_url + "&page=" + (init ? "1" : state.page);
     }
     if (filter) {
-      console.log(filter);
+      debug && console.log(filter);
       Object.keys(filter).forEach((key) => {
         if (filter[key] && key != "posttype") {
           rest_call_url += "&" + key + "=" + filter[key];
@@ -59,27 +61,37 @@ const fetchData = (
     // }else{
     // // rest_call_url += "&lang=en";
     // }
-    console.log(rest_call_url);
+    debug && console.log(rest_call_url);
     return Axios.get(rest_call_url).then(
       (response) => {
-        console.log(response);
-        setState((prevState, props) => ({
-          ...state,
-          item: Array.isArray(response.data) ? response.data[0] : response.data,
-          items: concat ? prevState.items.concat(response.data) : response.data,
-          loaded: true,
-          page:
-            response.headers["x-wp-totalpages"] > prevState.page || !url2
-              ? prevState.page + 1
-              : 1,
-          hasMore:
-            response.headers["x-wp-totalpages"] > prevState.page ? true : false,
-          noItem: response.headers["x-wp-total"] == 0 && !url2 ? true : false,
-          itemTotal: response.headers["x-wp-total"],
-        }));
+        debug && console.log(response);
+        setState((prevState, props) => {
+          let _hasMore = response.headers["x-wp-totalpages"] > prevState.page;
+          if (url2 && query != url2 && !_hasMore) {
+            setQuery(url2);
+            _hasMore = true;
+          }
+          return {
+            ...state,
+            item: Array.isArray(response.data)
+              ? response.data[0]
+              : response.data,
+            items: concat
+              ? prevState.items.concat(response.data)
+              : response.data,
+            loaded: true,
+            page:
+              response.headers["x-wp-totalpages"] > prevState.page || !url2
+                ? prevState.page + 1
+                : 1,
+            hasMore: _hasMore,
+            noItem: response.headers["x-wp-total"] == 0 && !url2 ? true : false,
+            itemTotal: response.headers["x-wp-total"],
+          };
+        });
       },
       (error) => {
-        console.log(error);
+        debug && console.log(error);
         setState((prevState, props) => ({
           ...state,
           error: error.toJSON().message,
@@ -92,9 +104,6 @@ const fetchData = (
   const loadMore = () => {
     if (state.loaded === true) {
       if (state.hasMore) {
-        getItems().then(() => {});
-      } else if (url2) {
-        _url = url2;
         getItems().then(() => {});
       }
     }
