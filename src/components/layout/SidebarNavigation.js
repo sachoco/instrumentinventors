@@ -93,11 +93,11 @@ const SidebarNavigation = ({ menuItems, noreactrouter=false, setSidemenuOpen=nul
             </ul>
           </nav>
           <SearchForm noreactrouter={noreactrouter} />
-          <ul className="flex justify-start items-start w-full text-xl mt-12">
+          {/* <ul className="flex justify-start items-start w-full text-xl mt-12">
             <li>
               <LanguageSelect />
             </li>
-          </ul>
+          </ul> */}
         </div>
       </div>
       <div className="fixed bottom-0 ml-24 w-hscreen h-24 z-30 font-nav text-xl transform -rotate-90 origin-bottom-left bg-white border-b-2">

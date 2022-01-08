@@ -36,8 +36,8 @@ export default function Item(props) {
 			/>
 			<div className="absolute flex items-end z-10 w-full px-5 py-2 bottom-0 border-t-2 border-black bg-white transition-all min-h-0 group-hover:min-h-full+2px">
 				<div className="transition-all duration-200 absolute z-20 w-full top-8 left-0  px-5 my-2 opacity-0 delay-0 group-hover:delay-200 group-hover:opacity-100 ">
-					<div className="mt-1 text-xl min-h-16 flex items-end"><span>{title}</span></div>
-					<div className="border-t-2">{meta1}</div>
+					<div className="mt-1 text-xl min-h-16 flex items-end"><span className="line-clamp-2">{title}</span></div>
+					<div className="border-t-2 line-clamp-2">{meta1}</div>
 					<div className="border-t-2">{meta2}</div>
 					<div className="border-t-2 border-b-2 overflow-hidden overflow-ellipsis whitespace-pre ">
 						{Array.isArray(tag)&&tag.length>0  ?

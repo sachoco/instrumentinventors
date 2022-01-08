@@ -130,6 +130,7 @@ module.exports = {
       screens: {
         'hbp': {'raw': '(min-height: 800px)'},
         // => @media (orientation: portrait) { ... }
+        '2xl': '1800px',
       }
     },
   },
@@ -154,5 +155,6 @@ module.exports = {
   },
   plugins: [
     // require('@tailwindcss/typography'),
+    require('@tailwindcss/line-clamp'),
   ],
 };
