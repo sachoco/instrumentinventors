@@ -20,7 +20,7 @@ const Home = () => {
         carousel
         url="wp/v2/agenda/?subcat=host&upcoming"
         url2="wp/v2/project/?pricat=curated_programs&subcat=host"
-        debug
+        
       />
 
       <Block
@@ -33,7 +33,7 @@ const Home = () => {
 
       <Block title="projects" carousel url="wp/v2/project/?" />
 
-      <Block title="news & media" bg={true} carousel url="wp/v2/posts/?" />
+      <Block debug title="news & media" bg={true} carousel url="wp/v2/posts/?" />
 
       <Block title="about iii">
         <p className="max-w-prose">

@@ -32,8 +32,10 @@ export default function LanguageSelect(props) {
       setLang(initLang);
     }else{
       // removeCookie("lang");
-      setCookie("lang", "en", { path: "/" });
-      setLang("en");
+      if(!cookies.lang){
+        setCookie("lang", "en", { path: "/" });
+        setLang("en");
+      }
     }
   }, [initLang]);
   return (

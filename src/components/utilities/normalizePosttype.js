@@ -148,7 +148,8 @@ const normalizePosttype = (item) => {
               return { value: cat.id, label: he.decode(cat.name) };
             })
           : null;
-        returnObj.date = item.formatted_date;
+        // returnObj.date = item.formatted_date;
+        returnObj.date = new Date(item.date).toLocaleDateString('en-us', { day:"numeric", year:"numeric", month:"long"});
         returnObj.archive_base = "posts";
       }
     }

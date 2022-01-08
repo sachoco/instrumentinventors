@@ -14,10 +14,10 @@ export default function HorizontalSlider({
 }) {
   if (!related_item) {
     url +=
-      "&per_page=24&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii";
+      "&per_page=24&_fields=id,title,slug,date,formatted_date,acf,type,tags,wpml_translations,iii";
     if (url2) {
       url2 +=
-        "&per_page=24&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii";
+        "&per_page=24&_fields=id,title,slug,date,formatted_date,acf,type,tags,wpml_translations,iii";
     }
   }
 
