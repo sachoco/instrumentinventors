@@ -54,69 +54,76 @@ function get_featured_items($request)
     $items = $agenda_items->posts;
 
   } elseif ($page == "agency") {
+
+
     $args = array(
       'post_type' => array('project'),
       'meta_query' => array(
-        'relation' => 'OR',
+        'relation' => 'AND',
         array(
-          'relation' => 'AND',
-          array(
-            'key' => 'category',
-            'value' => 'curated_programs',
-            'compare' => 'LIKE'
-          ),
-          array(
-            'key' => 'host_|_circulation',
-            'value' => "circulation",
-            'compare' => 'LIKE'
-          ),
-          array(
-            'key' => 'is_highlighted',
-            'value' => true,
-            'compare' => '=='
-          )
+          'key' => 'category',
+          'value' => 'curated_programs',
+          'compare' => 'LIKE'
         ),
         array(
-          'relation' => 'AND',
-          array(
-            'key' => 'category',
-            'value' => 'artworks',
-            'compare' => 'LIKE'
-          ),
-          array(
-            'key' => 'is_agency',
-            'value' => true,
-            'compare' => '=='
-          ),
-          array(
-            'key' => 'is_highlighted',
-            'value' => true,
-            'compare' => '=='
-          )
+          'key' => 'host_|_circulation',
+          'value' => "circulation",
+          'compare' => 'LIKE'
         ),
         array(
-          'relation' => 'AND',
-          array(
-            'key' => 'category',
-            'value' => 'workshops',
-            'compare' => 'LIKE'
-          ),
-          array(
-            'key' => 'is_agency',
-            'value' => true,
-            'compare' => '=='
-          ),
-          array(
-            'key' => 'is_highlighted',
-            'value' => true,
-            'compare' => '=='
-          )
+          'key' => 'is_highlighted',
+          'value' => true,
+          'compare' => '=='
         )
-
       )
     );
-    $project_items = new WP_Query($args);
+    $project_program_items = new WP_Query($args);
 
+    $args = array(
+      'post_type' => array('project'),
+      'meta_query' => array(
+        'relation' => 'AND',
+        array(
+          'key' => 'category',
+          'value' => 'artworks',
+          'compare' => 'LIKE'
+        ),
+        array(
+          'key' => 'is_agency',
+          'value' => true,
+          'compare' => '=='
+        ),
+        array(
+          'key' => 'is_highlighted',
+          'value' => true,
+          'compare' => '=='
+        )
+      )
+    );
+    $project_artworks_items = new WP_Query($args);
+
+    $args = array(
+      'post_type' => array('project'),
+      'meta_query' => array(
+        'relation' => 'AND',
+        array(
+          'key' => 'category',
+          'value' => 'workshops',
+          'compare' => 'LIKE'
+        ),
+        array(
+          'key' => 'is_agency',
+          'value' => true,
+          'compare' => '=='
+        ),
+        array(
+          'key' => 'is_highlighted',
+          'value' => true,
+          'compare' => '=='
+        )
+      )
+    );
+    $project_workshops_items = new WP_Query($args);
 
     $args = array(
       'post_type' => array('artist'),
@@ -137,7 +144,7 @@ function get_featured_items($request)
     $artist_items = new WP_Query($args);
 
     // $items = array_merge($agenda_items->posts,$project_items->posts,$artist_items->posts );
-    $items = array_merge($project_items->posts, $artist_items->posts);
+    $items = array_merge($project_program_items->posts, $project_artworks_items->posts, $project_workshops_items->posts, $artist_items->posts);
 
   } elseif ($page == "education") {
 

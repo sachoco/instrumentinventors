@@ -37,7 +37,7 @@ const SinglePage = ({ pages, ...otherProps }) => {
       var $carousel = jQuery(this);
       $carousel.carousel($carousel.data());
     });
-    metaCtx.setTranslation(location.pathname.includes("about", 1));
+    metaCtx.setTranslation(location.pathname.includes("about", 1)||location.pathname.includes("get-involved", 1));
     let catTitle = "";
     if(posttype=="post"){
       catTitle = "news & media";

@@ -28,14 +28,8 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
     subcat:subcat,
     tags:tag
   });
- 
-  url += '&per_page=24&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii';
-  let url2 = null;
-  if(posttype=="artist"&&cat==""&&tag==""){
-    url2 = url+"&past";
-    url += "&current"; 
-  }
-  const [state, loadMore] = fetchFilteredData(url,false,true,filter,url2);
+
+  const [state, loadMore] = fetchFilteredData(filter);
   const onFilterChange = (event) => {
     const { name, value } = event.target;
 
@@ -103,11 +97,8 @@ const Aggregation = ({ url, posttype, ...otherProps }) => {
 
     if (isInitialMount.current) {
       isInitialMount.current = false;
-      metaCtx.setTranslation(false);
-      
-
+      metaCtx.setTranslation(false);      
     }else{
-    
       setFilter({
         posttype : posttype,
         pricat:cat,

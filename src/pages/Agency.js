@@ -16,7 +16,7 @@ const Agency = () => {
     <Slideshow url="iii/getFeatured/agency/?" />
     <Block title="circulation events, workshops and residencies" carousel url="wp/v2/agenda/?subcat=circulation" />
 
-    <Block title="artists" bg={true} carousel url="wp/v2/artist/?cat=agency" />
+    <Block title="artists" bg={true} carousel url="wp/v2/artist/?pricat=agency" />
       
     <Block title="artworks" carousel url="wp/v2/project/?is_agency" />
       
