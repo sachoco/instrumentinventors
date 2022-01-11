@@ -10,7 +10,7 @@ function add_tags_to_pages() {
 }
 
 add_action( 'init', 'cp_change_post_object' );
-// Change dashboard Posts to News
+// Change dashboard Posts to News & Media
 function cp_change_post_object() {
     $get_post_type = get_post_type_object('post');
     $labels = $get_post_type->labels;
@@ -28,6 +28,38 @@ function cp_change_post_object() {
         $labels->menu_name = 'News & Media';
         $labels->name_admin_bar = 'News & Media';
 }
+
+add_filter(
+    'register_post_type_args',
+    function ($args, $post_type) {
+        if ($post_type !== 'post') {
+            return $args;
+        }
+
+        $args['rewrite'] = [
+            'slug' => 'post',
+            'with_front' => true,
+        ];
+
+        return $args;
+    },
+    10,
+    2
+);
+add_filter(
+    'pre_post_link',
+    function ($permalink, $post) {
+        if ($post->post_type !== 'post') {
+            return $permalink;
+        }
+
+        return '/post/%postname%/';
+    },
+    10,
+    2
+);
+
+
 
 // custom post types : artist, work, news
 function create_post_type() {
