@@ -32,10 +32,7 @@ const fetchJson = (url) => {
 	}, [url, cookies]);
 
 	const getItem = (_url) => {
-		setState({
-			...state,
-			loaded: false,
-		});
+		setState(initialState);
 
 
 		console.log(_url);

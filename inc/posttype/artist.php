@@ -121,7 +121,7 @@ add_filter('manage_edit-artist_sortable_columns','order_column_register_sortable
 function menu_order_update_value( $value, $post_id, $field  ) {
 	$menu_order = 0;
 	
-	if(in_array("resident",$value)){
+	if(in_array("resident",$value)&&!in_array("iii_member",$value)){
 		$menu_order = 3;
 	}else if(in_array("iii_member",$value)){
 		$menu_order = 2;

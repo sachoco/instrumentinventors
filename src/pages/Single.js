@@ -26,7 +26,6 @@ import "../assets/vc/assets/lib/flexslider/flexslider.min.css";
 const Single = ({ posttype = "posts", ...otherProps }) => {
 	const metaCtx = useContext(MetaContext);
 	const { slug } = useParams();
-	const [cookies, setCookie] = useCookies(["lang"]);
 
 	const url = "wp/v2/" + posttype + "/?slug=" + slug + "&_embed";
 	const related_url = "iii/related/" + posttype + "/" + slug +"/?";
