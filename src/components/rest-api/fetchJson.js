@@ -12,23 +12,34 @@ const fetchJson = (url) => {
 	const [state, setState] = useState(initialState);
 	useEffect(() => {
 		const abortController = new AbortController();
-		getItem();
+		let _url = '';
+		if (cookies.lang == "nl") {
+			_url = url+'/nl/data.json';
+			Axios.get(_url).then((response) => {
+				getItem(_url);
+			}).catch((error) => {
+				_url = url+'/en/data.json';
+				getItem(_url);
+			})
+		}else{
+			_url = url+'/en/data.json';
+			getItem(_url);
+		}
+		
 		return () => {
 			abortController.abort(); // cancel pending fetch request on component unmount
 		};
 	}, [url, cookies]);
 
-	const getItem = () => {
+	const getItem = (_url) => {
 		setState({
 			...state,
 			loaded: false,
 		});
-		if (cookies.lang == "nl") {
 
-		}
 
-		console.log(url);
-		return Axios.get(url).then(
+		console.log(_url);
+		return Axios.get(_url).then(
 			(response) => {
 				console.log(response.data);
 				setState((prevState, props) => ({

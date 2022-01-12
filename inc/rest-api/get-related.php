@@ -4,6 +4,9 @@ function get_related($request)
 {
     $slug = $request['slug'];
     $posttype = $request['posttype'];
+    if($posttype=='posts'){
+        $posttype = 'post';
+    }
     if ($post = get_page_by_path($slug, OBJECT, $posttype)) {
         $id = $post->ID;
     } else {

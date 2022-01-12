@@ -1,8 +1,10 @@
 import React, { useContext, useEffect } from "react";
 import { useParams } from "react-router";
 import MetaContext from "../store/meta-context";
+import { useCookies } from "react-cookie";
 
 import fetchData from "../components/rest-api/fetchData";
+import fetchJson from "../components/rest-api/fetchJson";
 
 import HeaderImage from "../components/HeaderImage";
 import Carousel from "../components/Carousel";
@@ -24,14 +26,21 @@ import "../assets/vc/assets/lib/flexslider/flexslider.min.css";
 const Single = ({ posttype = "posts", ...otherProps }) => {
 	const metaCtx = useContext(MetaContext);
 	const { slug } = useParams();
+	const [cookies, setCookie] = useCookies(["lang"]);
+
 	const url = "wp/v2/" + posttype + "/?slug=" + slug + "&_embed";
 	const related_url = "iii/related/" + posttype + "/" + slug +"/?";
-	const [state, loadMore] = fetchData(url, true);
+	// const [state, loadMore] = fetchData(url, true);
+	let pt = posttype;
+	if(pt=='posts'){ pt = 'post'}; 
+	
+	const state = fetchJson("/data/"+pt+"/"+slug);
+
 	const {title, content} = normalizePosttype(state.item);
 
 	useEffect(()=>{
 		let catTitle = "";
-		if(posttype=="post"){
+		if(posttype=="posts"){
 			catTitle = "news & media";
 		}else{
 			catTitle = posttype;
@@ -69,7 +78,7 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
 						<div className="mt-10 mx-auto max-w-3xl"></div>
 					</Block>
 
-					<Block title="related" bg={true} carousel url={related_url} related_item={true} />
+					<Block debug title="related" bg={true} carousel url={related_url} related_item={true} />
 				</>
 				: 
 				<>

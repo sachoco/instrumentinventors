@@ -22,11 +22,11 @@ const fetchData = (
   const [cookies, setCookie] = useCookies(["lang"]);
 
   const [state, setState] = useState(initialState);
+  const [query, setQuery] = useState(url);
   const _url = useRef(url);
 
   useEffect(() => {
     const abortController = new AbortController();
-    _url.current = url;
     getItems(true);
     return () => {
       abortController.abort(); // cancel pending fetch request on component unmount
@@ -42,7 +42,7 @@ const fetchData = (
         loaded: false,
       });
     }
-    let rest_call_url = wpApiSettings.root + _url.current;
+    let rest_call_url = wpApiSettings.root + query;
     if (!single) {
       rest_call_url = rest_call_url + "&page=" + (init ? "1" : state.page);
     }
@@ -68,8 +68,8 @@ const fetchData = (
         debug && console.log(response);
         setState((prevState, props) => {
           let _hasMore = response.headers["x-wp-totalpages"] > prevState.page;
-          if (url2 && _url != url2 && !_hasMore) {
-            _url.current = url2;
+          if (url2 && query != url2 && !_hasMore) {
+            setQuery(url2);
             _hasMore = true;
           }
           return {
