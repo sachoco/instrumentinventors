@@ -1,4 +1,54 @@
 <?php
+function iii_export_json_btn($wp_admin_bar)
+{
+    $args = array(
+        'id' => 'iii-export-json',
+        'title' => '<span class="ab-icon"></span>' .'!!! Export JSON !!!',
+        'href' => '#'
+    );
+    $wp_admin_bar->add_node($args);
+}
+add_action('admin_bar_menu', 'iii_export_json_btn', 500);
+
+add_action( 'admin_footer', 'iii_export_json_js' );
+
+function iii_export_json_js() { ?>
+    <script type="text/javascript" >
+       jQuery("li#wp-admin-bar-iii-export-json .ab-item").on( "click", function() {
+          var data = {
+                        'action': 'iii_export_json',
+                      };
+  
+          /* since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php */
+          jQuery.post(ajaxurl, data, function(response) {
+             alert( response );
+          });
+  
+        });
+    </script> <?php
+  }
+  
+  /* Here you hook and define ajax handler function */
+  
+  add_action( 'wp_ajax_iii_export_json', 'iii_export_json_callback' );
+  
+  function iii_export_json_callback() {
+    //   global $wpdb; /* this is how you get access to the database */
+      /* You cache purge logic should go here. */
+      if(export_filter_in_json()){
+          if(export_featured_in_json()){
+            $response = "JSON exported :)";
+            echo $response;
+          }
+      }
+
+      wp_die(); /* this is required to terminate immediately and return a proper     response */
+  } 
+
+
+
+
+
 function prep_rest_call()
 {
     register_rest_field(
@@ -74,6 +124,7 @@ function export_post_in_json($post_id, $post, $update)
         $server = rest_get_server();
         $output = $server->response_to_data($response, false);
         save_json($output[0]);
+
     }
 }
 add_action('save_post', 'export_post_in_json', 10, 3);
@@ -92,6 +143,7 @@ function export_artist_in_json($post_id, $post, $update)
         $output = $server->response_to_data($response, false);
 
         save_json($output[0]);
+
     }
 }
 add_action('save_post_artist', 'export_artist_in_json', 10, 3);
@@ -110,6 +162,7 @@ function export_agenda_in_json($post_id, $post, $update)
         $output = $server->response_to_data($response, false);
 
         save_json($output[0]);
+
     }
 }
 add_action('save_post_agenda', 'export_agenda_in_json', 10, 3);
@@ -186,3 +239,91 @@ function export_allpost_in_json()
     }
 }
 // add_action( 'wp_loaded', 'export_allpost_in_json' );
+
+
+
+
+/**
+ * Exporting json for menu
+ */
+function export_menu_in_json($nav_menu_selected_id)
+{
+    $request = new WP_REST_Request('GET', '/iii/menu');
+    $response = rest_do_request($request);
+    $server = rest_get_server();
+    $output = $server->response_to_data($response, false);
+    $data = json_encode($output);
+    $file_name =  'data.json';
+
+    $save_path = ABSPATH . 'data/menu/' . $file_name;
+
+    $dirname = dirname($save_path);
+    if (!is_dir($dirname)) {
+        mkdir($dirname, 0755, true);
+    }
+    $f = fopen($save_path, "w"); //if json file doesn't gets saved, comment this and uncomment the one below
+    fwrite($f, $data);
+    fclose($f);
+}
+add_action('wp_update_nav_menu', 'export_menu_in_json', 10, 1);
+
+/**
+ * Exporting json for filter
+ */
+function export_filter_in_json()
+{
+    
+    $posttypes = Array('posts','agenda','artist','project');
+    foreach($posttypes as $pt){
+        $request = new WP_REST_Request('GET', '/iii/filterItems/'.$pt);
+        $response = rest_do_request($request);
+        $server = rest_get_server();
+        $output = $server->response_to_data($response, false);
+        $data = json_encode($output);
+        $file_name =  'data.json';
+    
+        $save_path = ABSPATH . 'data/filter/' . $pt . '/' . $file_name;
+    
+        $dirname = dirname($save_path);
+        if (!is_dir($dirname)) {
+            mkdir($dirname, 0755, true);
+        }
+        $f = fopen($save_path, "w"); //if json file doesn't gets saved, comment this and uncomment the one below
+        fwrite($f, $data);
+        fclose($f);
+    }
+    return true;
+    
+}
+// add_action( 'wp_loaded', 'export_filter_in_json' );
+/**
+ * Exporting json for filter
+ */
+function export_featured_in_json()
+{
+    $pages = Array('home','hostedprogram','agency','education');
+    $lang = Array('en','nl');
+    foreach($lang as $l){
+        foreach($pages as $page){
+            $request = new WP_REST_Request('GET', '/iii/getFeatured/'.$page);
+            $response = rest_do_request($request);
+            $server = rest_get_server();
+            $output = $server->response_to_data($response, false);
+            $data = json_encode($output);
+            $file_name =  'data.json';
+        
+            $save_path = ABSPATH . 'data/featured/' . $page . '/' . $l . '/' . $file_name;
+        
+            $dirname = dirname($save_path);
+            if (!is_dir($dirname)) {
+                mkdir($dirname, 0755, true);
+            }
+            $f = fopen($save_path, "w"); //if json file doesn't gets saved, comment this and uncomment the one below
+            fwrite($f, $data);
+            fclose($f);
+        }
+    }
+    
+    return true;
+    
+}

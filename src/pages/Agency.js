@@ -13,7 +13,9 @@ const Agency = () => {
   return (
   <>
     <Meta title="Agency" />
-    <Slideshow url="iii/getFeatured/agency/?" />
+    {/* <Slideshow url="iii/getFeatured/agency/?" /> */}
+    <Slideshow url="/data/featured/agency" />
+
     <Block title="circulation events, workshops and residencies" carousel url="wp/v2/agenda/?subcat=circulation" />
 
     <Block title="artists" bg={true} carousel url="wp/v2/artist/?pricat=agency" />

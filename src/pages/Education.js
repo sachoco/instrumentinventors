@@ -13,7 +13,8 @@ const Education = () => {
   return (
     <>
       <Meta title="Education" />
-      <Slideshow url="iii/getFeatured/education/?" />
+      {/* <Slideshow url="iii/getFeatured/education/?" /> */}
+      <Slideshow url="/data/featured/education" />
       <Block
         title="hosted workshops"
         carousel

@@ -17,7 +17,7 @@ import fetchMenu from "./components/rest-api/fetchMenu";
 
 const App = () => {
   const menuItems = fetchMenu();
-  const pages = loadPages(menuItems.items);
+  const pages = null;//loadPages(menuItems.items);
 
   return (
     <>

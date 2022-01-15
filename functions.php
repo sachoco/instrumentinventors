@@ -23,9 +23,7 @@ $enqueue = new \WPackio\Enqueue( 'instrumentInventors', 'dist', '1.0.0', 'theme'
  * Enqueue scripts and styles.
  */
 function theme_scripts() {
-	wp_enqueue_script( 'jquery' );
-	wp_enqueue_script( 'lightbox2' );
-	wp_enqueue_style( 'lightbox2' );
+
 
 	// wp_enqueue_media();
 	// wp_register_script( 'vibrant', get_stylesheet_directory_uri() . '/node_modules/node-vibrant/dist/vibrant.js', array('jquery'), '', true );
@@ -39,7 +37,9 @@ function theme_scripts() {
 	global $enqueue;
 	if(!is_woocommerce()&&!is_product()&&!is_cart()&&!is_checkout()&&!is_account_page()):
 
-
+		wp_enqueue_script( 'jquery' );
+		wp_enqueue_script( 'lightbox2' );
+		wp_enqueue_style( 'lightbox2' );
 		$assets = $enqueue->enqueue( 'theme', 'main',  [
 			'js' => true,
 			'css' => true,

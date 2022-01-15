@@ -1,0 +1,42 @@
+{
+  "main.css": "theme-noreact/main-79d05a8a.css",
+  "main.css.map": "theme-noreact/main-79d05a8a.css.map",
+  "main.js": "theme-noreact/main-19914bfa.js",
+  "main.js.map": "theme-noreact/main-19914bfa.js.map",
+  "runtime.js": "theme-noreact/runtime-4a40480c.js",
+  "runtime.js.map": "theme-noreact/runtime-4a40480c.js.map",
+  "theme-noreact/assets/Antipol Extended Bold.otf": "theme-noreact/assets/Antipol%20Extended%20Bold-47719189.otf",
+  "theme-noreact/assets/Antipol Extended Regular.otf": "theme-noreact/assets/Antipol%20Extended%20Regular-c41cd2ee.otf",
+  "theme-noreact/assets/GT-Walsheim-Bold.eot": "theme-noreact/assets/GT-Walsheim-Bold-33f7eff5.eot",
+  "theme-noreact/assets/GT-Walsheim-Bold.woff": "theme-noreact/assets/GT-Walsheim-Bold-e9a3833e.woff",
+  "theme-noreact/assets/GT-Walsheim-Bold.woff2": "theme-noreact/assets/GT-Walsheim-Bold-1bcdcd82.woff2",
+  "theme-noreact/assets/GT-Walsheim-Regular.eot": "theme-noreact/assets/GT-Walsheim-Regular-397595bb.eot",
+  "theme-noreact/assets/GT-Walsheim-Regular.woff": "theme-noreact/assets/GT-Walsheim-Regular-e7d96dc5.woff",
+  "theme-noreact/assets/GT-Walsheim-Regular.woff2": "theme-noreact/assets/GT-Walsheim-Regular-c4f8cd15.woff2",
+  "theme-noreact/assets/no-image.svg": "theme-noreact/assets/no-image-3041b99b.svg",
+  "theme-noreact/assets/overlay.jpg": "theme-noreact/assets/overlay-f84db85c.jpg",
+  "vendors~main.js": "theme-noreact/vendors~main-6f62f900.js",
+  "vendors~main.js.map": "theme-noreact/vendors~main-6f62f900.js.map",
+  "wpackioEp": {
+    "main": {
+      "assets": {
+        "js": [
+          "theme-noreact/runtime-4a40480c.js",
+          "theme-noreact/vendors~main-6f62f900.js",
+          "theme-noreact/main-19914bfa.js"
+        ],
+        "js.map": [
+          "theme-noreact/runtime-4a40480c.js.map",
+          "theme-noreact/vendors~main-6f62f900.js.map",
+          "theme-noreact/main-19914bfa.js.map"
+        ],
+        "css": [
+          "theme-noreact/main-79d05a8a.css"
+        ],
+        "css.map": [
+          "theme-noreact/main-79d05a8a.css.map"
+        ]
+      }
+    }
+  }
+}

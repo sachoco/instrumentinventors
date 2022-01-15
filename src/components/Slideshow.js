@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import fetchData from "../components/rest-api/fetchData";
+import fetchFeatured from "../components/rest-api/fetchFeatured";
 
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -11,7 +12,8 @@ export default function Slideshow({
   url = "wp/v2/agenda/?featured&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii",
   ...otherProps
 }) {
-  const [state] = fetchData(url, true);
+  // const [state] = fetchData(url, true);
+  const state = fetchFeatured(url);
 
   var settings = {
     dots: true,

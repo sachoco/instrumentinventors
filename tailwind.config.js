@@ -52,7 +52,7 @@ module.exports = {
         },
       },
       backgroundImage: (theme) => ({
-        overlay: "url('./assets/overlay.jpg')",
+        overlay: "url('./assets/overlay-1600.jpg')",
       }),
       zIndex: {
         "-10": "-10",

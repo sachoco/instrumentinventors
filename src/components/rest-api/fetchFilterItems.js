@@ -6,7 +6,8 @@ const fetchFilterItems = (posttype) => {
     items: {},
     error: "",
   });
-  const url = "iii/filterItems/" + posttype;
+  // const url = "iii/filterItems/" + posttype;
+  const url = "/data/filter/" + posttype;
   useEffect(() => {
     const abortController = new AbortController();
     getItems();
@@ -16,7 +17,8 @@ const fetchFilterItems = (posttype) => {
   }, [posttype]);
 
   const getItems = () => {
-    let rest_call_url = wpApiSettings.root + url;
+    // let rest_call_url = wpApiSettings.root + url;
+    let rest_call_url = url + '/' + 'data.json';;
 
     return Axios.get(rest_call_url).then(
       (response) => {
