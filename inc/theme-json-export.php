@@ -205,26 +205,26 @@ function update_all_posts()
 function export_allpost_in_json()
 {
     prep_rest_call();
-    // $args = array(
-    //     'post_type' => 'post',
-    //     'post_status' => 'publish',
-    //     'numberposts' => 100,
-    //     'offset' => 0
-    // );
     $args = array(
-        'post_type' => 'project',
+        'post_type' => 'post',
         'post_status' => 'publish',
-        'posts_per_page' => 100,
-        'paged' => 2
+        'numberposts' => 100,
+        'offset' => 0
     );
+    // $args = array(
+    //     'post_type' => 'project',
+    //     'post_status' => 'publish',
+    //     'posts_per_page' => 100,
+    //     'paged' => 2
+    // );
     // $all_posts = get_posts($args);
     $all_posts = new WP_Query($args);
     $ids = [];
     foreach ($all_posts->posts as $single_post) {
         array_push($ids, $single_post->ID);
     }
-    // $request = new WP_REST_Request( 'GET', '/wp/v2/posts' );
-    $request = new WP_REST_Request('GET', '/wp/v2/project');
+    $request = new WP_REST_Request( 'GET', '/wp/v2/posts' );
+    // $request = new WP_REST_Request('GET', '/wp/v2/project');
     $request->set_query_params([
         'include' => implode(',', $ids),
         'per_page' => 100

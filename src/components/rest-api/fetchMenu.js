@@ -22,6 +22,11 @@ const fetchMenu = (url="/data/menu/") => {
     let rest_call_url = url + 'data.json';
 
     console.log(rest_call_url)
+    // Axios.defaults.headers = {
+    //   "Cache-Control": "no-cache",
+    //   Pragma: "no-cache",
+    //   Expires: "0",
+    // };
     return Axios.get(rest_call_url).then(
       (response) => {
         console.log(response.data);

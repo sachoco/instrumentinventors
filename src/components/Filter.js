@@ -94,7 +94,7 @@ export default function Filter({ filter, ...props }) {
 		<div className={props.className}>
 			<div
 				className={
-					"fixed t-24 l-0 w-full lg:pr-24 z-40 transform transition " +
+					"fixed t-24 h-0 l-0 w-full lg:pr-24 z-40 transform transition " +
 					(showFilter ? "" : "-translate-y-full")
 				}
 			>

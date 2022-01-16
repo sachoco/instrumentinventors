@@ -40,6 +40,7 @@ module.exports = {
         title: ["Antipol Extended", "sans-serif"],
       },
       fontSize: {
+        '2xs' : '0.65rem',
         'mobile': '16px',
       },
       backgroundColor: {

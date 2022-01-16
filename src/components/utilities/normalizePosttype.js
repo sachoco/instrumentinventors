@@ -40,7 +40,7 @@ const normalizePosttype = (item) => {
         .replace("https://", "")
         .split(/[/?#](.+)/)[1];
       returnObj.subcategory = item.subtype;
-      returnObj.tag = item.tags?.length > 0 ? item.tags : "no tag yet";
+      returnObj.tag = item.tags?.length > 0 ? item.tags : "";
       returnObj.posttype = item.subtype;
     } else if (item.featured_result) {
       returnObj.title = he.decode(item.title);
@@ -53,7 +53,7 @@ const normalizePosttype = (item) => {
           .replace("http://", "")
           .replace("https://", "")
           .split(/[/?#](.+)/)[1];
-      returnObj.tag = item.tags?.length > 0 ? item.tags : "no tag yet";
+      returnObj.tag = item.tags?.length > 0 ? item.tags : "";
       returnObj.posttype = item.post_type;
       returnObj.date = item.date;
       returnObj.meta1 = item.meta1 ? item.meta1 : "";
@@ -99,7 +99,7 @@ const normalizePosttype = (item) => {
         };
       returnObj.link = "/" + item.type + "/" + item.slug;
       returnObj.posttype = item.type;
-      returnObj.tag = (Array.isArray(item.iii?.tags)&&item.iii.tags?.length > 0) ? item.iii.tags : "no tag yet";
+      returnObj.tag = (Array.isArray(item.iii?.tags)&&item.iii.tags?.length > 0) ? item.iii.tags : "";
 
       if (item.type == "artist") {
         returnObj.subcategory = item.acf?.badges;
@@ -114,8 +114,8 @@ const normalizePosttype = (item) => {
 
       } else if (item.type == "project") {
         returnObj.subcategory = [item.acf.category];
-        returnObj.meta1 = item.acf.authors ? item.acf.authors : "no authors value";
-        returnObj.meta2 = item.acf.year ? item.acf.year : "no year value";
+        returnObj.meta1 = item.acf.authors ? item.acf.authors : "";
+        returnObj.meta2 = item.acf.year ? item.acf.year : "";
         returnObj.date = item.acf.year;
         returnObj.archive_base = "projects";
 
@@ -125,7 +125,7 @@ const normalizePosttype = (item) => {
           ? `${item.acf.date_from} - ${item.acf.date_until}`
           : `${item.acf.date_from}`;
 
-        let location = "";
+        let location = null;
         if(!item.acf.venue&&!item.acf.city){
           if(item.acf.location){
             location = item.acf.location[0].location;
@@ -135,7 +135,9 @@ const normalizePosttype = (item) => {
         }else{
           location = item.acf.venue + item.acf.city;
         }
-        returnObj.meta1 = location;//item.acf.venue ? item.acf.venue : "no venue value";
+        if(location){
+          returnObj.meta1 = location;//item.acf.venue ? item.acf.venue : "no venue value";
+        }
         // returnObj.meta2 = item.acf.city ? item.acf.city : "no city value";
         returnObj.meta3 = item.acf["host_|_circulation"];
         returnObj.archive_base = "agenda";

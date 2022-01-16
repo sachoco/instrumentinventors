@@ -9,7 +9,7 @@ const fetchFilteredData = (
   const prepareUrl = (secondary=false) => {
     let _url = wpApiSettings.root + 'wp/v2/'+filter.posttype+'/?';
     let _url2 = null;
-    _url += '&per_page=24&_fields=id,title,slug,formatted_date,acf,type,tags,wpml_translations,iii';
+    _url += '&per_page=24&_fields=id,title,slug,formatted_date,date,acf,type,tags,wpml_translations,iii';
     Object.keys(filter).forEach((key) => {
       if (filter[key] && key != "posttype") {
         _url += "&" + key + "=" + filter[key];

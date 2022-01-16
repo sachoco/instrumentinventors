@@ -19,7 +19,11 @@ const fetchFilterItems = (posttype) => {
   const getItems = () => {
     // let rest_call_url = wpApiSettings.root + url;
     let rest_call_url = url + '/' + 'data.json';;
-
+    // Axios.defaults.headers = {
+    //   "Cache-Control": "no-cache",
+    //   Pragma: "no-cache",
+    //   Expires: "0",
+    // };
     return Axios.get(rest_call_url).then(
       (response) => {
         console.log(response.data);
