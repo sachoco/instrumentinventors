@@ -51,7 +51,7 @@ const SinglePage = ({ pages, ...otherProps }) => {
   }, [content, posttype]);
 
   return (
-    <>
+    <div className="single-page">
       <Meta title={title} />
 			{state.item ? 
 				<>
@@ -81,7 +81,7 @@ const SinglePage = ({ pages, ...otherProps }) => {
 					)}
 				</>
 			}
-    </>
+    </div>
   );
 };
 

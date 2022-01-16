@@ -191,6 +191,7 @@ function get_featured_items($request)
   $data = [];
   if (!empty($items)) {
     foreach ($items as $post) {
+      $post_data = [];
       $post_data['id'] = $post->ID;
       $post_data['title'] = $post->post_title;
       $post_data['post_type'] = $post->post_type;

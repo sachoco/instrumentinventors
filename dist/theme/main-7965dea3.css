@@ -2209,6 +2209,10 @@ body {
   overscroll-behavior-x: none;
 }
 
+.single-page a:hover {
+  text-decoration: underline;
+}
+
 .single-item-content p {
   margin-bottom: 1rem;
 }
@@ -3581,4 +3585,4 @@ html[xmlns] .flexslider .slides{
 
 /* purgecss end ignore */
 
-/*# sourceMappingURL=main-5373ba46.css.map*/
+/*# sourceMappingURL=main-7965dea3.css.map*/

@@ -65,7 +65,7 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
 		})
 	},[state])
 	return (
-		<>
+		<div className="single-page">
 			<Meta title={title} />
 
 			{state.item ? 
@@ -93,7 +93,7 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
 					)}
 				</>
 			}
-		</>
+		</div>
 	);
 };
 

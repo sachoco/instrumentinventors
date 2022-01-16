@@ -2209,6 +2209,10 @@ body {
   overscroll-behavior-x: none;
 }
 
+.single-page a:hover {
+  text-decoration: underline;
+}
+
 .single-item-content p {
   margin-bottom: 1rem;
 }
@@ -2517,4 +2521,4 @@ body {
 }
 
 
-/*# sourceMappingURL=noreact-90ddb870.css.map*/
+/*# sourceMappingURL=noreact-44558252.css.map*/
