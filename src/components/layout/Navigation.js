@@ -188,7 +188,7 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
           )}
 
           <div className="flex w-full lg:hidden justify-center items-center h-full ">
-            <h2>{metaCtx.title}</h2>
+            {/* <h2>{metaCtx.title}</h2> */}
           </div>
         </nav>
 

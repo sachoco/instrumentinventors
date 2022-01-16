@@ -176,7 +176,7 @@ export default function HeaderImage({ item, ...otherProps }) {
           )}
           {Array.isArray(tag) && tag.length > 0
             ? tag.map((obj, i) => (
-                <span key={i} className="border-2 bg-white py-2 px-4 mr-2">
+                <span key={i} className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">
                   <Link to={"/" + archive_base + "/?t=" + obj.id}>
                     {obj.name}
                   </Link>
