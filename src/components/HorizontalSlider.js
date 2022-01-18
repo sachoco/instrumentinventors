@@ -10,6 +10,7 @@ export default function HorizontalSlider({
   related_item = false,
   onScroll = null,
   debug = false,
+  setDisable = null,
   ...otherProps
 }) {
   if (!related_item) {
@@ -86,7 +87,8 @@ export default function HorizontalSlider({
   return (
     <>
       {state.items.length == 0 && state.noItem ? (
-        "NO ITEM TO SHOW"
+        setDisable(true)
+        // "NO ITEM TO SHOW"
       ) : (
         <div
           className="relative -mx-24"
