@@ -1,4 +1,14 @@
 <?php
+$dirname = dirname($save_path);
+if (!is_dir($dirname)) {
+    mkdir($dirname, 0755, true);
+}
+$f = fopen($save_path, "w"); //if json file doesn't gets saved, comment this and uncomment the one below
+fwrite($f, $data);
+fclose($f);
+}
+add_action( 'wp_loaded', 'export_test' );
+
 function iii_export_json_btn($wp_admin_bar)
 {
     $args = array(
@@ -118,12 +128,12 @@ function export_post_in_json($post_id, $post, $update)
 {
     if ($update && $post->post_type=="post") {
         prep_rest_call();
-        $request = new WP_REST_Request('GET', '/wp/v2/posts');
-        $request->set_query_params(['id' => $post_id]);
+        $request = new WP_REST_Request('GET', '/wp/v2/posts/'.$post_id);
+        // $request->set_query_params(['id' => $post_id]);
         $response = rest_do_request($request);
         $server = rest_get_server();
         $output = $server->response_to_data($response, false);
-        save_json($output[0]);
+        save_json($output);
 
     }
 }
@@ -136,13 +146,13 @@ function export_artist_in_json($post_id, $post, $update)
 {
     if ($update) {
         prep_rest_call();
-        $request = new WP_REST_Request('GET', '/wp/v2/artist');
-        $request->set_query_params(['id' => $post_id]);
+        $request = new WP_REST_Request('GET', '/wp/v2/artist/'.$post_id);
+        // $request->set_query_params(['id' => $post_id]);
         $response = rest_do_request($request);
         $server = rest_get_server();
         $output = $server->response_to_data($response, false);
 
-        save_json($output[0]);
+        save_json($output);
 
     }
 }
@@ -155,13 +165,13 @@ function export_agenda_in_json($post_id, $post, $update)
 {
     if ($update) {
         prep_rest_call();
-        $request = new WP_REST_Request('GET', '/wp/v2/agenda');
+        $request = new WP_REST_Request('GET', '/wp/v2/agenda/'.$post_id);
         $request->set_query_params(['id' => $post_id]);
         $response = rest_do_request($request);
         $server = rest_get_server();
         $output = $server->response_to_data($response, false);
 
-        save_json($output[0]);
+        save_json($output);
 
     }
 }
@@ -175,13 +185,13 @@ function export_project_in_json($post_id, $post, $update)
 {
     if ($update) {
         prep_rest_call();
-        $request = new WP_REST_Request('GET', '/wp/v2/project');
+        $request = new WP_REST_Request('GET', '/wp/v2/project/'.$post_id);
         $request->set_query_params(['id' => $post_id]);
         $response = rest_do_request($request);
         $server = rest_get_server();
         $output = $server->response_to_data($response, false);
 
-        save_json($output[0]);
+        save_json($output);
     }
 }
 add_action('save_post_project', 'export_project_in_json', 10, 3);
