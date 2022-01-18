@@ -13,16 +13,16 @@ const Footer = () => (
     </div>
     <div className="">
       <h4 className="mt-5 lg:mt-auto text-lg lg:text-2xl border-b-2 border-black mb-2 block lg:inline-block ">contact us</h4>
-      <p>info@instrumentinventors.org</p>
+      <p><a href="mailto:info@instrumentinventors.org">info@instrumentinventors.org</a></p>
     </div>
     <div className="">
       <h4 className="mt-5 lg:mt-auto text-lg lg:text-2xl border-b-2 border-black mb-2 block lg:inline-block ">donate</h4>
-      <p>click for more info</p>
+      <p><a href="/product-category/donation/" target="_self" >click for more info</a></p>
     </div>
     <div className="">
       <h4 className="mt-5 lg:mt-auto text-lg lg:text-2xl border-b-2 border-black mb-2 block lg:inline-block ">follow us</h4>
       <p className="flex justify-center lg:justify-start">
-        <a href="#" className="mr-2">
+        <a href="https://www.facebook.com/instrumentinventors" target="_blank" className="mr-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="40"
@@ -35,7 +35,7 @@ const Footer = () => (
             />
           </svg>
         </a>
-        <a href="#" className="mr-2">
+        <a href="https://www.instagram.com/instrumentinventors/" target="_blank" className="mr-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="40"
@@ -56,7 +56,7 @@ const Footer = () => (
             />
           </svg>
         </a>
-        <a href="#" className="mr-2">
+        <a href="https://vimeo.com/user43489698" target="_blank" className="mr-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="39.998"

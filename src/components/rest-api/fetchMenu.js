@@ -19,14 +19,20 @@ const fetchMenu = (url="/data/menu/") => {
 
   const getItems = () => {
     // let rest_call_url = wpApiSettings.root + url;
-    let rest_call_url = url + 'data.json';
+    let rest_call_url = url;
+    if(cookies.lang=='nl'){
+      rest_call_url += 'nl/';
+    }else{
+      rest_call_url += 'en/';
+    }
+    rest_call_url += 'data.json';
 
     console.log(rest_call_url)
-    // Axios.defaults.headers = {
-    //   "Cache-Control": "no-cache",
-    //   Pragma: "no-cache",
-    //   Expires: "0",
-    // };
+    Axios.defaults.headers = {
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+      Expires: "0",
+    };
     return Axios.get(rest_call_url).then(
       (response) => {
         console.log(response.data);

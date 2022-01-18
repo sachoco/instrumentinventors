@@ -116,7 +116,7 @@ add_action('save_post_page', 'export_page_in_json', 10, 3);
  */
 function export_post_in_json($post_id, $post, $update)
 {
-    if ($update) {
+    if ($update && $post->post_type=="post") {
         prep_rest_call();
         $request = new WP_REST_Request('GET', '/wp/v2/posts');
         $request->set_query_params(['id' => $post_id]);
@@ -248,22 +248,29 @@ function export_allpost_in_json()
  */
 function export_menu_in_json($nav_menu_selected_id)
 {
-    $request = new WP_REST_Request('GET', '/iii/menu');
-    $response = rest_do_request($request);
-    $server = rest_get_server();
-    $output = $server->response_to_data($response, false);
-    $data = json_encode($output);
-    $file_name =  'data.json';
+    $lang = Array('en','nl');
+    foreach($lang as $l){
 
-    $save_path = ABSPATH . 'data/menu/' . $file_name;
+        $request = new WP_REST_Request('GET', '/iii/menu');
+        if($l=='nl'){
+            $request->set_query_params( ['lang' => 'nl'] );
+        }
+        $response = rest_do_request($request);
+        $server = rest_get_server();
+        $output = $server->response_to_data($response, false);
+        $data = json_encode($output);
+        $file_name =  'data.json';
 
-    $dirname = dirname($save_path);
-    if (!is_dir($dirname)) {
-        mkdir($dirname, 0755, true);
+        $save_path = ABSPATH . 'data/menu/' . $l . '/' . $file_name;
+
+        $dirname = dirname($save_path);
+        if (!is_dir($dirname)) {
+            mkdir($dirname, 0755, true);
+        }
+        $f = fopen($save_path, "w"); //if json file doesn't gets saved, comment this and uncomment the one below
+        fwrite($f, $data);
+        fclose($f);
     }
-    $f = fopen($save_path, "w"); //if json file doesn't gets saved, comment this and uncomment the one below
-    fwrite($f, $data);
-    fclose($f);
 }
 add_action('wp_update_nav_menu', 'export_menu_in_json', 10, 1);
 
@@ -305,7 +312,11 @@ function export_featured_in_json()
     $lang = Array('en','nl');
     foreach($lang as $l){
         foreach($pages as $page){
+            
             $request = new WP_REST_Request('GET', '/iii/getFeatured/'.$page);
+            if($l=='nl'){
+                $request->set_query_params( ['lang' => 'nl'] );
+            }
             $response = rest_do_request($request);
             $server = rest_get_server();
             $output = $server->response_to_data($response, false);

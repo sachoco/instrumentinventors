@@ -2,21 +2,32 @@
 
 add_action('rest_api_init', function () {
     register_rest_route('iii', '/menu', array(
+        // register_rest_route('iii', '/menu(?:/(?P<lang>[a-z0-9,+]+))?', array(
         'methods' => 'GET',
         'callback' => 'get_menu',
         'permission_callback' => '__return_true',
     ));
 });
 
-function get_menu()
+function get_menu($request)
 {
+
     $available_languages = wpml_get_active_languages_filter('', array('skip_missing' => false,));
-    if (isset($_REQUEST['lang'])) {
-        $lang = $_REQUEST['lang'];
+
+    if ($request->get_param('lang')) {
+        $lang = $request->get_param('lang');
     } else {
         $lang = "en";
     }
+     // if (isset($_REQUEST['lang'])) {
+    //     $lang = $_REQUEST['lang'];
+    // } else {
+    //     $lang = "en";
+    // }
 
+    // var_dump($available_languages);
+    // $lang = "nl";
+    
     if (isset($lang) && in_array($lang, array_keys($available_languages))) {
         do_action('wpml_switch_language', $lang);
     }
