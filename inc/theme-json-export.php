@@ -1,14 +1,4 @@
 <?php
-$dirname = dirname($save_path);
-if (!is_dir($dirname)) {
-    mkdir($dirname, 0755, true);
-}
-$f = fopen($save_path, "w"); //if json file doesn't gets saved, comment this and uncomment the one below
-fwrite($f, $data);
-fclose($f);
-}
-add_action( 'wp_loaded', 'export_test' );
-
 function iii_export_json_btn($wp_admin_bar)
 {
     $args = array(
