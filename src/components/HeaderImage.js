@@ -77,7 +77,7 @@ export default function HeaderImage({ item, ...otherProps }) {
             {/*<span className="border-2 bg-white py-2 px-4 mr-2">
               {link}
             </span>*/}
-            {subcategory.length > 0
+            {subcategory?.length > 0
               ? subcategory?.map((cat, i) => (
                   <span
                     key={i}
@@ -134,7 +134,7 @@ export default function HeaderImage({ item, ...otherProps }) {
       <div className="lg:hidden relative w-full bg-bg-light-gray border-t-2 border-b-2">
         <h2 className="text-lg text-white bg-bg-gray px-6 py-3">{title}</h2>
         <div className=" text-black p-6 border-t-2 text-xs">
-          {subcategory.length > 0
+          {subcategory?.length > 0
             ? subcategory?.map((cat, i) => (
                 <span
                   key={i}

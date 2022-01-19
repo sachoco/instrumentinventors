@@ -14,7 +14,9 @@ const Block = ({
 }) => {
   const [scrollSine, setScrollSine] = useState(0);
   const [disable, setDisable] = useState(false);
-
+  const toggleDisable = (bool) => {
+    setDisable(bool);
+  }
   return (
     <>
     {!disable &&    
@@ -31,7 +33,7 @@ const Block = ({
             <Wave waveType="sine" scrollX={scrollSine} />
           </div>
         )}
-        {carousel && <HorizontalSlider setDisable={setDisable} debug={debug} url={url} url2={url2} related_item={related_item} onScroll={ (value) => setScrollSine(value) } />}
+        {carousel && <HorizontalSlider toggleDisable={toggleDisable} debug={debug} url={url} url2={url2} related_item={related_item} onScroll={ (value) => setScrollSine(value) } />}
         {otherProps.children}
       </div>
     }

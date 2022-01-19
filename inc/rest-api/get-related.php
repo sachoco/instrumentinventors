@@ -13,7 +13,9 @@ function get_related($request)
         return new WP_Error('empty_post', 'there is no post', array('status' => 404));
     }
 
-    $related_posts = get_field('related_posts', $id);
+    $related_posts_ids = get_field('related_posts', $id);
+
+    $related_posts = get_posts(array('post__in' => $related_posts_ids));
     // var_dump($related_posts);
     //
 
