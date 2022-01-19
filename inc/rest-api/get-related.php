@@ -15,7 +15,7 @@ function get_related($request)
 
     $related_posts_ids = get_field('related_posts', $id);
 
-    $related_posts = get_posts(array('post__in' => $related_posts_ids));
+    $related_posts = get_posts(array('post__in' => $related_posts_ids, 'post_type' => array('post','artist','project','agenda'), 'posts_per_page' => -1 ));
     // var_dump($related_posts);
     //
 
