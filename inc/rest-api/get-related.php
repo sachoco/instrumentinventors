@@ -63,16 +63,21 @@ function get_related($request)
             $post_data['id'] = $post->ID;
             $post_data['title'] = $post->post_title;
             $post_data['subtype'] = $post->post_type;
-            $post_data['tag'] = get_the_tags($post->ID);
             $post_data['url'] = esc_url(get_permalink($post->ID));
             $post_data['featured_image'] = get_the_post_thumbnail_url($post->ID, 'medium_large');
             $post_data['related_result'] = true;
-            if($post->post_type=='project'){
-                $post_data['date'] = get_field('year',$post->ID);
-            }elseif($post->post_type=='post'){
-                $post_data['date'] = $post->post_date;
-            }elseif($post->post_type=='agenda'){
-                $post_data['date'] = get_field('date_from',$post->ID);
+            $post_data['acf'] = get_fields($post->ID);
+            $post_data['date'] = $post->post_date;
+            // $post_data['tag'] = get_the_tags($post->ID);
+            if (get_the_tags($post->ID)) {
+                foreach(get_the_tags($post->ID) as $tag) {
+                    $post_data["tags"][] = array(
+                        'id' => $tag->term_id,
+                        'name' => $tag->name, 
+                    ); 
+                }
+            }else{
+                $post_data["tags"] = false;
             }
             array_push($data,  $post_data);
         }
