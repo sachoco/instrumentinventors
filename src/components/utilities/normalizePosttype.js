@@ -40,7 +40,7 @@ const normalizePosttype = (item) => {
           .replace("https://", "")
           .split(/[/?#](.+)/)[1];
       returnObj.subcategory = item.subtype;
-      returnObj.tag = item.tags;//?.length > 0 ? item.tags : "";
+      returnObj.tag = item.tags ? item.tags : he.decode("&nbsp;");//?.length > 0 ? item.tags : "";
       returnObj.posttype = item.subtype;
       if (item.subtype == "artist") {
         returnObj.meta1 = item.acf?.badges ? item.acf.badges.map((obj)=>(obj.label)).join(', ') : null;
@@ -80,10 +80,13 @@ const normalizePosttype = (item) => {
         returnObj.meta3 = item.acf["host_|_circulation"];
         returnObj.archive_base = "agenda";
       } else {
+        // returnObj.meta1 = item.iii?.category
+        //   ? item.iii.category.map((cat) => {
+        //       return { value: cat.id, label: he.decode(cat.name) };
+        //     })
+        //   : null;
         returnObj.meta1 = item.iii?.category
-          ? item.iii.category.map((cat) => {
-              return { value: cat.id, label: he.decode(cat.name) };
-            })
+          ? item.iii.category.map((cat) => (cat.name)).join(", ")
           : null;
         // returnObj.date = item.formatted_date;
         returnObj.date = new Date(item.date).toLocaleDateString("en-us", {
