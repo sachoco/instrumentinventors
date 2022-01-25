@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useHistory } from "react-router-dom";
 import SearchForm from "./SearchForm";
 import LanguageSelect from "../LanguageSelect";
 
@@ -11,6 +11,7 @@ const SidebarNavigation = ({ menuItems, noreactrouter=false, setSidemenuOpen=nul
   }
   const [showMenu, setShowMenu] = useState(false);
   const ref = useRef(null);
+  const location = useLocation();
   const onClickHandler = (e) => {
     showMenu ? setShowMenu(false) : setShowMenu(true);
     // if(setSidemenuOpen){
@@ -27,16 +28,23 @@ const SidebarNavigation = ({ menuItems, noreactrouter=false, setSidemenuOpen=nul
     (event) => {
       if (ref.current && !ref.current.contains(event.target) && showMenu) {
         setShowMenu(false);
+
       }
     },
     [ref, showMenu]
   );
   useEffect(() => {
+    if(!location.pathname.includes("about", 1)&&!location.pathname.includes("get-involved", 1)){
+      setShowMenu(false);
+    }
+    
+  },[location.pathname]);
+  useEffect(() => {
     document.addEventListener("keydown", escFunction, false);
-    document.addEventListener("mousedown", handleClickOutside);
+    // document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("keydown", escFunction, false);
-      document.removeEventListener("mousedown", handleClickOutside);
+      // document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [ref, showMenu]);
 

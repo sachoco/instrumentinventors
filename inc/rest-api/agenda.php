@@ -42,6 +42,7 @@ function query_agenda($args, $request) {
     if(isset($request["upcoming"])) {
         $args['meta_key'] = 'date_from';
         $args['orderby'] = 'meta_value_num';
+        $args['order'] = 'ASC';
         $args['meta_query'][] = array(
           'relation' => 'OR',
           array(

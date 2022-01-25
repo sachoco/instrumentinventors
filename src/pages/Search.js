@@ -10,7 +10,7 @@ const Search = ({ ...otherProps }) => {
   const { search } = useLocation();
   const queryParams = new URLSearchParams(search);
   const searchStr = queryParams.get("q");
-  const url="wp/v2/search/?per_page=12&search="+searchStr;
+  const url="wp/v2/search/?per_page=24&subtype=post,artist,agenda,project&search="+searchStr;
   const [state, loadMore] = fetchData(url,false);
   
   const metaCtx = useContext(MetaContext);

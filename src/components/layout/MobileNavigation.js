@@ -105,8 +105,8 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
           !showMenu ? "opacity-0 invisible" : "opacity-100 visible"
         }`}
       >
-        <div className="relative h-full p-8 bg-white flex flex-col justify-between">
-          <nav className="flex-grow border-b-2 pb-8">
+        <div className="relative h-full p-4 sm:p-8 bg-white flex flex-col justify-between">
+          <nav className="flex-grow border-b-2 pb-4 sm:pb-8">
             {noreactrouter ? (
               <ul className="flex flex-col justify-around h-full  leading-10">
                 <li className="text-center">
@@ -210,7 +210,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
             )}
           </nav>
 
-          <nav className="flex-grow py-10 border-b-2 ">
+          <nav className="flex-grow py-5 sm:py-10 border-b-2 ">
             <ul className="flex flex-col justify-around h-full leading-10">
               <li className="text-center">
                 <span
@@ -279,7 +279,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
           </div>
 
           <div
-            className={`absolute top-0 left-0 h-full w-full p-8 bg-white flex flex-col justify-between font-nav transform duration-200 transition-all ${
+            className={`absolute z-50 top-0 left-0 h-full w-full p-8 bg-white flex flex-col justify-between font-nav transform duration-200 transition-all ${
               !showSubMenu ? "opacity-0 invisible" : "opacity-100 visible"
             }`}
           >

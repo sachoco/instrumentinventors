@@ -94,6 +94,7 @@ const normalizePosttype = (item) => {
           year: "numeric",
           month: "long",
         });
+        returnObj.subcategory = "news & media";
         returnObj.archive_base = "posts";
       }
     } else if (item.featured_result) {
@@ -170,8 +171,13 @@ const normalizePosttype = (item) => {
       } else if (item.type == "project") {
         returnObj.subcategory = item.acf.category ? [item.acf.category] : null;
         returnObj.meta1 = item.acf.authors ? item.acf.authors : "";
-        returnObj.meta2 = item.acf.year ? item.acf.year : "";
-        returnObj.date = item.acf.year;
+        // returnObj.meta2 = item.acf.year ? item.acf.year : "";
+        if (item.acf.year) {
+          returnObj.date = item.acf.year_end
+            ? `${item.acf.year} - ${item.acf.year_end}`
+            : `${item.acf.year}`;
+        }
+        // returnObj.date = item.acf.year;
         returnObj.archive_base = "projects";
       } else if (item.type == "agenda") {
         returnObj.subcategory = item.acf.category ? [item.acf.category] : null;
