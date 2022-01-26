@@ -58,6 +58,25 @@ function query_agenda($args, $request) {
               'compare' => '>='
           ),
         );
+    }else if(isset($request["past"])) {
+      $args['meta_key'] = 'date_from';
+  		$args['orderby'] = 'meta_value_num';
+  		$args['order'] = 'DESC';
+  		$args['meta_query'][] = array(
+  			'relation' => 'AND',
+        array(
+          'key' => 'date_from',
+          'value' => date("Ymd", strtotime("now")),
+          'type' => 'NUMERIC',
+          'compare' => '<'
+        ),
+        array(
+          'key' => 'date_until',
+          'value' => date("Ymd", strtotime("now")),
+          'type' => 'NUMERIC',
+          'compare' => '<'
+        )       
+  		);
     }else if(isset($request["featured"])) {
       $args['meta_key'] = 'date_from';
   		$args['orderby'] = 'meta_value_num';

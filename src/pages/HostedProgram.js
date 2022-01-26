@@ -17,9 +17,9 @@ const HostedProgram = () => {
     {/* <Slideshow url="iii/getFeatured/hostedprogram/?" /> */}
     <Slideshow url="/data/featured/hostedprogram" />
 
-    <Block title="hosted events" carousel url="wp/v2/agenda/?subcat=host&pricat=event" />
+    <Block title="hosted events" carousel url="wp/v2/agenda/?subcat=host&pricat=event&upcoming" url2="wp/v2/agenda/?subcat=host&pricat=event&past" />
       
-    <Block title="hosted workshops" bg={true} carousel url="wp/v2/agenda/?subcat=host&pricat=workshop" />
+    <Block title="hosted workshops" bg={true} carousel url="wp/v2/agenda/?subcat=host&pricat=workshop&upcoming" url="wp/v2/agenda/?subcat=host&pricat=workshop&past" />
      
     <Block title="residencies" carousel url="wp/v2/artist/?pricat=resident" />
 

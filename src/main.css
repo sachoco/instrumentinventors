@@ -77,9 +77,12 @@ body {
   @apply overscroll-x-none;
 
 }
-.single-page {
-  a:hover {
+.single-item-content  {
+  a {
     @apply underline;
+    &:hover {
+      @apply bg-black text-white no-underline;
+    }
   }
 }
 .single-item-content {

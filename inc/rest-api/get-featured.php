@@ -4,9 +4,9 @@ function get_featured_items($request)
 
   // Change the request language
   $lang = $request->get_param('lang');
-  if ($lang == "nl") {
-    do_action('wpml_switch_language', $lang);
-  }
+  // if ($lang == "nl") {
+  //   do_action('wpml_switch_language', $lang);
+  // }
 
   $page = $request['page'];
 
@@ -194,11 +194,18 @@ function get_featured_items($request)
       $post_data = [];
       $post_data['id'] = $post->ID;
       $post_data['title'] = $post->post_title;
+      if ($lang == "nl") {
+        $translations = get_translations($post);
+        if($translations['nl_NL']){
+          $post_data['title'] = $translations['nl_NL']['post_title'];
+        }
+      }
       $post_data['post_type'] = $post->post_type;
       $post_data['tag'] = get_the_tags($post->ID);
       $post_data['url'] = esc_url(get_permalink($post->ID));
       $post_data['featured_image'] = get_the_post_thumbnail_url($post->ID, 'large');
       $post_data['featured_result'] = true;
+      // $post_data['translations']= get_translations($post);
       if ($post->post_type == "artist") {
         $post_data['subcategory'] = get_field('badges', $post->ID);
         $post_data['date_from'] = get_field('date_from', $post->ID);
@@ -264,3 +271,52 @@ add_action('rest_api_init', function () {
     'permission_callback' => '__return_true',
   ));
 });
+
+function get_translations( $post ) {
+  $languages = apply_filters('wpml_active_languages', null);
+  $translations = [];
+  $show_on_front = get_option( 'show_on_front' );
+  $page_on_front = get_option( 'page_on_front' );
+
+  foreach ($languages as $language) {
+    $post_id = wpml_object_id_filter( $post->ID, 'post', false, $language['language_code'] );
+    if ( $post_id === null || $post_id == $object['id'] ) {
+      continue;
+    }
+    $thisPost = get_post( $post_id );
+
+    // Only show published posts
+    if ( 'publish' !== $thisPost->post_status ) {
+      continue;
+    }
+
+    $href = apply_filters( 'WPML_filter_link', $language['url'], $language );
+    $href = apply_filters( 'wpmlrestapi_translations_href', $href, $thisPost );
+    $href = trailingslashit( $href );
+
+    if ( ! ( 'page' == $show_on_front && $post->ID == $page_on_front ) ) {
+      // $postUrl = $this->calculate_rel_path( $thisPost );
+      // if ( strpos( $href, '?' ) !== false ) {
+      //   $href = str_replace( '?', '/' . $postUrl . '/?', $href );
+      // } else {
+      //   if ( substr( $href, - 1 ) !== '/' ) {
+      //     $href .= '/';
+      //   }
+
+      //   $href .= $postUrl . '/';
+      // }
+
+      $translation  = array(
+        'locale'     => $language['default_locale'],
+        'id'         => $thisPost->ID,
+        'post_title' => $thisPost->post_title,
+        // 'href'       => $href,
+      );
+
+      $translation = apply_filters( 'wpmlrestapi_get_translation', $translation, $thisPost, $language );
+      $translations[$translation['locale']] = $translation;
+    }
+  }
+
+  return $translations;
+}

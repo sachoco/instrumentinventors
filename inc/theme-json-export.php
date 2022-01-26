@@ -308,8 +308,14 @@ function export_filter_in_json()
  */
 function export_featured_in_json()
 {
+    global $wpdb,$sitepress;
     $pages = Array('home','hostedprogram','agency','education');
     $lang = Array('en','nl');
+    // var_dump($sitepress->get_current_language());
+    $default_lang = ICL_LANGUAGE_CODE;
+    if($sitepress->get_current_language()!="en"){
+        $sitepress->switch_lang("en");
+    }
     foreach($lang as $l){
         foreach($pages as $page){
             
@@ -334,7 +340,9 @@ function export_featured_in_json()
             fclose($f);
         }
     }
-    
+    if($default_lang!="en"){
+        $sitepress->switch_lang($default_lang);
+    }
     return true;
     
 }

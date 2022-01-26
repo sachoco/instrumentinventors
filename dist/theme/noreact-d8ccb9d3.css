@@ -2218,8 +2218,16 @@ body {
   overscroll-behavior-x: none;
 }
 
-.single-page a:hover {
+.single-item-content a {
   text-decoration: underline;
+}
+
+.single-item-content a:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgba(0, 0, 0, var(--tw-bg-opacity));
+  --tw-text-opacity: 1;
+  color: rgba(255, 255, 255, var(--tw-text-opacity));
+  text-decoration: none;
 }
 
 .single-item-content p {
@@ -2543,4 +2551,4 @@ body {
 }
 
 
-/*# sourceMappingURL=noreact-259d84cf.css.map*/
+/*# sourceMappingURL=noreact-d8ccb9d3.css.map*/

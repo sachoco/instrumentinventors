@@ -28,7 +28,7 @@ export default function Item(props) {
 	const itemBox = (
 		<div  className="group overflow-hidden relative pb-64 border-2 border-black ">
 
-		{/* <Link to={link} > */}
+		<Link to={link} >
 			<img
 				src={image.medium}
 				alt={title}
@@ -103,7 +103,7 @@ export default function Item(props) {
 				<div className="border-t-2">{meta2}</div>
 				<div className="border-t-2 border-b-2">{tag}</div>
 			</div> */}
-		{/* </Link> */}
+		</Link>
 		</div>
 	);
 

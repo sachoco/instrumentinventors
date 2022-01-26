@@ -94,7 +94,7 @@ export default function HeaderImage({ item, ...otherProps }) {
                 {date}
               </span>
             )}
-            {website.trim() != "" && (
+            {website && website?.trim() != "" && (
               <span className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">
                 <a href={website} target="_blank" className="inline-block ">
                   {website}
@@ -152,7 +152,7 @@ export default function HeaderImage({ item, ...otherProps }) {
               {date}
             </span>
           )}
-          {website.trim() != "" && (
+          {website?.trim() != "" && (
             <a href={website} target="_blank">
               <span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">
                 {website}
