@@ -18,14 +18,16 @@ const Education = () => {
       <Block
         title="hosted workshops"
         carousel
-        url="wp/v2/agenda/?subcat=host&pricat=workshop"
+        url="wp/v2/agenda/?subcat=host&pricat=workshop&upcoming"
+        url2="wp/v2/agenda/?subcat=host&pricat=workshop&past"
       />
 
       <Block
         title="circulation workshops"
         bg={true}
         carousel
-        url="wp/v2/agenda/?subcat=circulation&pricat=workshop"
+        url="wp/v2/agenda/?subcat=circulation&pricat=workshop&upcoming"
+        url2="wp/v2/agenda/?subcat=circulation&pricat=workshop&past"
       />
 
       <Block
