@@ -101,17 +101,17 @@ export default function HeaderImage({ item, ...otherProps }) {
                 </a>
               </span>
             )}
-            {meta1.trim() != "" && (
+            {meta1 && meta1.trim() != "" && (
               <span className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">
                 {meta1}
               </span>
             )}
-            {meta2.trim() != "" && (
+            {meta2 && meta2.trim() != "" && (
               <span className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">
                 {meta2}
               </span>
             )}
-            {meta3.trim() != "" && (
+            {meta3 && meta3.trim() != "" && (
               <span className="inline-block border-2 bg-white py-2 px-4 mr-2 mb-2">
                 {meta3}
               </span>
@@ -152,24 +152,24 @@ export default function HeaderImage({ item, ...otherProps }) {
               {date}
             </span>
           )}
-          {website?.trim() != "" && (
+          {website && website.trim() != "" && (
             <a href={website} target="_blank">
               <span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">
                 {website}
               </span>
             </a>
           )}
-          {meta1.trim() != "" && (
+          {meta1 && meta1.trim() != "" && (
             <span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">
               {meta1}
             </span>
           )}
-          {meta2.trim() != "" && (
+          {meta2 && meta2.trim() != "" && (
             <span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">
               {meta2}
             </span>
           )}
-          {meta3.trim() != "" && (
+          {meta3 && meta3.trim() != "" && (
             <span className="inline-block border-2 bg-white py-1 px-2 mr-2 mb-2">
               {meta3}
             </span>

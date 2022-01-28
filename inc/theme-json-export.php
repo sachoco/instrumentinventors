@@ -79,7 +79,7 @@ function save_json($output)
 
     $file_name =  'data.json';
 
-    $save_path = ABSPATH . 'data/' . $output['type'] . '/' . $output['slug'] . '/' . $lang_dir . $file_name;
+    $save_path = ABSPATH . 'data/' . $output['type'] . '/' . urldecode($output['slug']) . '/' . $lang_dir . $file_name;
     if ($output['type'] == "page") {
         $save_path = ABSPATH . 'data/' . $output['type'] . stripslashes($output['path']) . $lang_dir . $file_name;
     }
@@ -346,3 +346,25 @@ function export_featured_in_json()
     return true;
     
 }
+
+function test_json($output)
+{
+    $data = "test";
+    $dir = "more-moire%c2%b2";
+    // $dir.replaceAll('%c2%b2','²');
+    // $dir = str_replace('%c2%b2', '²', $dir);
+    $dir = urlencode($dir);
+    // $dir = htmlspecialchars_decode($dir);
+    $file_name =  'data.json';
+
+    $save_path = ABSPATH . 'data/'.$dir.'/'. $file_name;
+
+    $dirname = dirname($save_path);
+    if (!is_dir($dirname)) {
+        mkdir($dirname, 0755, true);
+    }
+    $f = fopen($save_path, "w"); //if json file doesn't gets saved, comment this and uncomment the one below
+    fwrite($f, $data);
+    fclose($f);
+}
+// add_action( 'wp_loaded', 'test_json' );
