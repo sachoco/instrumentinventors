@@ -24,77 +24,90 @@ import "../assets/vc/assets/lib/flexslider/jquery.flexslider.min.js";
 import "../assets/vc/assets/lib/flexslider/flexslider.min.css";
 
 const Single = ({ posttype = "posts", ...otherProps }) => {
-	const metaCtx = useContext(MetaContext);
-	const { slug } = useParams();
+  const metaCtx = useContext(MetaContext);
+  const { slug } = useParams();
 
-	const url = "wp/v2/" + posttype + "/?slug=" + slug + "&_embed";
-	const related_url = "iii/related/" + posttype + "/" + slug +"/?";
-	// const [state, loadMore] = fetchData(url, true);
-	let pt = posttype;
-	if(pt=='posts'){ pt = 'post'}; 
-	
-	const state = fetchJson("/data/"+pt+"/"+slug);
+  const url = "wp/v2/" + posttype + "/?slug=" + slug + "&_embed";
+  const related_url = "iii/related/" + posttype + "/" + slug + "/?";
+  // const [state, loadMore] = fetchData(url, true);
+  let pt = posttype;
+  if (pt == "posts") {
+    pt = "post";
+  }
 
-	const {title, content} = normalizePosttype(state.item);
+  const state = fetchJson("/data/" + pt + "/" + slug);
 
-	useEffect(()=>{
-		let catTitle = "";
-		if(posttype=="posts"){
-			catTitle = "news & media";
-		}else{
-			catTitle = posttype;
-		}
-		metaCtx.setTitle(catTitle);
-		metaCtx.setTranslation(false);
-		jQuery('[data-ride="vc_carousel"]').each(function () {
-			var $carousel = jQuery(this);
-			$carousel.carousel($carousel.data());
-		});
-		jQuery(".wpb_flexslider").each(function(){
-			var this_element=jQuery(this), 
-				sliderTimeout=1e3*parseInt(this_element.attr("data-interval"),10),
-				sliderFx=this_element.attr("data-flex_fx"),
-				slideshow=0==sliderTimeout?!1:!0;
-			this_element.is(":visible")&&this_element.flexslider({
-				animation:sliderFx,
-				slideshow:slideshow,
-				slideshowSpeed:sliderTimeout,
-				sliderSpeed:800,
-				smoothHeight:!0
-			})
-		})
-	},[state])
-	return (
-		<div >
-			<Meta title={title} />
+  const { title, content } = normalizePosttype(state.item);
 
-			{state.item ? 
-				<>
-					<HeaderImage item={state.item} /> 
-					<Block className="single-item-content ">
-						{content}
-						<div className="max-w-3xl  font-bold lg:font-normal text-base lg:text-2xl"></div>
-						<div className="mt-10 mx-auto max-w-3xl"></div>
-					</Block>
+  useEffect(() => {
+    let catTitle = "";
+    if (posttype == "posts") {
+      catTitle = "news & media";
+    } else {
+      catTitle = posttype;
+    }
+    metaCtx.setTitle(catTitle);
+    metaCtx.setTranslation(false);
+    jQuery('[data-ride="vc_carousel"]').each(function () {
+      var $carousel = jQuery(this);
+      $carousel.carousel($carousel.data());
+    });
+    jQuery(".wpb_flexslider").each(function () {
+      var this_element = jQuery(this),
+        sliderTimeout = 1e3 * parseInt(this_element.attr("data-interval"), 10),
+        sliderFx = this_element.attr("data-flex_fx"),
+        slideshow = 0 == sliderTimeout ? !1 : !0;
+      this_element.is(":visible") &&
+        this_element.flexslider({
+          animation: sliderFx,
+          slideshow: slideshow,
+          slideshowSpeed: sliderTimeout,
+          sliderSpeed: 800,
+          smoothHeight: !0,
+        });
+    });
+  }, [state]);
+  return (
+    <div>
+      <Meta title={title} />
 
-					<Block debug title="related" bg={true} carousel url={related_url} related_item={true} />
-				</>
-				: 
-				<>
-					{!state.loaded && (
-						<div className="h-64 min-w-64 sm:min-w-80 mr-6">
-							<div className="h-full flex flex-col justify-center items-center">
-								<div className="flex justify-center items-center">
-									<div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-								</div>
-								<div className="mt-3 text-xs inline-block">loading...</div>
-							</div>
-						</div>
-					)}
-				</>
-			}
-		</div>
-	);
+      {state.item ? (
+        <>
+          <HeaderImage item={state.item} />
+          <Block className="single-item-content ">
+            {content}
+            <div className="max-w-3xl  font-bold lg:font-normal text-base lg:text-2xl"></div>
+            <div className="mt-10 mx-auto max-w-3xl"></div>
+          </Block>
+          {state.item.acf.related_posts &&
+            state.item.acf.related_posts != "" &&
+            state.item.acf.related_posts.length > 0 && (
+              <Block
+                debug
+                title="related"
+                bg={true}
+                carousel
+                url={related_url}
+                related_item={true}
+              />
+            )}
+        </>
+      ) : (
+        <>
+          {!state.loaded && (
+            <div className="h-64 min-w-64 sm:min-w-80 mr-6">
+              <div className="h-full flex flex-col justify-center items-center">
+                <div className="flex justify-center items-center">
+                  <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+                </div>
+                <div className="mt-3 text-xs inline-block">loading...</div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
 };
 
 export default Single;
