@@ -21,7 +21,8 @@ const HostedProgram = () => {
       
     <Block title="hosted workshops" bg={true} carousel url="wp/v2/agenda/?subcat=host&pricat=workshop&upcoming" url2="wp/v2/agenda/?subcat=host&pricat=workshop&past" />
      
-    <Block title="residencies" carousel url="wp/v2/artist/?pricat=resident" />
+    {/* <Block title="residencies" carousel url="wp/v2/artist/?pricat=resident" /> */}
+    <Block title="residencies" carousel url="wp/v2/artist/?pricat=resident&upcoming" url2="wp/v2/artist/?pricat=resident&past" />
 
     <Block title="hosted programs and series" bg={true} carousel url="wp/v2/project/?pricat=curated_programs&subcat=host" />
 

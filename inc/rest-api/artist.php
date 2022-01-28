@@ -73,6 +73,26 @@ function query_artist($args, $request)
         $args['orderby'] = array( 
 			'meta_value_num' => 'DESC',
 		);
+	}else if(isset($request["upcoming"])){
+		$args['meta_key'] = 'date_from';
+        $args['orderby'] = 'meta_value_num';
+        $args['order'] = 'ASC';
+        $args['meta_query'][] = array(
+          'relation' => 'OR',
+          array(
+              'key' => 'date_from',
+              'value' => date("Ymd", strtotime("now")),
+              'type' => 'NUMERIC',
+              'compare' => '>='
+          ),
+          array(
+              'key' => 'date_until',
+              'value' => date("Ymd", strtotime("now")),
+              'type' => 'NUMERIC',
+              'compare' => '>='
+          ),
+        );
+
 	}
 
 
