@@ -40,10 +40,12 @@ const normalizePosttype = (item) => {
           .replace("https://", "")
           .split(/[/?#](.+)/)[1];
       returnObj.subcategory = item.subtype;
-      returnObj.tag = item.tags ? item.tags : he.decode("&nbsp;");//?.length > 0 ? item.tags : "";
+      returnObj.tag = item.tags ? item.tags : he.decode("&nbsp;"); //?.length > 0 ? item.tags : "";
       returnObj.posttype = item.subtype;
       if (item.subtype == "artist") {
-        returnObj.meta1 = item.acf?.badges ? item.acf.badges.map((obj)=>(obj.label)).join(', ') : null;
+        returnObj.meta1 = item.acf?.badges
+          ? item.acf.badges.map((obj) => obj.label).join(", ")
+          : null;
         if (item.acf.date_from) {
           returnObj.date = item.acf.date_until
             ? `${item.acf.date_from} - ${item.acf.date_until}`
@@ -60,9 +62,11 @@ const normalizePosttype = (item) => {
         returnObj.archive_base = "projects";
       } else if (item.subtype == "agenda") {
         returnObj.meta1 = item.acf.category ? item.acf.category.label : null;
-        returnObj.date = item.acf.date_until
-          ? `${item.acf.date_from} - ${item.acf.date_until}`
-          : `${item.acf.date_from}`;
+        item.acf.date_from
+          ? (returnObj.date = item.acf.date_until
+              ? `${item.acf.date_from} - ${item.acf.date_until}`
+              : `${item.acf.date_from}`)
+          : (returnObj.date = "");
 
         let location = null;
         if (!item.acf.venue && !item.acf.city) {
@@ -86,7 +90,7 @@ const normalizePosttype = (item) => {
         //     })
         //   : null;
         returnObj.meta1 = item.iii?.category
-          ? item.iii.category.map((cat) => (cat.name)).join(", ")
+          ? item.iii.category.map((cat) => cat.name).join(", ")
           : null;
         // returnObj.date = item.formatted_date;
         returnObj.date = new Date(item.date).toLocaleDateString("en-us", {
@@ -165,8 +169,8 @@ const normalizePosttype = (item) => {
           returnObj.date = item.acf.date_until
             ? `${item.acf.date_from} - ${item.acf.date_until}`
             : `${item.acf.date_from} - ongoing`;
-        }else{
-          returnObj.date = null
+        } else {
+          returnObj.date = null;
         }
         returnObj.website = item.acf.website && item.acf.website;
         returnObj.archive_base = "artists";
