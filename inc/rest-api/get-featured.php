@@ -221,8 +221,16 @@ function get_featured_items($request)
       } else if ($post->post_type == "project") {
         $post_data['subcategory'] = get_field('category', $post->ID);
         $post_data['meta1'] = get_field('authors', $post->ID);
-        $post_data['meta2'] = get_field('year', $post->ID);
-        $post_data['date'] = get_field('year', $post->ID);
+        $year = get_field('year', $post->ID);
+        $year_end = get_field('year_end', $post->ID);
+        $date = "";
+        if($year==$year_end){
+          $date = $year;
+        }else{
+          $date = $year .' - '.$year_end;
+        }
+        $post_data['meta2'] = $date;
+        $post_data['date'] = $date;        
         $post_data['archive_base'] = "projects";
       } else if ($post->post_type == "agenda") {
         $post_data['subcategory'] = get_field('category', $post->ID);

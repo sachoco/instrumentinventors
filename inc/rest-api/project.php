@@ -1,7 +1,7 @@
 <?php
 function query_project($args, $request)
 {
-    $args['meta_key'] = 'year';
+    $args['meta_key'] = 'year_end';
     $args['orderby'] = array( 
         'meta_value_num' => 'DESC',
         'date' => 'DESC',

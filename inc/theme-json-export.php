@@ -189,19 +189,27 @@ add_action('save_post_project', 'export_project_in_json', 10, 3);
 
 function update_all_posts()
 {
-    $args = array(
-        'post_type' => 'post',
-        'post_status' => 'publish',
-        'numberposts' => 50,
-        'offset' => 0
-    );
-    $all_posts = get_posts($args);
-    foreach ($all_posts as $single_post) {
-        $single_post->post_title = $single_post->post_title . '';
-        wp_update_post($single_post);
+    // var_dump(get_current_user_id());
+    if ( is_user_logged_in() && get_current_user_id()==19) {
+        $args = array(
+            'post_type' => 'project',
+            'post_status' => 'publish',
+            'numberposts' => 50,
+            'offset' => 150
+        );
+        $all_posts = get_posts($args);
+        foreach ($all_posts as $single_post) {
+            $single_post->post_title = $single_post->post_title . '';
+            var_dump($single_post->post_title);
+            var_dump($single_post->ID);
+            do_action( 'acf/save_post',$single_post->ID );
+            // wp_update_post($single_post);
+        }
     }
+   
 }
 // add_action( 'wp_loaded', 'update_all_posts' );
+
 function export_allpost_in_json()
 {
     prep_rest_call();

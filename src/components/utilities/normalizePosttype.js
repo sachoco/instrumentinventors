@@ -58,7 +58,11 @@ const normalizePosttype = (item) => {
         returnObj.meta1 = item.acf.category ? item.acf.category.label : null;
         returnObj.meta2 = item.acf.authors ? item.acf.authors : "";
         // returnObj.meta2 = item.acf.year ? item.acf.year : "";
-        returnObj.date = item.acf.year;
+        if (item.acf.year) {
+          returnObj.date = item.acf.year == item.acf.year_end
+            ? `${item.acf.year}`
+            : `${item.acf.year} - ${item.acf.year_end}`;
+        }
         returnObj.archive_base = "projects";
       } else if (item.subtype == "agenda") {
         returnObj.meta1 = item.acf.category ? item.acf.category.label : null;
@@ -179,9 +183,9 @@ const normalizePosttype = (item) => {
         returnObj.meta1 = item.acf.authors ? item.acf.authors : "";
         // returnObj.meta2 = item.acf.year ? item.acf.year : "";
         if (item.acf.year) {
-          returnObj.date = item.acf.year_end
-            ? `${item.acf.year} - ${item.acf.year_end}`
-            : `${item.acf.year}`;
+          returnObj.date = item.acf.year == item.acf.year_end
+            ? `${item.acf.year}`
+            : `${item.acf.year} - ${item.acf.year_end}`;
         }
         // returnObj.date = item.acf.year;
         returnObj.archive_base = "projects";
