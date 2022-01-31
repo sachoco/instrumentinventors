@@ -38,7 +38,7 @@ const fetchFeatured = (url) => {
   const getItem = (_url) => {
     setState(initialState);
 
-    console.log(_url);
+    // console.log(_url);
     // Axios.defaults.headers = {
     //   "Cache-Control": "no-cache",
     //   Pragma: "no-cache",
@@ -46,7 +46,7 @@ const fetchFeatured = (url) => {
     // };
     return Axios.get(_url).then(
       (response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setState((prevState, props) => ({
           ...state,
           items: response.data,

@@ -24,14 +24,15 @@ const Search = ({ ...otherProps }) => {
         <h2 className="text-center mb-16">Search result for: {searchStr}</h2>
         {state.noItem ? "NO ITEM TO SHOW" : <TileView items={state.items} />}
       </Block>
-      {state.hasMore && (
+      {(state.hasMore||state.hasMoreUrl) && (
         <p className="mb-16 text-center">
           <button
-            className="inline-block bg-white hover:bg-black hover:text-white border-black border-2 text-black py-1 px-6 font-title"
+            className="inline-block bg-white hover:bg-black hover:text-white border-black border-2 text-black py-1 px-6 font-title disabled:opacity-50 disabled:cursor-wait disabled:bg-black disabled:text-white"
             type="button"
             onClick={loadMore}
+            disabled={!state.loaded}
           >
-            load more
+          {state.loaded ? 'load more' : 'loading...' }
           </button>
         </p>
       )}

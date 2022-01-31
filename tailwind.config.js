@@ -23,8 +23,8 @@ module.exports = {
         },
       }),
       inset: {
-        '2px': '2px',
-        '3px': '3px'
+        "2px": "2px",
+        "3px": "3px",
       },
       colors: {
         body: "#4f4f4f",
@@ -40,17 +40,22 @@ module.exports = {
         title: ["Antipol Extended", "sans-serif"],
       },
       fontSize: {
-        '2xs' : '0.65rem',
-        'mobile': '16px',
+        "2xs": "0.65rem",
+        mobile: "16px",
       },
       backgroundColor: {
         bg: {
           "lighter-gray": "#E6E6E6",
           "light-gray": "#CCCCCC",
-          "filter": "#989999",
+          filter: "#989999",
           gray: "#999999",
+          "dark": "#444444",
+          "darker": "#000000",
           DEFAULT: "#999999",
         },
+      },
+      opacity: {
+        '45': '0.45',
       },
       backgroundImage: (theme) => ({
         overlay: "url('./assets/overlay-1600.jpg')",
@@ -62,17 +67,17 @@ module.exports = {
         "1/3": "33%",
         "2/5": "40%",
         "1/2": "50%",
-        "gallery": "58%",
+        gallery: "58%",
         "2/3": "66%",
         "3/4": "75%",
         "4/5": "80%",
-        "full": "100%",
+        full: "100%",
       },
       margin: {
         "sidemenu-close": "calc(-25vw + 108px)",
       },
       width: {
-        "hscreen": "100vh",
+        hscreen: "100vh",
         "200px": "200px",
         "220px": "220px",
         "350px": "350px",
@@ -87,24 +92,24 @@ module.exports = {
       minWidth: {
         "100px": "100px",
         "300px": "300px",
-        "24": "6rem",
-        "80": "20rem",
-        "72": "18rem",
-        "64": "16rem",
+        24: "6rem",
+        80: "20rem",
+        72: "18rem",
+        64: "16rem",
       },
       minHeight: {
         "full+2px": "calc(100% + 2px)",
-        "12": "3rem",
-        "16": "4rem",
-        "24": "6rem",
-        "80": "20rem",
+        12: "3rem",
+        16: "4rem",
+        24: "6rem",
+        80: "20rem",
       },
       transitionProperty: {
-        'width': 'width',
+        width: "width",
       },
       transitionDelay: {
-        "0": "0ms",
-        "2000": "2000ms",
+        0: "0ms",
+        2000: "2000ms",
       },
       keyframes: {
         fadein: {
@@ -121,22 +126,26 @@ module.exports = {
         fadeOut: "fadeout 0.2s linear forwards",
       },
       strokeWidth: {
-        "3": "3",
-        "4": "4"
+        3: "3",
+        4: "4",
       },
       translate: {
-         'sidemenu-open': 'calc(25vw - 108px)',
-         '-test': "calc(-25vw + 108px)",
+        "sidemenu-open": "calc(25vw - 108px)",
+        "-test": "calc(-25vw + 108px)",
       },
       screens: {
-        'hbp': {'raw': '(min-height: 800px)'},
+        hbp: { raw: "(min-height: 800px)" },
         // => @media (orientation: portrait) { ... }
-        '2xl': '1800px',
-      }
+        "2xl": "1800px",
+      },
     },
+    namedGroups: ["parent"],
+
   },
 
   variants: {
+    backgroundColor: ({ after }) => after(["disabled"]),
+    textColor: ({ after }) => after(["disabled"]),
     extend: {
       fontWeight: ["hover"],
       width: ["group-hover"],
@@ -146,16 +155,19 @@ module.exports = {
       maxWidth: ["group-hover"],
       fontSize: ["group-hover"],
       display: ["group-hover"],
-      opacity: ["group-hover"],
+      opacity: ["group-hover", "disabled"],
       transitionDelay: ["group-hover"],
       animation: ["group-hover"],
       visibility: ["group-hover"],
       strokeWidth: ["group-hover"],
       margin: ["group-hover"],
+      cursor: ["disabled"],
+      fill: ['hover', 'focus'],
     },
   },
   plugins: [
     // require('@tailwindcss/typography'),
-    require('@tailwindcss/line-clamp'),
+    require("@tailwindcss/line-clamp"),
+    require("tailwindcss-named-groups"),
   ],
 };

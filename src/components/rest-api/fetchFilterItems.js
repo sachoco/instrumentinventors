@@ -26,7 +26,7 @@ const fetchFilterItems = (posttype) => {
     // };
     return Axios.get(rest_call_url).then(
       (response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setState({
           items: response.data,
         });

@@ -43,9 +43,11 @@ const normalizePosttype = (item) => {
       returnObj.tag = item.tags ? item.tags : he.decode("&nbsp;"); //?.length > 0 ? item.tags : "";
       returnObj.posttype = item.subtype;
       if (item.subtype == "artist") {
-        returnObj.meta1 = item.acf?.badges
-          ? item.acf.badges.map((obj) => obj.label).join(", ")
-          : null;
+        returnObj.subcategory = item.acf?.badges;
+
+        // returnObj.meta1 = item.acf?.badges
+        //   ? item.acf.badges.map((obj) => obj.label).join(", ")
+        //   : null;
         if (item.acf.date_from) {
           returnObj.date = item.acf.date_until
             ? `${item.acf.date_from} - ${item.acf.date_until}`
@@ -55,9 +57,9 @@ const normalizePosttype = (item) => {
         returnObj.archive_base = "artists";
       } else if (item.subtype == "project") {
         // returnObj.meta1 = item.acf.category ? item.acf.category.map((obj)=>(obj.label)).join(', ') : null;
-        returnObj.meta1 = item.acf.category ? item.acf.category.label : null;
-        returnObj.meta2 = item.acf.authors ? item.acf.authors : "";
-        // returnObj.meta2 = item.acf.year ? item.acf.year : "";
+        returnObj.subcategory = item.acf.category ? [item.acf.category] : null;
+        // returnObj.meta1 = item.acf.category ? item.acf.category.label : null;
+        returnObj.meta1 = item.acf.authors ? item.acf.authors : he.decode("&nbsp;");
         if (item.acf.year) {
           returnObj.date = item.acf.year == item.acf.year_end
             ? `${item.acf.year}`
@@ -65,7 +67,7 @@ const normalizePosttype = (item) => {
         }
         returnObj.archive_base = "projects";
       } else if (item.subtype == "agenda") {
-        returnObj.meta1 = item.acf.category ? item.acf.category.label : null;
+        returnObj.subcategory = item.acf.category ? [item.acf.category] : null;
         item.acf.date_from
           ? (returnObj.date = item.acf.date_until
               ? `${item.acf.date_from} - ${item.acf.date_until}`
@@ -83,26 +85,26 @@ const normalizePosttype = (item) => {
           location = item.acf.venue + item.acf.city;
         }
         if (location) {
-          returnObj.meta2 = location; //item.acf.venue ? item.acf.venue : "no venue value";
+          returnObj.meta1 = location; //item.acf.venue ? item.acf.venue : "no venue value";
         }
         returnObj.meta3 = item.acf["host_|_circulation"];
         returnObj.archive_base = "agenda";
       } else {
+        returnObj.subcategory = item.category
+        ? item.category.map((cat) => {
+            return { value: cat.id, label: he.decode(cat.name) };
+          })
+        : null;
         // returnObj.meta1 = item.iii?.category
-        //   ? item.iii.category.map((cat) => {
-        //       return { value: cat.id, label: he.decode(cat.name) };
-        //     })
+        //   ? item.iii.category.map((cat) => cat.name).join(", ")
         //   : null;
-        returnObj.meta1 = item.iii?.category
-          ? item.iii.category.map((cat) => cat.name).join(", ")
-          : null;
         // returnObj.date = item.formatted_date;
         returnObj.date = new Date(item.date).toLocaleDateString("en-us", {
           day: "numeric",
           year: "numeric",
           month: "long",
         });
-        returnObj.subcategory = "news & media";
+        // returnObj.subcategory = "news & media";
         returnObj.archive_base = "posts";
       }
     } else if (item.featured_result) {
@@ -164,7 +166,7 @@ const normalizePosttype = (item) => {
       returnObj.tag =
         Array.isArray(item.iii?.tags) && item.iii.tags?.length > 0
           ? item.iii.tags
-          : "";
+          : he.decode("&nbsp;");
 
       if (item.type == "artist") {
         returnObj.subcategory = item.acf?.badges;
@@ -180,7 +182,7 @@ const normalizePosttype = (item) => {
         returnObj.archive_base = "artists";
       } else if (item.type == "project") {
         returnObj.subcategory = item.acf.category ? [item.acf.category] : null;
-        returnObj.meta1 = item.acf.authors ? item.acf.authors : "";
+        returnObj.meta1 = item.acf.authors ? item.acf.authors : he.decode("&nbsp;");
         // returnObj.meta2 = item.acf.year ? item.acf.year : "";
         if (item.acf.year) {
           returnObj.date = item.acf.year == item.acf.year_end

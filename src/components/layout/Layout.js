@@ -17,7 +17,7 @@ const Layout = ({menuItems, ...props}) => {
         <SidebarNavigation menuItems={menuItems} />
         <div className="relative flex-grow z-10 pt-14 lg:pt-24 lg:ml-24 overflow-hidden">
           {props.children}
-          <div className="p-8 lg:p-24 bg-bg-light-gray">
+          <div className="p-8 lg:p-24 bg-bg-dark bg-opacity-30">
             <h4 className="text-lg lg:text-2xl mb-4 lg:mb-10 max-w-xs">
               stay updated,
               <br />

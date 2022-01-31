@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import fetchData from "./rest-api/fetchData";
-
 import Item from "./Item";
 
-export default function HorizontalSlider({
+const HorizontalSlider = ({
   url = "wp/v2/posts/?_embed",
   url2 = null,
   type = null,
@@ -12,7 +11,7 @@ export default function HorizontalSlider({
   debug = false,
   toggleDisable = null,
   ...otherProps
-}) {
+}) => {
   if (!related_item) {
     url +=
       "&per_page=24&_fields=id,title,slug,date,formatted_date,acf,type,tags,wpml_translations,iii";
@@ -49,7 +48,7 @@ export default function HorizontalSlider({
 
     if (state.hasMore && state.loaded) {
       if (scrolPosition / scrolWidth > 0.66) {
-        console.log("loading more items");
+        // console.log("loading more items");
         loadMore();
       }
     }
@@ -60,9 +59,11 @@ export default function HorizontalSlider({
   };
   const onMouseEnterHandler = (e) => {
     setHover(true);
+    // console.log("enter")
   };
   const onMouseLeaveHandler = (e) => {
     setHover(false);
+    // console.log("leave")
   };
   const onArrowClickHandler = (direction) => {
     const scrolWidth = ref.current.scrollWidth;
@@ -92,86 +93,70 @@ export default function HorizontalSlider({
     }
   }, [state]);
   return (
-    <>
+    <div className="relative -mx-24">
       <div
-        className="relative -mx-24"
+        // className="relative -mx-24 group-parent"
         onMouseEnter={onMouseEnterHandler}
         onMouseLeave={onMouseLeaveHandler}
       >
-        {hover && (
-          <>
-            {canScrollPrev && (
-              <button
-                onClick={(e) => onArrowClickHandler("prev")}
-                className="absolute flex justify-center items-center z-50 top-0 left-0 bg-white h-full w-20 bg-opacity-70"
+        <button
+          onClick={(e) => onArrowClickHandler("prev")}
+          className={`absolute flex justify-center items-center z-50 top-0 left-0 bg-white h-full w-20 bg-opacity-70 ${
+            hover && canScrollPrev ? "flex" : "hidden"
+          }`}
+        >
+          <svg
+            className="transform scale-75"
+            width="65px"
+            height="29px"
+            viewBox="0 0 65 29"
+          >
+            <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+              <g
+                transform="translate(2.000000, 1.000000)"
+                stroke="#000000"
+                strokeWidth="2"
               >
-                <svg
-                  className="transform scale-75"
-                  width="65px"
-                  height="29px"
-                  viewBox="0 0 65 29"
-                >
-                  <g
-                    id="Page-1"
-                    stroke="none"
-                    strokeWidth="1"
-                    fill="none"
-                    fillRule="evenodd"
-                  >
-                    <g
-                      transform="translate(2.000000, 1.000000)"
-                      stroke="#000000"
-                      strokeWidth="2"
-                    >
-                      <line
-                        x1="62.561"
-                        y1="13.486"
-                        x2="2.45137244e-13"
-                        y2="13.486"
-                      ></line>
-                      <polyline points="13.486 0 3.55271368e-15 13.486 13.486 26.972"></polyline>
-                    </g>
-                  </g>
-                </svg>
-              </button>
-            )}
-            {canScrollNext && (
-              <button
-                onClick={(e) => onArrowClickHandler("next")}
-                className="absolute flex justify-center items-center z-50 top-0 right-0 bg-white h-full w-20 bg-opacity-70"
+                <line
+                  x1="62.561"
+                  y1="13.486"
+                  x2="2.45137244e-13"
+                  y2="13.486"
+                ></line>
+                <polyline points="13.486 0 3.55271368e-15 13.486 13.486 26.972"></polyline>
+              </g>
+            </g>
+          </svg>
+        </button>
+        <button
+          onClick={(e) => onArrowClickHandler("next")}
+          className={` absolute  justify-center items-center z-50 top-0 right-0 bg-white h-full w-20 bg-opacity-70 ${
+            hover && canScrollNext ? "flex" : "hidden"
+          }`}
+        >
+          <svg
+            className="transform scale-75"
+            width="65px"
+            height="29px"
+            viewBox="0 0 65 29"
+          >
+            <g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+              <g
+                transform="translate(31.280500, 14.486000) scale(-1, 1) translate(-31.280500, -14.486000) translate(-0.000000, 1.000000)"
+                stroke="#000000"
+                strokeWidth="2"
               >
-                <svg
-                  className="transform scale-75"
-                  width="65px"
-                  height="29px"
-                  viewBox="0 0 65 29"
-                >
-                  <g
-                    id="Page-1"
-                    stroke="none"
-                    strokeWidth="1"
-                    fill="none"
-                    fillRule="evenodd"
-                  >
-                    <g
-                      transform="translate(31.280500, 14.486000) scale(-1, 1) translate(-31.280500, -14.486000) translate(-0.000000, 1.000000)"
-                      stroke="#000000"
-                      strokeWidth="2"
-                    >
-                      <line
-                        x1="62.561"
-                        y1="13.486"
-                        x2="2.45137244e-13"
-                        y2="13.486"
-                      ></line>
-                      <polyline points="13.486 0 3.55271368e-15 13.486 13.486 26.972"></polyline>
-                    </g>
-                  </g>
-                </svg>
-              </button>
-            )}
-          </>
-        )}
+                <line
+                  x1="62.561"
+                  y1="13.486"
+                  x2="2.45137244e-13"
+                  y2="13.486"
+                ></line>
+                <polyline points="13.486 0 3.55271368e-15 13.486 13.486 26.972"></polyline>
+              </g>
+            </g>
+          </svg>
+        </button>
         {/* <div
 						ref={ref}
 						onScroll={onScrollHandler}
@@ -188,6 +173,7 @@ export default function HorizontalSlider({
                   key={i}
                   className="min-w-full sm:min-w-80 mr-6 scroll-align-start"
                   item={item}
+                  lazy={related_item}
                 />
               ))
             : new Array(5)
@@ -210,6 +196,9 @@ export default function HorizontalSlider({
           )}
         </div>
       </div>
-    </>
+    </div>
   );
-}
+};
+// export default HorizontalSlider;
+
+export default React.memo(HorizontalSlider);

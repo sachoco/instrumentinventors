@@ -37,7 +37,7 @@ const fetchJson = (url) => {
     setState(initialState);
     const timestamp = new Date().getTime();
     // _url += _url + '?timestamp='+ timestamp;
-    console.log(_url);
+    // console.log(_url);
     Axios.defaults.headers = {
       "Cache-Control": "no-cache",
       Pragma: "no-cache",
@@ -45,7 +45,7 @@ const fetchJson = (url) => {
     };
     return Axios.get(_url).then(
       (response) => {
-        console.log(response.data);
+        // console.log(response.data);
         setState((prevState, props) => ({
           ...state,
           item: response.data,

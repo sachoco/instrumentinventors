@@ -10,6 +10,7 @@ const Block = ({
   url2 = null,
   related_item = false,
   debug = false,
+  className = null,
   ...otherProps
 }) => {
   const [scrollSine, setScrollSine] = useState(0);
@@ -23,8 +24,8 @@ const Block = ({
       <div
         className={
           "px-8 py-10 lg:px-24 lg:py-16 " +
-          (bg ? "bg-bg-lighter-gray " : "") +
-          otherProps.className
+          (bg ? "bg-bg bg-opacity-30" : "") +
+          (className ? className : "")
         }
       >
         {title && (
@@ -34,6 +35,8 @@ const Block = ({
           </div>
         )}
         {carousel && <HorizontalSlider toggleDisable={toggleDisable} debug={debug} url={url} url2={url2} related_item={related_item} onScroll={ (value) => setScrollSine(value) } />}
+        {/* {carousel && <HorizontalSlider toggleDisable={toggleDisable} debug={debug} url={url} url2={url2} related_item={related_item} />} */}
+
         {otherProps.children}
       </div>
     }

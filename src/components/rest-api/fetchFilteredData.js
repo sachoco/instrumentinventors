@@ -85,10 +85,10 @@ const fetchFilteredData = (
     let rest_call_url = query;
     rest_call_url = rest_call_url + "&page=" + (init ? "1" : state.page);
 
-    console.log(rest_call_url);
+    // console.log(rest_call_url);
     return Axios.get(rest_call_url).then(
       (response) => {
-        console.log(response);
+        // console.log(response);
         setState((prevState, props) => {
           const _url2 = prepareUrl(true);
           let _hasMore = response.headers["x-wp-totalpages"] > prevState.page;

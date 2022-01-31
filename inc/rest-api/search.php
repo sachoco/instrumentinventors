@@ -35,6 +35,17 @@ function register_rest_search()
     );
     register_rest_field(
         'search-result',
+        'date',
+        array(
+            'get_callback'    => function ($object) {
+                return get_the_date('Y-m-d', $object['id']);
+            },
+            'update_callback' => null,
+            'schema'          => null,
+        )
+    );
+    register_rest_field(
+        'search-result',
         'tags',
         array(
             'get_callback'    => function ($object) {
@@ -55,6 +66,30 @@ function register_rest_search()
             'schema'          => null,
         )
     );
+    register_rest_field(
+        'search-result',
+        'category',
+        array(
+            'get_callback'    => function ($object) {
+                $postcategory = [];
+                if (get_the_category($object['id'])) {
+                    foreach(get_the_category($object['id']) as $cat) {
+                        $postcategory[] = array(
+                            'id' => $cat->term_id,
+                            'name' => $cat->name, 
+                        ); 
+                    }                  
+                }else{
+                    $postcategory = false;
+                }
+                return $postcategory;
+            },
+            'update_callback' => null,
+            'schema'          => null,
+        )
+    );
+
+
 }
 function get_rest_featured_image($object, $field_name, $request)
 {

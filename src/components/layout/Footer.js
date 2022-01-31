@@ -2,9 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Footer = () => (
-  <footer className="p-8 lg:p-24 flex flex-col lg:flex-row lg:justify-between bg-bg-gray text-center lg:text-left">
+  <footer className="p-8 lg:p-24 flex flex-col lg:flex-row lg:justify-between bg-bg-darker bg-opacity-45 text-center lg:text-left">
     <div className="">
-      <h4 className="text-lg lg:text-2xl border-b-2 border-black mb-2 block lg:inline-block ">find us</h4>
+      <h4 className="text-lg lg:text-2xl border-b-2 border-black mb-2 block lg:inline-block ">
+        find us
+      </h4>
       <p>
         Willem Dreespark 312
         <br />
@@ -12,22 +14,48 @@ const Footer = () => (
       </p>
     </div>
     <div className="">
-      <h4 className="mt-5 lg:mt-auto text-lg lg:text-2xl border-b-2 border-black mb-2 block lg:inline-block ">contact us</h4>
-      <p><a href="mailto:info@instrumentinventors.org">info@instrumentinventors.org</a></p>
+      <h4 className="mt-5 lg:mt-auto text-lg lg:text-2xl border-b-2 border-black mb-2 block lg:inline-block ">
+        contact us
+      </h4>
+      <p>
+        <a
+          className="hover:underline"
+          href="mailto:info@instrumentinventors.org"
+        >
+          info@instrumentinventors.org
+        </a>
+      </p>
     </div>
     <div className="">
-      <h4 className="mt-5 lg:mt-auto text-lg lg:text-2xl border-b-2 border-black mb-2 block lg:inline-block ">donate</h4>
-      <p><a href="/product-category/donation/" target="_self" >click for more info</a></p>
+      <h4 className="mt-5 lg:mt-auto text-lg lg:text-2xl border-b-2 border-black mb-2 block lg:inline-block ">
+        donate
+      </h4>
+      <p>
+        <a
+          className="hover:underline"
+          href="/product-category/donation/"
+          target="_self"
+        >
+          click for more info
+        </a>
+      </p>
     </div>
     <div className="">
-      <h4 className="mt-5 lg:mt-auto text-lg lg:text-2xl border-b-2 border-black mb-2 block lg:inline-block ">follow us</h4>
+      <h4 className="mt-5 lg:mt-auto text-lg lg:text-2xl border-b-2 border-black mb-2 block lg:inline-block ">
+        follow us
+      </h4>
       <p className="flex justify-center lg:justify-start">
-        <a href="https://www.facebook.com/instrumentinventors" target="_blank" className="mr-2">
+        <a
+          href="https://www.facebook.com/instrumentinventors"
+          target="_blank"
+          className="mr-2 transform hover:scale-105"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="40"
             height="40"
             viewBox="0 0 40 40"
+            // className="fill-current hover:text-white"
           >
             <path
               d="M-1443.557,1838.041a20,20,0,0,0-20,20,20,20,0,0,0,20,20,20,20,0,0,0,20-20A20,20,0,0,0-1443.557,1838.041Zm5.874,12.133h-2.778c-.981,0-1.185.4-1.185,1.417v2.451h3.964l-.382,4.3h-3.581V1871.2h-5.133v-12.8h-2.67v-4.358h2.67v-3.432c0-3.221,1.722-4.9,5.542-4.9h3.555Z"
@@ -35,7 +63,11 @@ const Footer = () => (
             />
           </svg>
         </a>
-        <a href="https://www.instagram.com/instrumentinventors/" target="_blank" className="mr-2">
+        <a
+          href="https://www.instagram.com/instrumentinventors/"
+          target="_blank"
+          className="mr-2 transform hover:scale-105"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="40"
@@ -56,7 +88,11 @@ const Footer = () => (
             />
           </svg>
         </a>
-        <a href="https://vimeo.com/user43489698" target="_blank" className="mr-2">
+        <a
+          href="https://vimeo.com/user43489698"
+          target="_blank"
+          className="mr-2 transform hover:scale-105"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="39.998"

@@ -27,7 +27,7 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
   if (!menuItems) {
     menuItems = fetchMenu();
   }
-  console.log(metaCtx.title);
+  // console.log(metaCtx.title);
   // const menuItems = fetchMenu();
   // metaCtx.setTitle(getTitle(location));
   return (

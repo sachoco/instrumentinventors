@@ -79,6 +79,17 @@ function get_related($request)
             }else{
                 $post_data["tags"] = false;
             }
+            $post_data["category"]=false; 
+            $postcategory = get_the_category($post->ID);
+            if ($postcategory) {
+                foreach($postcategory as $cat) {
+                    $post_data['category'][] = array(
+                        'id' => $cat->term_id,
+                        'name' => $cat->name, 
+                    ); 
+                }
+            }
+
             array_push($data,  $post_data);
         }
     }

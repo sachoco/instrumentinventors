@@ -47,7 +47,7 @@ const fetchData = (
       rest_call_url = rest_call_url + "&page=" + (init ? "1" : state.page);
     }
     if (filter) {
-      debug && console.log(filter);
+      // debug && console.log(filter);
       Object.keys(filter).forEach((key) => {
         if (filter[key] && key != "posttype") {
           rest_call_url += "&" + key + "=" + filter[key];
@@ -62,10 +62,10 @@ const fetchData = (
     // }else{
     // // rest_call_url += "&lang=en";
     // }
-    debug && console.log(rest_call_url);
+    // debug && console.log(rest_call_url);
     return Axios.get(rest_call_url).then(
       (response) => {
-        debug && console.log(response);
+        // console.log(response);
         setState((prevState, props) => {
           let _hasMore = response.headers["x-wp-totalpages"] > prevState.page;
           if (url2 && _url != url2 && !_hasMore) {
@@ -92,7 +92,7 @@ const fetchData = (
         });
       },
       (error) => {
-        debug && console.log(error);
+        // debug && console.log(error);
         setState((prevState, props) => ({
           ...state,
           error: error.toJSON().message,

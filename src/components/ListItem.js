@@ -21,18 +21,19 @@ export default function ListItem(props) {
     meta3,
   } = normalizePosttype(item);
 
-  const onClickHandler = (link) => {
+  const onClickHandler = (e, link) => {
+    e.preventDefault();
     history.push(link);
   };
   const itemBox = (
     <div className={className}>
-      {/* <Link to={link}> */}
-      {/* <div onClick={(e) => onClickHandler(link)} className={className}> */}
-      {/* <div className="flex flex-nowrap items-center border-b-2 py-2 lg:py-4 px-2 hover:bg-bg-filter cursor-pointer"> */}
-      <div className="flex flex-nowrap items-center border-b-2 py-2 lg:py-4 px-2 ">
-        <div className="flex flex-wrap md:flex-nowrap justify-between flex-grow ">
-          <div className="w-full md:w-4/6 flex flex-col flex-nowrap">
-            {/* <div className="inline-block -ml-4 -mt-2 align-middle mb-2">
+      <Link to={link}>
+        {/* <div onClick={(e) => onClickHandler(link)} className={className}> */}
+        {/* <div className="flex flex-nowrap items-center border-b-2 py-2 lg:py-4 px-2 hover:bg-bg-filter cursor-pointer"> */}
+        <div className="flex flex-nowrap items-center border-b-2 py-2 lg:py-4 px-2 ">
+          <div className="flex flex-wrap md:flex-nowrap justify-between flex-grow ">
+            <div className="w-full md:w-4/6 flex flex-col flex-nowrap">
+              {/* <div className="inline-block -ml-4 -mt-2 align-middle mb-2">
               {subcategory.length > 0
                 ? subcategory?.map((cat, i) => (
                     <span key={i}>
@@ -48,9 +49,9 @@ export default function ListItem(props) {
                   ))
                 : ""}
             </div> */}
-            <div className="font-bold pr-4 text-lg lg:text-2xl w-full sm:w-full">
-              {title}
-              {/* <div className="inline-block ml-5 -mt-2 align-middle">
+              <div className="font-bold pr-4 text-lg lg:text-2xl w-full sm:w-full">
+                {title}
+                {/* <div className="inline-block ml-5 -mt-2 align-middle">
                 {subcategory.length > 0
                   ? subcategory?.map((cat, i) => (
                       <span key={i}>
@@ -66,89 +67,102 @@ export default function ListItem(props) {
                     ))
                   : ""}
               </div> */}
-            </div>
-            <div className="hidden md:block leading-normal py-1 min-w-100px w-full flex-grow">
-              {Array.isArray(tag) && tag.length > 0
-                ? tag.map((t, i) => (
-                    <Link to={"/" + archive_base + "/?t=" + t.id}>
+              </div>
+              <div className="hidden md:block leading-normal py-1 min-w-100px w-full flex-grow">
+                {Array.isArray(tag) && tag.length > 0
+                  ? tag.map((t, i) => (
+                      // <Link to={"/" + archive_base + "/?t=" + t.id}>
                       <span
+                        onClick={(e) =>
+                          onClickHandler(e, "/" + archive_base + "/?t=" + t.id)
+                        }
                         key={i}
-                        className="inline-block bg-gray-200 rounded-full px-2 py-1 text-2xs text-gray-700 mr-1 mb-1"
+                        className="hover:bg-gray-400 hover:text-white cursor-pointer inline-block bg-gray-200 rounded-full px-2 py-1 text-2xs text-gray-700 mr-1 mb-1"
                       >
                         {t.name}
                       </span>
-                    </Link>
-                  ))
-                : // tag.map((obj, i)=>(i>0 ? ", "+obj.name : obj.name))
-                  tag}
+                      // </Link>
+                    ))
+                  : // tag.map((obj, i)=>(i>0 ? ", "+obj.name : obj.name))
+                    tag}
+              </div>
             </div>
-          </div>
-          <div className="w-full md:w-2/6 flex flex-wrap md:flex-nowrap flex-row md:flex-col md:border-l-2 justify-start items-start">
-            <div className="px-4 leading-normal py-1 md:w-full flex-grow-0 border-l-2 md:border-l-0">
-              {/* {subcategory.length > 0 ? subcategory?.map((cat, i) =>
+            <div className="w-full md:w-2/6 flex flex-wrap md:flex-nowrap flex-row md:flex-col md:border-l-2 justify-start items-start">
+              <div className="px-4 leading-normal py-1 md:w-full flex-grow-0 border-l-2 md:border-l-0">
+                {/* {subcategory.length > 0 ? subcategory?.map((cat, i) =>
 						<span key={i}>
 						{i>0 && ', '}
 						{cat.label}
 						</span>
 						)
 							: ""} */}
-              {subcategory.length > 0
-                ? subcategory?.map((cat, i) => (
-                    <span key={i}>
-                      {i > 0 && ", "}
-                      <Link to={"/" + archive_base + "/?c=" + cat.value}>
-                        {/* <span
+                {subcategory.length > 0
+                  ? subcategory?.map((cat, i) => (
+                      <span key={i}>
+                        {i > 0 && ", "}
+                        {/* <Link to={"/" + archive_base + "/?c=" + cat.value}> */}
+                        <span
+                          onClick={(e) =>
+                            onClickHandler(
+                              e,
+                              "/" + archive_base + "/?c=" + cat.value
+                            )
+                          }
+                          className="hover:underline cursor-pointer"
+                        >
+                          {/* <span
                         key={i}
                         className="whitespace-nowrap inline-block bg-gray-200 rounded-full px-3 py-1 text-xs text-gray-700 mr-2 mb-2"
                       >
                         {cat.label}
                       </span> */}
-                        {cat.label}
-                      </Link>
-                    </span>
-                  ))
-                : ""}
-            </div>
-            {posttype == "artist" ||
-            posttype == "agenda" ||
-            posttype == "posts" ? (
-              <div className="px-4 leading-normal py-1 md:w-full border-l-2 md:border-l-0">
-                {date}
+                          {cat.label}
+                        </span>
+                        {/* </Link> */}
+                      </span>
+                    ))
+                  : ""}
               </div>
-            ) : null}
-            {posttype == "agenda" ? (
-              <div className="px-4 leading-normal py-1 md:w-full border-l-2 md:border-l-0">
-                {meta1}
-              </div>
-            ) : null}
-            {posttype == "project" ? (
-              <>
+              {posttype == "artist" ||
+              posttype == "agenda" ||
+              posttype == "posts" ? (
+                <div className="px-4 leading-normal py-1 md:w-full border-l-2 md:border-l-0">
+                  {date}
+                </div>
+              ) : null}
+              {posttype == "agenda" ? (
                 <div className="px-4 leading-normal py-1 md:w-full border-l-2 md:border-l-0">
                   {meta1}
                 </div>
-                <div className="px-4 leading-normal py-1 md:w-full border-l-2 md:border-l-0">
-                  {meta2}
-                </div>
-              </>
-            ) : null}
+              ) : null}
+              {posttype == "project" ? (
+                <>
+                  <div className="px-4 leading-normal py-1 md:w-full border-l-2 md:border-l-0">
+                    {meta1}
+                  </div>
+                  <div className="px-4 leading-normal py-1 md:w-full border-l-2 md:border-l-0">
+                    {meta2}
+                  </div>
+                </>
+              ) : null}
+            </div>
+            <div className=" md:hidden leading-normal py-1 min-w-100px w-full flex-grow">
+              {Array.isArray(tag) && tag.length > 0
+                ? tag.map((t, i) => (
+                    <span
+                      key={i}
+                      className="inline-block bg-gray-200 rounded-full px-1.5 py-0 text-2xs text-gray-700 mr-0.5 mb-0.5"
+                    >
+                      {t.name}
+                    </span>
+                  ))
+                : // tag.map((obj, i)=>(i>0 ? ", "+obj.name : obj.name))
+                  tag}
+            </div>
           </div>
-          <div className=" md:hidden leading-normal py-1 min-w-100px w-full flex-grow">
-            {Array.isArray(tag) && tag.length > 0
-              ? tag.map((t, i) => (
-                  <span
-                    key={i}
-                    className="inline-block bg-gray-200 rounded-full px-1.5 py-0 text-2xs text-gray-700 mr-0.5 mb-0.5"
-                  >
-                    {t.name}
-                  </span>
-                ))
-              : // tag.map((obj, i)=>(i>0 ? ", "+obj.name : obj.name))
-                tag}
-          </div>
-        </div>
-        <div style={{ width: "32px" }}>
-          <Link to={link}>
-            <button>
+          <div style={{ width: "32px" }}>
+            {/* <Link to={link}> */}
+            <button onClick={(e) => onClickHandler(e,link)}>
               <svg
                 className={
                   "inline-block duration-100 transition-transform transform hover:scale-110"
@@ -170,10 +184,10 @@ export default function ListItem(props) {
                 </g>
               </svg>
             </button>
-          </Link>
+            {/* </Link> */}
+          </div>
         </div>
-      </div>
-      {/* </Link> */}
+      </Link>
     </div>
   );
   return (

@@ -3,7 +3,7 @@ import normalizePosttype from "./normalizePosttype";
 
 const getTitle = (item) => {
   const location = useLocation();
-  console.log(location);
+  // console.log(location);
 
   let title = "";
   if(location.pathname=="/"){
