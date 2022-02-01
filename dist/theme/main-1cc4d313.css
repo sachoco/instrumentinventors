@@ -2415,8 +2415,8 @@ body {
     padding-right: 3rem;
   }
 
-  .md\:pb-2\/5 {
-    padding-bottom: 40%;
+  .md\:pb-1\/2 {
+    padding-bottom: 50%;
   }
 }
 
@@ -2567,8 +2567,8 @@ body {
     padding-right: 6rem;
   }
 
-  .lg\:pb-1\/2 {
-    padding-bottom: 50%;
+  .lg\:pb-2\/5 {
+    padding-bottom: 40%;
   }
 
   .lg\:pl-24 {
@@ -21048,4 +21048,4 @@ html[xmlns] .flexslider .slides{
 
 /* purgecss end ignore */
 
-/*# sourceMappingURL=main-5632156c.css.map*/
+/*# sourceMappingURL=main-1cc4d313.css.map*/

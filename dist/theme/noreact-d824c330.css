@@ -2415,8 +2415,8 @@ body {
     padding-right: 3rem;
   }
 
-  .md\:pb-2\/5 {
-    padding-bottom: 40%;
+  .md\:pb-1\/2 {
+    padding-bottom: 50%;
   }
 }
 
@@ -2567,8 +2567,8 @@ body {
     padding-right: 6rem;
   }
 
-  .lg\:pb-1\/2 {
-    padding-bottom: 50%;
+  .lg\:pb-2\/5 {
+    padding-bottom: 40%;
   }
 
   .lg\:pl-24 {
@@ -2649,4 +2649,4 @@ body {
 }
 
 
-/*# sourceMappingURL=noreact-1ba2fc93.css.map*/
+/*# sourceMappingURL=noreact-d824c330.css.map*/
