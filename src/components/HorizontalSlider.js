@@ -52,7 +52,7 @@ const HorizontalSlider = ({
         loadMore();
       }
     }
-    if (onScroll) {
+    if (onScroll&&e) {
       let scrollValue = e.nativeEvent.srcElement.scrollLeft;
       onScroll(scrollValue);
     }
@@ -91,6 +91,7 @@ const HorizontalSlider = ({
     } else {
       toggleDisable(false);
     }
+    onScrollHandler();
   }, [state]);
   return (
     <div className="relative -mx-24">

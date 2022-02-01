@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-import { Img } from "react-image";
 import VisibilitySensor from "./utilities/react-visibility-sensor-master/visibility-sensor";
 
 import { Link } from "react-router-dom";

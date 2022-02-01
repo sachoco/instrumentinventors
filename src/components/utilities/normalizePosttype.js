@@ -2,6 +2,35 @@ import he from "he";
 import parse from "html-react-parser";
 import NoImage from "../../assets/no-image.svg";
 import { useCookies } from "react-cookie";
+import moment from "moment";
+import "moment-timezone";
+
+function padTo2Digits(num) {
+  return num.toString().padStart(2, "0");
+}
+
+function formatDate(date) {
+  return [
+    padTo2Digits(date.getDate()),
+    padTo2Digits(date.getMonth() + 1),
+    date.getFullYear(),
+  ].join(".");
+}
+
+function parseTwoDates(date_from, date_until) {
+  const yearDiff = date_from.diff(date_until, "year");
+  const monthDiff = date_from.diff(date_until, "month");
+  const dayDiff = date_from.diff(date_until, "day");
+  if (yearDiff != 0) {
+    return (
+      date_from.format("DD.MM.YYYY") + " - " + date_until.format("DD.MM.YYYY")
+    );
+  } else if (monthDiff != 0) {
+    return date_from.format("DD.MM") + " - " + date_until.format("DD.MM.YYYY");
+  } else {
+    return date_from.format("DD") + "-" + date_until.format("DD.MM.YYYY");
+  }
+}
 
 const normalizePosttype = (item) => {
   const [cookies, setCookie] = useCookies(["lang"]);
@@ -16,6 +45,7 @@ const normalizePosttype = (item) => {
     archive_base: "",
     subcat_link: "",
     date: "",
+    full_date: "",
     website: "",
     meta1: he.decode("&nbsp;"),
     meta2: he.decode("&nbsp;"),
@@ -48,10 +78,43 @@ const normalizePosttype = (item) => {
         // returnObj.meta1 = item.acf?.badges
         //   ? item.acf.badges.map((obj) => obj.label).join(", ")
         //   : null;
-        if (item.acf.date_from) {
-          returnObj.date = item.acf.date_until
-            ? `${item.acf.date_from} - ${item.acf.date_until}`
+        let date_from = "";
+        let date_until = "";
+        if (
+          returnObj.subcategory?.some(function (badge, index) {
+            if (badge.value == "resident") return true;
+          }) &&
+          !returnObj.subcategory?.some(function (badge, index) {
+            if (badge.value == "iii_member") return true;
+          })
+        ) {
+          date_from = item.acf.date_from
+            ? moment(item.acf.date_from, "DD.MM.YYYY").format("MM.YYYY")
+            : "";
+          date_until = item.acf.date_until
+            ? moment(item.acf.date_until, "DD.MM.YYYY").format("MM.YYYY")
+            : "";
+        } else {
+          date_from = item.acf.date_from
+            ? moment(item.acf.date_from, "DD.MM.YYYY").year()
+            : "";
+          date_until = item.acf.date_until
+            ? moment(item.acf.date_until, "DD.MM.YYYY").year()
+            : "";
+        }
+        if (date_from) {
+          returnObj.date = date_until
+            ? date_from == date_until
+              ? `${date_from}`
+              : `${date_from} - ${date_until}`
+            : `${date_from} - ongoing`;
+          returnObj.full_date = item.acf.date_until
+            ? item.acf.date_from == item.acf.date_until
+              ? `${item.acf.date_from}`
+              : `${item.acf.date_from} - ${item.acf.date_until}`
             : `${item.acf.date_from} - ongoing`;
+        } else {
+          returnObj.date = null;
         }
         returnObj.website = item.acf.website && item.acf.website;
         returnObj.archive_base = "artists";
@@ -59,18 +122,24 @@ const normalizePosttype = (item) => {
         // returnObj.meta1 = item.acf.category ? item.acf.category.map((obj)=>(obj.label)).join(', ') : null;
         returnObj.subcategory = item.acf.category ? [item.acf.category] : null;
         // returnObj.meta1 = item.acf.category ? item.acf.category.label : null;
-        returnObj.meta1 = item.acf.authors ? item.acf.authors : he.decode("&nbsp;");
+        returnObj.meta1 = item.acf.authors
+          ? item.acf.authors
+          : he.decode("&nbsp;");
         if (item.acf.year) {
-          returnObj.date = item.acf.year == item.acf.year_end
-            ? `${item.acf.year}`
-            : `${item.acf.year} - ${item.acf.year_end}`;
+          returnObj.date =
+            item.acf.year == item.acf.year_end
+              ? `${item.acf.year}`
+              : `${item.acf.year} - ${item.acf.year_end}`;
         }
         returnObj.archive_base = "projects";
       } else if (item.subtype == "agenda") {
         returnObj.subcategory = item.acf.category ? [item.acf.category] : null;
         item.acf.date_from
           ? (returnObj.date = item.acf.date_until
-              ? `${item.acf.date_from} - ${item.acf.date_until}`
+              ? parseTwoDates(
+                  moment(item.acf.date_from, "DD.MM.YYYY"),
+                  moment(item.acf.date_until, "DD.MM.YYYY")
+                )
               : `${item.acf.date_from}`)
           : (returnObj.date = "");
 
@@ -91,19 +160,20 @@ const normalizePosttype = (item) => {
         returnObj.archive_base = "agenda";
       } else {
         returnObj.subcategory = item.category
-        ? item.category.map((cat) => {
-            return { value: cat.id, label: he.decode(cat.name) };
-          })
-        : null;
+          ? item.category.map((cat) => {
+              return { value: cat.id, label: he.decode(cat.name) };
+            })
+          : null;
         // returnObj.meta1 = item.iii?.category
         //   ? item.iii.category.map((cat) => cat.name).join(", ")
         //   : null;
         // returnObj.date = item.formatted_date;
-        returnObj.date = new Date(item.date).toLocaleDateString("en-us", {
-          day: "numeric",
-          year: "numeric",
-          month: "long",
-        });
+        // returnObj.date = new Date(item.date).toLocaleDateString("en-us", {
+        //   day: "numeric",
+        //   year: "numeric",
+        //   month: "long",
+        // });
+        returnObj.date = formatDate(new Date(item.date));
         // returnObj.subcategory = "news & media";
         returnObj.archive_base = "posts";
       }
@@ -170,10 +240,40 @@ const normalizePosttype = (item) => {
 
       if (item.type == "artist") {
         returnObj.subcategory = item.acf?.badges;
-        // if (returnObj.subcategory.value == "resident") {
-        if (item.acf.date_from) {
-          returnObj.date = item.acf.date_until
-            ? `${item.acf.date_from} - ${item.acf.date_until}`
+        let date_from = "";
+        let date_until = "";
+        if (
+          returnObj.subcategory?.some(function (badge, index) {
+            if (badge.value == "resident") return true;
+          }) &&
+          !returnObj.subcategory?.some(function (badge, index) {
+            if (badge.value == "iii_member") return true;
+          })
+        ) {
+          date_from = item.acf.date_from
+            ? moment(item.acf.date_from, "DD.MM.YYYY").format("MM.YYYY")
+            : "";
+          date_until = item.acf.date_until
+            ? moment(item.acf.date_until, "DD.MM.YYYY").format("MM.YYYY")
+            : "";
+        } else {
+          date_from = item.acf.date_from
+            ? moment(item.acf.date_from, "DD.MM.YYYY").year()
+            : "";
+          date_until = item.acf.date_until
+            ? moment(item.acf.date_until, "DD.MM.YYYY").year()
+            : "";
+        }
+        if (date_from) {
+          returnObj.date = date_until
+            ? date_from == date_until
+              ? `${date_from}`
+              : `${date_from} - ${date_until}`
+            : `${date_from} - ongoing`;
+          returnObj.full_date = item.acf.date_until
+            ? item.acf.date_from == item.acf.date_until
+              ? `${item.acf.date_from}`
+              : `${item.acf.date_from} - ${item.acf.date_until}`
             : `${item.acf.date_from} - ongoing`;
         } else {
           returnObj.date = null;
@@ -182,21 +282,30 @@ const normalizePosttype = (item) => {
         returnObj.archive_base = "artists";
       } else if (item.type == "project") {
         returnObj.subcategory = item.acf.category ? [item.acf.category] : null;
-        returnObj.meta1 = item.acf.authors ? item.acf.authors : he.decode("&nbsp;");
+        returnObj.meta1 = item.acf.authors
+          ? item.acf.authors
+          : he.decode("&nbsp;");
         // returnObj.meta2 = item.acf.year ? item.acf.year : "";
         if (item.acf.year) {
-          returnObj.date = item.acf.year == item.acf.year_end
-            ? `${item.acf.year}`
-            : `${item.acf.year} - ${item.acf.year_end}`;
+          returnObj.date =
+            item.acf.year == item.acf.year_end
+              ? `${item.acf.year}`
+              : `${item.acf.year} - ${item.acf.year_end}`;
+          returnObj.full_date = returnObj.date;
         }
         // returnObj.date = item.acf.year;
         returnObj.archive_base = "projects";
       } else if (item.type == "agenda") {
         returnObj.subcategory = item.acf.category ? [item.acf.category] : null;
         returnObj.date = item.acf.date_until
+          ? parseTwoDates(
+              moment(item.acf.date_from, "DD.MM.YYYY"),
+              moment(item.acf.date_until, "DD.MM.YYYY")
+            )
+          : `${item.acf.date_from}`;
+        returnObj.full_date = item.acf.date_until
           ? `${item.acf.date_from} - ${item.acf.date_until}`
           : `${item.acf.date_from}`;
-
         let location = null;
         if (!item.acf.venue && !item.acf.city) {
           if (item.acf.location) {
@@ -220,11 +329,13 @@ const normalizePosttype = (item) => {
             })
           : null;
         // returnObj.date = item.formatted_date;
-        returnObj.date = new Date(item.date).toLocaleDateString("en-us", {
-          day: "numeric",
-          year: "numeric",
-          month: "long",
-        });
+        // returnObj.date = new Date(item.date).toLocaleDateString("en-us", {
+        //   day: "numeric",
+        //   year: "numeric",
+        //   month: "long",
+        // });
+        returnObj.date = formatDate(new Date(item.date));
+
         returnObj.archive_base = "posts";
       }
     }

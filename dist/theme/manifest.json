@@ -1,12 +1,12 @@
 {
   "main.css": "theme/main-054babc1.css",
   "main.css.map": "theme/main-054babc1.css.map",
-  "main.js": "theme/main-1101daea.js",
-  "main.js.map": "theme/main-1101daea.js.map",
+  "main.js": "theme/main-24ad9952.js",
+  "main.js.map": "theme/main-24ad9952.js.map",
   "noreact.css": "theme/noreact-19290f85.css",
   "noreact.css.map": "theme/noreact-19290f85.css.map",
-  "noreact.js": "theme/noreact-4211ad71.js",
-  "noreact.js.map": "theme/noreact-4211ad71.js.map",
+  "noreact.js": "theme/noreact-5247ba74.js",
+  "noreact.js.map": "theme/noreact-5247ba74.js.map",
   "runtime.js": "theme/runtime-c29d24d5.js",
   "runtime.js.map": "theme/runtime-c29d24d5.js.map",
   "theme/assets/Antipol Extended Bold.otf": "theme/assets/Antipol%20Extended%20Bold-47719189.otf",
@@ -81,24 +81,24 @@
   "theme/assets/video.png": "theme/assets/video-df20b626.png",
   "vendors~main.css": "theme/vendors~main-dbe03e4f.css",
   "vendors~main.css.map": "theme/vendors~main-dbe03e4f.css.map",
-  "vendors~main.js": "theme/vendors~main-1671df6d.js",
-  "vendors~main.js.map": "theme/vendors~main-1671df6d.js.map",
-  "vendors~main~noreact.js": "theme/vendors~main~noreact-7bebf0f4.js",
-  "vendors~main~noreact.js.map": "theme/vendors~main~noreact-7bebf0f4.js.map",
+  "vendors~main.js": "theme/vendors~main-b95bbc2a.js",
+  "vendors~main.js.map": "theme/vendors~main-b95bbc2a.js.map",
+  "vendors~main~noreact.js": "theme/vendors~main~noreact-7f839b4a.js",
+  "vendors~main~noreact.js.map": "theme/vendors~main~noreact-7f839b4a.js.map",
   "wpackioEp": {
     "main": {
       "assets": {
         "js": [
           "theme/runtime-c29d24d5.js",
-          "theme/vendors~main~noreact-7bebf0f4.js",
-          "theme/vendors~main-1671df6d.js",
-          "theme/main-1101daea.js"
+          "theme/vendors~main~noreact-7f839b4a.js",
+          "theme/vendors~main-b95bbc2a.js",
+          "theme/main-24ad9952.js"
         ],
         "js.map": [
           "theme/runtime-c29d24d5.js.map",
-          "theme/vendors~main~noreact-7bebf0f4.js.map",
-          "theme/vendors~main-1671df6d.js.map",
-          "theme/main-1101daea.js.map"
+          "theme/vendors~main~noreact-7f839b4a.js.map",
+          "theme/vendors~main-b95bbc2a.js.map",
+          "theme/main-24ad9952.js.map"
         ],
         "css": [
           "theme/vendors~main-dbe03e4f.css",
@@ -114,13 +114,13 @@
       "assets": {
         "js": [
           "theme/runtime-c29d24d5.js",
-          "theme/vendors~main~noreact-7bebf0f4.js",
-          "theme/noreact-4211ad71.js"
+          "theme/vendors~main~noreact-7f839b4a.js",
+          "theme/noreact-5247ba74.js"
         ],
         "js.map": [
           "theme/runtime-c29d24d5.js.map",
-          "theme/vendors~main~noreact-7bebf0f4.js.map",
-          "theme/noreact-4211ad71.js.map"
+          "theme/vendors~main~noreact-7f839b4a.js.map",
+          "theme/noreact-5247ba74.js.map"
         ],
         "css": [
           "theme/noreact-19290f85.css"
