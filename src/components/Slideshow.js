@@ -23,7 +23,7 @@ export default function Slideshow({
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 4000
+    autoplaySpeed: 4000,
   };
   return (
     <>
@@ -32,8 +32,8 @@ export default function Slideshow({
     ) : (
     <Slider className="border-b-2" {...settings}>
       {state.items.length > 0
-        ? state.items?.map((item, i) => <Item key={i} item={item} className="relative pb-4/5 lg:pb-2/5 w-full" />)
-        : new Array(1).fill({}).map((item, i) => <Item key={i} className="relative pb-4/5 lg:pb-2/5 w-full" />)}
+        ? state.items?.map((item, i) => <Item key={i} item={item} className="relative pb-4/5 md:pb-2/5 lg:pb-1/2 w-full" />)
+        : new Array(1).fill({}).map((item, i) => <Item key={i} className="relative pb-4/5 md:pb-2/5 lg:pb-1/2 w-full" />)}
     </Slider>
     )}
     </>

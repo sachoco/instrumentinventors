@@ -83,7 +83,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
       </button>
       {showSubMenu && (
         <button
-          className="w-full h-full flex justify-center items-center absolute top-0 left-0 bg-white"
+          className="w-full h-full flex justify-center items-center absolute top-0 left-0 bg-overlay"
           onClick={onToggleSubmenu}
         >
           <svg width="31px" height="26px" viewBox="0 0 31 26">
@@ -105,7 +105,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
           !showMenu ? "opacity-0 invisible" : "opacity-100 visible"
         }`}
       >
-        <div className="relative h-full p-4 sm:p-8 bg-white flex flex-col justify-between">
+        <div className="relative h-full p-4 sm:p-8 bg-overlay flex flex-col justify-between">
           <nav className="flex-grow border-b-2 pb-4 sm:pb-8">
             {noreactrouter ? (
               <ul className="flex flex-col justify-around h-full  leading-10">
@@ -279,7 +279,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
           </div>
 
           <div
-            className={`absolute z-50 top-0 left-0 h-full w-full p-8 bg-white flex flex-col justify-between font-nav transform duration-200 transition-all ${
+            className={`absolute z-50 top-0 left-0 h-full w-full p-8 bg-overlay flex flex-col justify-between font-nav transform duration-200 transition-all ${
               !showSubMenu ? "opacity-0 invisible" : "opacity-100 visible"
             }`}
           >

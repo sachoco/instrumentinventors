@@ -32,7 +32,7 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
   // metaCtx.setTitle(getTitle(location));
   return (
     <>
-      <header className="fixed w-full h-14 lg:h-24 bg-white border-b-2 flex z-50 font-nav text-xl">
+      <header className="fixed w-full h-14 lg:h-24 bg-overlay border-b-2 flex z-50 font-nav text-xl">
         <span className="w-14 lg:w-24 h-full border-r-2 flex justify-center items-center">
           {noreactrouter ? (
             <a className="w-full text-center" href="/">

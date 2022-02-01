@@ -72,6 +72,7 @@ module.exports = {
         "3/4": "75%",
         "4/5": "80%",
         full: "100%",
+        "68": "17rem",
       },
       margin: {
         "sidemenu-close": "calc(-25vw + 108px)",
@@ -96,6 +97,9 @@ module.exports = {
         80: "20rem",
         72: "18rem",
         64: "16rem",
+      },
+      height: {
+        "full-40px": "calc(100% - 40px)",
       },
       minHeight: {
         "full+2px": "calc(100% + 2px)",

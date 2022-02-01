@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import VisibilitySensor from "./utilities/react-visibility-sensor-master/visibility-sensor";
 
@@ -6,11 +6,11 @@ import { Link } from "react-router-dom";
 import normalizePosttype from "./utilities/normalizePosttype";
 import Skeleton from "@mui/material/Skeleton";
 
-
 const Item = (props) => {
   const { item, className, lazy } = props;
   let history = useHistory();
-
+  const ref = useRef();
+  const [isOverflow, setIsOverflow] = useState(false);
   const {
     title,
     image,
@@ -23,7 +23,9 @@ const Item = (props) => {
     meta1,
     meta2,
   } = normalizePosttype(item);
-
+  useEffect(() => {
+    setIsOverflow(ref.current.offsetWidth < ref.current.scrollWidth);
+  }, [item]);
   const onClickHandler = (e, link) => {
     e.preventDefault();
     history.push(link);
@@ -35,11 +37,11 @@ const Item = (props) => {
           <img
             src={image.medium}
             alt={title}
-            className="absolute w-full h-full object-cover object-center"
+            className="absolute w-full h-full-40px object-cover object-center"
             loading={lazy ? "lazy" : "auto"}
           />
         </VisibilitySensor>
-        <div className="absolute flex items-end z-10 w-full px-5 py-2 bottom-0 border-t-2 border-black bg-white transition-all min-h-0 group-hover:min-h-full+2px">
+        <div className="absolute flex items-end z-10 w-full px-5 py-2 bottom-0 border-t-2 border-black bg-overlay transition-all min-h-0 group-hover:min-h-full+2px">
           <div className="transition-all duration-200 absolute z-20 w-full top-8 left-0  px-5 my-2 opacity-0 delay-0 group-hover:delay-200 group-hover:opacity-100 ">
             <div className="mt-1 text-xl min-h-16 flex items-end">
               <span className="line-clamp-2">{title}</span>
@@ -79,17 +81,23 @@ const Item = (props) => {
 				<div className="absolute bottom-0 right-0 px-5 py-2 z-20 transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible">
 					<Link to={link}>more info</Link>
 				</div> */}
-          <div className="flex w-full items-baseline">
+          <div className="relative flex w-full items-center h-10">
             {/* <div className="flex-grow max-w-full overflow-hidden overflow-ellipsis whitespace-pre mr-2 mt-0 transition-all group-hover:absolute top-0 group-hover:whitespace-normal group-hover:delay-200 group-hover:mt-8">
 						{title}
 					</div> */}
-            <div className="flex-grow max-w-full overflow-hidden overflow-ellipsis whitespace-pre mr-2 transition-all group-hover:max-w-0 group-hover:mr-0 duration-2000">
+
+            <div
+              className={`relative flex-grow max-w-full mr-2 transition-all group-hover:max-w-0 group-hover:mr-0 duration-2000 ${isOverflow ? "text-sm line-clamp-2 whitespace-normal " : "whitespace-pre overflow-hidden overflow-ellipsis "}`}
+            >
+              <div ref={ref} className="opacity-0 absolute w-full text-base line-clamp-none whitespace-pre overflow-hidden overflow-ellipsis text-red-700">
+                {title}
+              </div>
               {title}
             </div>
             <div className="group-hover:flex-grow whitespace-nowrap text-sm">
               {date}
             </div>
-            <div className="absolute bottom-0 right-0 px-5 py-2 z-20 transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible">
+            <div className="absolute bottom-1/2 transform translate-y-1/2 right-0 px-5 py-2 z-20 transition-all duration-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible">
               {/* <Link to={link} className="hover:underline"> */}
               <span
                 onClick={(e) => onClickHandler(e, link)}
@@ -101,7 +109,7 @@ const Item = (props) => {
             </div>
           </div>
         </div>
-        <div className="absolute z-20 top-0 right-0 bg-white border-b-2 border-l-2 px-4 py-2 text-sm">
+        <div className="absolute z-20 top-0 right-0 bg-overlay border-b-2 border-l-2 px-4 py-2 text-sm">
           {typeof subcategory === "string" ? (
             subcategory
           ) : (
@@ -151,6 +159,6 @@ const Item = (props) => {
       )}
     </div>
   );
-}
+};
 // export default Item;
 export default React.memo(Item);

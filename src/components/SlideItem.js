@@ -43,7 +43,7 @@ export default function SlideItem(props) {
 						{date}
 					</span>
 				</div>
-				<div className="lg:hidden bg-white border-t-2 absolute transform origin-bottom-left -rotate-90 translate-x-full bottom-0 left-0 w-full text-black py-4">
+				<div className="lg:hidden bg-overlay border-t-2 absolute transform origin-bottom-left -rotate-90 translate-x-full bottom-0 left-0 w-full text-black py-4">
 					<Marquee gradient={false} speed={1}>
 					{(subcategory&&!Array.isArray(subcategory)) ? 
 						<span className="mr-2">

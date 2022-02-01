@@ -52,7 +52,7 @@ const SidebarNavigation = ({ menuItems, noreactrouter=false, setSidemenuOpen=nul
     <div className="hidden lg:block" ref={ref}>
 
       <div
-        className={` fixed z-40 h-screen w-sidemenu-open bg-white left-0 border-r-2 pt-24 font-nav transform transition ${
+        className={` fixed z-40 h-screen w-sidemenu-open bg-overlay left-0 border-r-2 pt-24 font-nav transform transition ${
           showMenu ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -108,7 +108,7 @@ const SidebarNavigation = ({ menuItems, noreactrouter=false, setSidemenuOpen=nul
           </ul> */}
         </div>
       </div>
-      <div className="fixed bottom-0 ml-24 w-hscreen h-24 z-30 font-nav text-xl transform -rotate-90 origin-bottom-left bg-white border-b-2">
+      <div className="fixed bottom-0 ml-24 w-hscreen h-24 z-30 font-nav text-xl transform -rotate-90 origin-bottom-left bg-overlay border-b-2">
         <nav className="w-full h-full">
           <ul className="flex justify-around items-center h-full">
             <li className="inline-block mx-4 hbp:mx-10">
