@@ -209,7 +209,7 @@ const normalizePosttype = (item) => {
         : he.decode(item.title);
 
       if (item.content) {
-        returnObj.content = item.content.rendered
+        returnObj.content = item.content?.rendered
           ? parse(item.content.rendered)
           : parse(item.content);
       }
