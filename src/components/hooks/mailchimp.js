@@ -12,7 +12,7 @@ function toQueryString(params) {
   return Object.keys(params)
     .map((key) => key + "=" + params[key])
     .join("&");
-}
+} 
 
 export function useMailchimp(url) {
   const [status, setStatus] = React.useState(Status.idle);
@@ -23,7 +23,7 @@ export function useMailchimp(url) {
     const params = toQueryString(data);
     const ajaxURL = url.replace("/post?", "/post-json?");
     const newUrl = ajaxURL + "&" + params;
-    console.log(newUrl);
+    // console.log(newUrl);
     setError(null);
     setStatus(Status.loading);
 
