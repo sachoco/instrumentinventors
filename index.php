@@ -14,7 +14,7 @@ if(!is_woocommerce()&&!is_product()&&!is_cart()&&!is_checkout()&&!is_account_pag
     	// Load posts loop.
     	while ( have_posts() ) {
     		the_post();
-        echo '<div class="px-8 py-10 lg:p-24 ">';
+        echo '<div class="px-8 py-10 lg:p-24 woocommerce-content">';
         the_content();
         echo '</div>';
     	}

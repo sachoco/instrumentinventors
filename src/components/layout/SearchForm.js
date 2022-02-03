@@ -51,7 +51,7 @@ const SearchForm = ({ mobile = false, noreactrouter = false }) => {
         </svg>
       </button>
       <input
-        className={`appearance-none bg-transparent placeholder-black w-full py-1 leading-tight focus:outline-none placeholder-light ${
+        className={`search appearance-none bg-transparent placeholder-black w-full py-1 leading-tight focus:outline-none placeholder-light ${
           mobile ? "text-center px-10" : "px-2"
         }`}
         type="text"

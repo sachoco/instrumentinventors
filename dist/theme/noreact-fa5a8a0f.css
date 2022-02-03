@@ -2335,7 +2335,7 @@ body {
   text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF; */
 }
 
-.woocommerce select, .woocommerce input {
+.woocommerce-content select, .woocommerce-content input, .woocommerce-content textarea {
   border-width: 1px;
   --tw-border-opacity: 1;
   border-color: rgba(209, 213, 219, var(--tw-border-opacity));
@@ -2649,4 +2649,4 @@ body {
 }
 
 
-/*# sourceMappingURL=noreact-d824c330.css.map*/
+/*# sourceMappingURL=noreact-fa5a8a0f.css.map*/

@@ -97,8 +97,8 @@ body {
   text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF; */
 }
 
-.woocommerce {
-  select, input {
+.woocommerce-content {
+  select, input, textarea {
     @apply p-2 border border-gray-300;
   }
 }

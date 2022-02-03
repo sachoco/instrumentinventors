@@ -29,13 +29,13 @@ render(
 );
 
 render(
-  // <BrowserRouter basename={"/"}>
-    // <ThemeProvider theme={iiiTheme}>
-      // <MetaContextProvider>
+  <BrowserRouter basename={"/"}>
+    {/* <ThemeProvider theme={iiiTheme}> */}
+      {/* <MetaContextProvider> */}
         <SidebarNavigation noreactrouter />
-      // </MetaContextProvider>
-    // </ThemeProvider>
-  // </BrowserRouter>
+      {/* </MetaContextProvider> */}
+    {/* </ThemeProvider> */}
+  </BrowserRouter>
   ,
   entrySidemenu
 );
