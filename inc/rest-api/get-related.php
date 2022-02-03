@@ -7,6 +7,7 @@ function get_related($request)
     if($posttype=='posts'){
         $posttype = 'post';
     }
+    var_dump($slug);
     if ($post = get_page_by_path($slug, OBJECT, $posttype)) {
         $id = $post->ID;
     } else {
@@ -105,7 +106,7 @@ function get_related($request)
 
 add_action('rest_api_init', function () {
 
-    register_rest_route('iii', '/related\/(?P<posttype>[a-z0-9,+]+(?:-[a-z0-9,+]+)*)\/(?P<slug>[a-z0-9,+,\/]+(?:-[a-z0-9,+,\/]+)*)', array(
+    register_rest_route('iii', '/related\/(?P<posttype>[a-z0-9,+]+(?:-[a-z0-9,+]+)*)\/(?P<slug>[a-zA-Z0-9%,+,\/]+(?:-[a-zA-Z0-9%,+,\/]+)*)', array(
         'methods' => 'GET',
         'callback' => 'get_related',
         'args' => array(
