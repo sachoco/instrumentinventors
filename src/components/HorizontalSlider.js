@@ -166,7 +166,7 @@ const HorizontalSlider = ({
         <div
           ref={ref}
           onScroll={onScrollHandler}
-          className="flex flex-nowrap px-24 overflow-x-scroll hide-scroll-bar overscroll-x-none scroll-padding-x-24"
+          className="flex flex-nowrap px-24 overflow-x-scroll hide-scroll-bar overscroll-x-none scroll-padding-x-24 scrollbar-hide"
         >
           {state.items.length > 0
             ? state.items?.map((item, i) => (

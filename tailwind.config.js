@@ -172,6 +172,7 @@ module.exports = {
   plugins: [
     // require('@tailwindcss/typography'),
     require("@tailwindcss/line-clamp"),
-    require("tailwindcss-named-groups"),
+    require('tailwind-scrollbar-hide'),
+    // require("tailwindcss-named-groups"),
   ],
 };

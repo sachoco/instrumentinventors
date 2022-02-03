@@ -804,6 +804,10 @@ h1, h2, h3, h4, h5 {
   margin: 0.25rem;
 }
 
+.m-3 {
+  margin: 0.75rem;
+}
+
 .mx-0 {
   margin-left: 0px;
   margin-right: 0px;
@@ -1100,6 +1104,10 @@ h1, h2, h3, h4, h5 {
   height: 0.25rem;
 }
 
+.h-6 {
+  height: 1.5rem;
+}
+
 .h-8 {
   height: 2rem;
 }
@@ -1144,12 +1152,20 @@ h1, h2, h3, h4, h5 {
   min-height: 4rem;
 }
 
+.min-h-full\+2px {
+  min-height: calc(100% + 2px);
+}
+
 .group:hover .group-hover\:min-h-full\+2px {
   min-height: calc(100% + 2px);
 }
 
 .w-0 {
   width: 0px;
+}
+
+.w-6 {
+  width: 1.5rem;
 }
 
 .w-14 {
@@ -1222,6 +1238,10 @@ h1, h2, h3, h4, h5 {
 
 .group:hover .group-hover\:min-w-full {
   min-width: 100%;
+}
+
+.max-w-0 {
+  max-width: 0rem;
 }
 
 .max-w-xs {
@@ -2267,6 +2287,10 @@ h1, h2, h3, h4, h5 {
   transition-delay: 0ms;
 }
 
+.delay-200 {
+  transition-delay: 200ms;
+}
+
 .group:hover .group-hover\:delay-200 {
   transition-delay: 200ms;
 }
@@ -2295,6 +2319,15 @@ h1, h2, h3, h4, h5 {
 
 .line-clamp-none {
   -webkit-line-clamp: unset;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
 .scroll-snap-x {
@@ -21064,4 +21097,4 @@ html[xmlns] .flexslider .slides{
 
 /* purgecss end ignore */
 
-/*# sourceMappingURL=main-0f959ad6.css.map*/
+/*# sourceMappingURL=main-ee16e5dd.css.map*/
