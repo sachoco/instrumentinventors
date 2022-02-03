@@ -839,6 +839,11 @@ h1, h2, h3, h4, h5 {
   margin-right: -6rem;
 }
 
+.my-0 {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
 .my-1 {
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
@@ -1895,6 +1900,10 @@ h1, h2, h3, h4, h5 {
   padding-bottom: 0.375rem;
 }
 
+.pt-8 {
+  padding-top: 2rem;
+}
+
 .pt-14 {
   padding-top: 3.5rem;
 }
@@ -2275,6 +2284,13 @@ h1, h2, h3, h4, h5 {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
 .line-clamp-none {
@@ -21048,4 +21064,4 @@ html[xmlns] .flexslider .slides{
 
 /* purgecss end ignore */
 
-/*# sourceMappingURL=main-70104461.css.map*/
+/*# sourceMappingURL=main-0f959ad6.css.map*/
