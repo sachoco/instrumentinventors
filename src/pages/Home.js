@@ -3,6 +3,7 @@ import Slideshow from "../components/Slideshow";
 import Block from "../components/layout/Block";
 import Meta from "../components/layout/Meta";
 import MetaContext from "../store/meta-context";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   const metaCtx = useContext(MetaContext);
@@ -20,7 +21,6 @@ const Home = () => {
         carousel
         url="wp/v2/agenda/?subcat=host&upcoming"
         url2="wp/v2/project/?pricat=curated_programs&subcat=host"
-        
       />
 
       <Block
@@ -33,7 +33,13 @@ const Home = () => {
 
       <Block title="projects" carousel url="wp/v2/project/?" />
 
-      <Block debug title="news & media" bg={true} carousel url="wp/v2/posts/?" />
+      <Block
+        debug
+        title="news & media"
+        bg={true}
+        carousel
+        url="wp/v2/posts/?"
+      />
 
       <Block title="about iii">
         <p className="max-w-prose">
@@ -48,12 +54,14 @@ const Home = () => {
           partner network.
         </p>
         <p className="mt-5">
-          <button
-            className="flex-grow bg-white hover:bg-black hover:text-white border-black border-2 text-black py-1 px-6 font-title"
-            type="button"
-          >
-            more about
-          </button>
+          <Link to="/about/mission/">
+            <button
+              className="flex-grow bg-white hover:bg-black hover:text-white border-black border-2 text-black py-1 px-6 font-title"
+              type="button"
+            >
+              more about
+            </button>
+          </Link>
         </p>
       </Block>
     </>
