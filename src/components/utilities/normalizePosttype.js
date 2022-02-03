@@ -211,7 +211,9 @@ const normalizePosttype = (item) => {
       if (item.content) {
         returnObj.content = item.content?.rendered
           ? parse(item.content.rendered)
-          : parse(item.content);
+          : typeof item.content === 'string'
+          ? parse(item.content)
+          : "";
       }
 
       returnObj.image = item.iii?.featured_image
