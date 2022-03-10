@@ -28,10 +28,10 @@ const Home = () => {
         bg={true}
         carousel
         url="wp/v2/agenda/?subcat=circulation&upcoming"
-        url2="wp/v2/agenda/?in_pricat=workshop,residency&subcat=circulation&past"
+        url2="wp/v2/agenda/?in_pricat=workshop,residency,event&subcat=circulation&past"
       />
 
-      <Block title="projects" carousel url="wp/v2/project/?" />
+      <Block title="projects" carousel url="wp/v2/project/?in_pricat=artworks,editions,workshops" />
 
       <Block
         debug

@@ -246,7 +246,7 @@ function get_featured_items($request)
         $post_data['meta3'] = get_field('host_|_circulation', $post->ID);
         $post_data['archive_base'] = "agenda";
       } else {
-        $post_data['date'] = $post->post_date;
+        $post_data['date'] = date("d.m.Y",strtotime($post->post_date));
         $post_data['subcategory'] = "";
         $post_data['archive_base'] = "posts";
       }

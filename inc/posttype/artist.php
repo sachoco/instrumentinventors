@@ -29,8 +29,8 @@ function filter_artist_by_acf_field( $post_type, $which ) {
 		return;
 
 	// A list of taxonomy slugs to filter by
-	$acf_fields = array( 'badges' );
-		// $acf_fields = array( 'field_615a077d70aaf' );
+	// $acf_fields = array( 'badges' );
+	$acf_fields = array( 'field_615a077d70aaf' );
 
 	foreach ( $acf_fields as $acf_field ) {
 

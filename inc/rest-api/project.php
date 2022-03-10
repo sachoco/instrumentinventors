@@ -15,6 +15,18 @@ function query_project($args, $request)
             'compare' => 'LIKE'
         );
     }
+    if(isset($request["in_pricat"])) {
+        $arr = array('relation' => 'OR');
+        $cats = explode(",",$request["in_pricat"]);
+          foreach($cats as $cat){
+            $arr[] = array(
+              'key' => 'category',
+              'value' => $cat,
+              'compare' => 'LIKE'
+          );
+        }
+        $args['meta_query'][] = $arr;
+      }
     if (isset($request["subcat"])) {
 
         foreach (explode(",", $request["subcat"]) as $item) {
