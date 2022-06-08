@@ -5,6 +5,7 @@ require_once 'inc/theme-json-export.php';
 // include 'meta_box_defs.php';
 
 // add_filter( 'show_admin_bar', '__return_false' );
+add_theme_support( 'responsive-embeds' );
 
 function register_my_menu() {
 	register_nav_menu('main-menu',__( 'Main Menu' ));
