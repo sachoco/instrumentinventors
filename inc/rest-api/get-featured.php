@@ -175,7 +175,7 @@ function get_featured_items($request)
         'relation' => 'AND',
         array(
           'key' => 'category',
-          'value' => 'workshops',
+          'value' => 'workshop',
           'compare' => 'LIKE'
         ),
         array(
