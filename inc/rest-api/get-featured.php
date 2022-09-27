@@ -84,6 +84,7 @@ function get_featured_items($request)
 
     $args = array(
       'post_type' => array('project'),
+      'post_status' => array('publish'),
       'meta_query' => array(
         'relation' => 'AND',
         array(
@@ -107,6 +108,7 @@ function get_featured_items($request)
 
     $args = array(
       'post_type' => array('project'),
+      'post_status' => array('publish'),
       'meta_query' => array(
         'relation' => 'AND',
         array(
@@ -130,6 +132,7 @@ function get_featured_items($request)
 
     $args = array(
       'post_type' => array('artist'),
+      'post_status' => array('publish'),
       'meta_query' => array(
         'relation' => 'AND',
         array(
@@ -153,6 +156,7 @@ function get_featured_items($request)
 
     $args = array(
       'post_type' => array('project'),
+      'post_status' => array('publish'),
       'meta_query' => array(
         'relation' => 'AND',
         array(
@@ -171,6 +175,7 @@ function get_featured_items($request)
 
     $args = array(
       'post_type' => array('agenda'),
+      'post_status' => array('publish'),
       'meta_query' => array(
         'relation' => 'AND',
         array(
