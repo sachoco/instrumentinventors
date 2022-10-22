@@ -19,6 +19,7 @@ function formatDate(date) {
 function convertDateForIos(date) {
   var arr = date.split(/[- :]/);
   date = new Date(arr[0], arr[1]-1, arr[2], arr[3], arr[4], arr[5]);
+  // console.log(date);
   return date;
 }
 function parseTwoDates(date_from, date_until) {
@@ -177,7 +178,7 @@ const normalizePosttype = (item) => {
         //   year: "numeric",
         //   month: "long",
         // });
-        returnObj.date = formatDate(new Date(item.date));
+        returnObj.date = formatDate(new Date(convertDateForIos(item.date)));
         // returnObj.subcategory = "news & media";
         returnObj.archive_base = "posts";
       }
