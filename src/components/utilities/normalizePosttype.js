@@ -16,7 +16,11 @@ function formatDate(date) {
     date.getFullYear(),
   ].join(".");
 }
-
+function convertDateForIos(date) {
+  var arr = date.split(/[- :]/);
+  date = new Date(arr[0], arr[1]-1, arr[2], arr[3], arr[4], arr[5]);
+  return date;
+}
 function parseTwoDates(date_from, date_until) {
   const yearDiff = date_from.diff(date_until, "year");
   const monthDiff = date_from.diff(date_until, "month");
@@ -336,7 +340,7 @@ const normalizePosttype = (item) => {
         //   year: "numeric",
         //   month: "long",
         // });
-        returnObj.date = formatDate(new Date(item.date));
+        returnObj.date = formatDate(new Date(convertDateForIos(item.date)));
 
         returnObj.archive_base = "posts";
       }
