@@ -341,7 +341,7 @@ const normalizePosttype = (item) => {
         //   year: "numeric",
         //   month: "long",
         // });
-        returnObj.date = formatDate(new Date(convertDateForIos(item.date)));
+        returnObj.date = formatDate(new Date(item.date));
 
         returnObj.archive_base = "posts";
       }
