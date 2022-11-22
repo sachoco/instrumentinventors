@@ -38,7 +38,7 @@ const SidebarNavigation = ({ menuItems, noreactrouter=false, setSidemenuOpen=nul
       setShowMenu(false);
     }
     
-  },[location.pathname]);
+  },[location.pathname, location.search]);
   useEffect(() => {
     document.addEventListener("keydown", escFunction, false);
     // document.addEventListener("mousedown", handleClickOutside);
