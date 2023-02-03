@@ -5,8 +5,12 @@ import LanguageSelect from "../LanguageSelect";
 
 import fetchMenu from "../rest-api/fetchMenu";
 
-const SidebarNavigation = ({ menuItems, noreactrouter=false, setSidemenuOpen=null }) => {
-  if(!menuItems){
+const SidebarNavigation = ({
+  menuItems,
+  noreactrouter = false,
+  setSidemenuOpen = null,
+}) => {
+  if (!menuItems) {
     menuItems = fetchMenu();
   }
   const [showMenu, setShowMenu] = useState(false);
@@ -28,17 +32,18 @@ const SidebarNavigation = ({ menuItems, noreactrouter=false, setSidemenuOpen=nul
     (event) => {
       if (ref.current && !ref.current.contains(event.target) && showMenu) {
         setShowMenu(false);
-
       }
     },
     [ref, showMenu]
   );
   useEffect(() => {
-    if(!location.pathname.includes("about", 1)&&!location.pathname.includes("get-involved", 1)){
+    if (
+      !location.pathname.includes("about", 1) &&
+      !location.pathname.includes("get-involved", 1)
+    ) {
       setShowMenu(false);
     }
-    
-  },[location.pathname, location.search]);
+  }, [location.pathname, location.search]);
   useEffect(() => {
     document.addEventListener("keydown", escFunction, false);
     // document.addEventListener("mousedown", handleClickOutside);
@@ -50,7 +55,6 @@ const SidebarNavigation = ({ menuItems, noreactrouter=false, setSidemenuOpen=nul
 
   return (
     <div className="hidden lg:block" ref={ref}>
-
       <div
         className={` fixed z-40 h-screen w-sidemenu-open bg-overlay left-0 border-r-2 pt-24 font-nav transform transition ${
           showMenu ? "translate-x-0" : "-translate-x-full"
@@ -87,7 +91,9 @@ const SidebarNavigation = ({ menuItems, noreactrouter=false, setSidemenuOpen=nul
                 </li>
               ))}
             </ul>
-            <h5 className="text-xl font-bold border-b-2 hbp:mt-12">get involved</h5>
+            <h5 className="text-xl font-bold border-b-2 hbp:mt-12">
+              get involved
+            </h5>
             <ul className="my-5">
               {menuItems.items["get_involved-menu"]?.map((item, i) => (
                 <li key={i} className="my-1">
@@ -138,6 +144,15 @@ const SidebarNavigation = ({ menuItems, noreactrouter=false, setSidemenuOpen=nul
                     </g>
                   </g>
                 </svg>
+              </span>
+            </li>
+            <li className="inline-block mx-4 hbp:mx-10">
+              <span className="inline-block">
+                {noreactrouter ? (
+                  <a className=" hover:font-bold" href='/faq'>FAQ</a>
+                ) : (
+                  <Link className=" hover:font-bold" to='/faq'>FAQ</Link>
+                )}
               </span>
             </li>
             <li className="inline-block mx-4 hbp:mx-10">
@@ -204,10 +219,11 @@ const SidebarNavigation = ({ menuItems, noreactrouter=false, setSidemenuOpen=nul
           </ul>
         </nav>
       </div>
-      <div className={`relative  h-full z-20 transition-width  ${
-        showMenu ? "w-sidemenu-open2" : "w-0"
-      }`}>
-      </div>
+      <div
+        className={`relative  h-full z-20 transition-width  ${
+          showMenu ? "w-sidemenu-open2" : "w-0"
+        }`}
+      ></div>
       {/*<div
         className={`fixed z-40 h-screen w-sidemenu-open bg-white left-0 border-r-2 pt-24 font-nav transform transition ${
           showMenu ? "translate-x-0" : "-translate-x-test"
