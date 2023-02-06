@@ -131,9 +131,14 @@ function EditorComponent(props) {
 		selectedIcon,
 		iconColor,
 		iconSize,
+		itemSpacing,
 		isRootList,
 		textColor,
 		backgroundColor,
+		fontSize,
+		columns,
+		maxMobileColumns,
+		alignment,
 	} = attributes;
 
 	useEffect(() => {
@@ -315,11 +320,11 @@ function EditorComponent(props) {
 		}
 	}, [isSelected]);
 
-	function setAttributesToAllItems(newAttributes) {
-		const listItemBlocks = getClientIdsOfDescendants([block.clientId]).filter(
-			(ID) => getBlock(ID).name === "ub/styled-list-item"
-		);
+	const listItemBlocks = getClientIdsOfDescendants([block.clientId]).filter(
+		(ID) => getBlock(ID).name === "ub/styled-list-item"
+	);
 
+	function setAttributesToAllItems(newAttributes) {
 		updateBlockAttributes(listItemBlocks, newAttributes);
 	}
 
@@ -508,16 +513,89 @@ function EditorComponent(props) {
 							max={10}
 						/>
 					</PanelBody>
+					<PanelBody title={__("Other Options")}>
+						<p>{__("Number of columns")}</p>
+						<RangeControl
+							value={columns}
+							onChange={(columns) => {
+								setAttributes({ columns });
+								if (columns <= maxMobileColumns) {
+									setAttributes({ maxMobileColumns: columns });
+								}
+							}}
+							min={1}
+							max={4}
+						/>
+						{columns > 1 && (
+							<>
+								<p>{__("Number of columns in mobile")}</p>
+								<RangeControl
+									value={maxMobileColumns}
+									onChange={(maxMobileColumns) =>
+										setAttributes({ maxMobileColumns })
+									}
+									min={1}
+									max={columns}
+								/>
+							</>
+						)}
+						<p>{__("Item spacing (pixels)")}</p>
+						<RangeControl
+							value={itemSpacing}
+							onChange={(itemSpacing) => setAttributes({ itemSpacing })}
+							min={0}
+							max={50}
+						/>
+						<ToggleControl
+							label={__("Customize font size")}
+							checked={setFontSize}
+							onChange={() => {
+								if (setFontSize) {
+									setAttributes({ fontSize: 0 });
+
+									//change font sizevalue of all list items to zero
+									updateBlockAttributes(listItemBlocks, {
+										fontSize: 0,
+									});
+								} else {
+									setAttributes({ fontSize: 10 });
+									//send signal to first child block to begin measuring
+									updateBlockAttributes(block.innerBlocks[0].clientId, {
+										fontSize: -1,
+									});
+								}
+								toggleSetFontSize(!setFontSize);
+							}}
+						/>
+						{setFontSize && (
+							<>
+								<p>{__("Font size (pixels)")}</p>
+								<RangeControl
+									value={fontSize}
+									onChange={(fontSize) => {
+										setAttributes({ fontSize });
+										updateBlockAttributes(listItemBlocks, { fontSize });
+									}}
+									min={10}
+									max={50}
+								/>
+							</>
+						)}
+					</PanelBody>
 				</InspectorControls>
+			)}
+			{isSelected && isRootList && (
+				<BlockControls>
+					<AlignmentToolbar
+						value={alignment}
+						onChange={(value) => setAttributes({ alignment: value })}
+					/>
+				</BlockControls>
 			)}
 			<ul
 				className="ub_styled_list"
 				id={`ub-styled-list-${blockID}`}
-				style={
-					isRootList
-						? { backgroundColor: backgroundColor, color: textColor }
-						: {}
-				}
+				style={isRootList ? { backgroundColor: backgroundColor } : {}}
 			>
 				<InnerBlocks
 					template={isRootOfList ? [["ub/styled-list-item"]] : []} //initial content
@@ -542,7 +620,22 @@ function EditorComponent(props) {
 						}'><path fill='currentColor' d='${
 							allIcons[`fa${dashesToCamelcase(selectedIcon)}`].icon[4]
 						}'></path></svg>");
-				}`,
+					}
+					#ub-styled-list-${blockID} li{
+						color: ${textColor};
+					}
+					#ub-styled-list-${blockID} [data-type="ub/styled-list-item"]:not(:first-child){
+						margin-top: ${itemSpacing}px;
+					}
+					#ub-styled-list-${blockID} .block-editor-inner-blocks > .block-editor-block-list__layout > [data-type="ub/styled-list-item"]:first-child{
+						margin-top: ${itemSpacing}px;
+					}
+					#ub-styled-list-${blockID}  > .block-editor-inner-blocks > .block-editor-block-list__layout{
+						column-count: ${columns};
+					}
+					#ub-styled-list-${blockID} {
+						text-align: ${alignment};
+					}`,
 					}}
 				/>
 			)}
@@ -562,6 +655,7 @@ export function StyledListItem(props) {
 		getBlockParents,
 		listRootClientId,
 		getBlockParentsByBlockName,
+		getClientIdsOfDescendants,
 		getClientIdsWithDescendants,
 		getNextBlockClientId,
 		getPreviousBlockClientId,
@@ -571,7 +665,10 @@ export function StyledListItem(props) {
 		replaceBlocks,
 		updateBlockAttributes,
 	} = props;
-	const { blockID, itemText, iconSize, iconColor, selectedIcon } = attributes;
+	const { blockID, itemText, iconSize, iconColor, selectedIcon, fontSize } =
+		attributes;
+
+	const [useFontSize, toggleUseFontSize] = useState(false);
 
 	useEffect(() => {
 		if (
@@ -669,6 +766,28 @@ export function StyledListItem(props) {
 		}
 	}
 
+	const parents = getBlockParentsByBlockName(block.clientId, [
+		"ub/styled-list",
+	]);
+
+	const listItemRef = useRef(null); //relocate
+
+	useEffect(() => {
+		if (fontSize === -1) {
+			const listItemBlocks = getClientIdsOfDescendants([parents[0]]).filter(
+				(ID) => getBlock(ID).name === "ub/styled-list-item"
+			);
+
+			updateBlockAttributes([parents[0], ...listItemBlocks], {
+				fontSize: parseInt(
+					getComputedStyle(listItemRef.current).fontSize.slice(0, -2)
+				),
+			});
+		} else {
+			toggleUseFontSize(fontSize > 0);
+		}
+	}, [fontSize]);
+
 	return (
 		<>
 			<BlockControls>
@@ -728,7 +847,11 @@ export function StyledListItem(props) {
 						itemText: itemFragment,
 					});
 				}}
-				onReplace={(replacementBlocks) => {
+				onReplace={(replacements) => {
+					let replacementBlocks = [...replacements];
+					replacementBlocks[replacementBlocks.length - 1].innerBlocks =
+						block.innerBlocks;
+
 					replaceBlocks(block.clientId, replacementBlocks);
 				}}
 				onMerge={(mergeWithNext) => {
@@ -874,6 +997,10 @@ export function StyledListItem(props) {
 
 					return mergeWithNext;
 				}}
+				ref={
+					currentBlockIndex === 0 && parents.length === 1 ? listItemRef : null
+				}
+				style={useFontSize ? { fontSize: `${fontSize}px` } : null}
 			/>
 			{/* INSERT INNERBLOCKS HERE* */}
 			<InnerBlocks

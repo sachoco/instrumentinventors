@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
 import SearchForm from "./SearchForm";
@@ -31,9 +31,18 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
     showSubMenu ? setShowSubMenu(false) : setShowSubMenu(cat);
   };
   const onMenuClick = (e) => {
-    setShowMenu(false)
-    setShowSubMenu(false)
-  }
+    setShowMenu(false);
+    setShowSubMenu(false);
+  };
+  useEffect(() => {
+    if (
+      !location.pathname.includes("about", 1) &&
+      !location.pathname.includes("get-involved", 1)
+    ) {
+      setShowMenu(false);
+      setShowSubMenu(false);
+    }
+  }, [location.pathname, location.search]);
   return (
     <div className="relative w-full h-full">
       <button
@@ -147,7 +156,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                   <MyLink
                     activeClassName="font-bold active"
                     className="relative hover:font-bold"
-                    to='/artists/'
+                    to="/artists/"
                     onClick={onMenuClick}
                   >
                     artists
@@ -194,7 +203,9 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                         return false;
                       }
                       const queryParams = new URLSearchParams(location.search);
-                      const cat = queryParams.get("c") ? queryParams.get("c") : "";
+                      const cat = queryParams.get("c")
+                        ? queryParams.get("c")
+                        : "";
                       return cat == "editions";
                     }}
                   >
@@ -270,6 +281,23 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                       ></polyline>
                     </g>
                   </svg>
+                </span>
+              </li>
+              <li className="text-center">
+                <span className="relative font-bold cursor-pointer">
+                  {noreactrouter ? (
+                    <a className=" hover:font-bold" href="/faq">
+                      FAQ
+                    </a>
+                  ) : (
+                    <Link
+                      className=" hover:font-bold"
+                      to="/faq"
+                      onClick={onMenuClick}
+                    >
+                      FAQ
+                    </Link>
+                  )}
                 </span>
               </li>
             </ul>

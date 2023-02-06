@@ -74,6 +74,15 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
       {state.item ? (
         <>
           <HeaderImage item={state.item} />
+          {state.item.acf.shop_product_id &&
+            state.item.acf.shop_product_id != "" &&
+            state.item.acf.shop_product_id.length > 0 && (
+              <Block 
+                bg={true} 
+                product_id={state.item.acf.shop_product_id}
+                shop_item={true}              
+              />
+            )}
           <Block className="single-item-content ">
             {content}
             <div className="max-w-3xl  font-bold lg:font-normal text-base lg:text-2xl"></div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import HorizontalSlider from "../HorizontalSlider";
+import ProductInfo from "../ProductInfo";
 import Wave from "../Wave";
 
 const Block = ({
@@ -9,6 +10,8 @@ const Block = ({
   url = null,
   url2 = null,
   related_item = false,
+  shop_item = false,
+  product_id = null,
   debug = false,
   className = null,
   ...otherProps
@@ -36,7 +39,7 @@ const Block = ({
         )}
         {carousel && <HorizontalSlider toggleDisable={toggleDisable} debug={debug} url={url} url2={url2} related_item={related_item} onScroll={ (value) => setScrollSine(value) } />}
         {/* {carousel && <HorizontalSlider toggleDisable={toggleDisable} debug={debug} url={url} url2={url2} related_item={related_item} />} */}
-
+        {shop_item && <ProductInfo id={product_id} /> }
         {otherProps.children}
       </div>
     }

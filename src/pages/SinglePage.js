@@ -141,6 +141,17 @@ const SinglePage = ({ pages, ...otherProps }) => {
         }
       }
     });
+    Array.prototype.slice.call(document.getElementsByClassName("wp-block-ub-content-toggle")).forEach(function (toggleContainer) {
+      if (window.innerWidth < 700 && JSON.parse(toggleContainer.dataset.mobilecollapse)) {
+        Array.prototype.slice.call(toggleContainer.children).forEach(function (child) {
+          var panel = child.children[0].nextElementSibling;
+  
+          if (!panel.classList.contains("ub-hide")) {
+            togglePanel(child.children[0]);
+          }
+        });
+      }
+    });
     // END Ultimate Block Hack
 
     metaCtx.setTranslation(location.pathname.includes("about", 1)||location.pathname.includes("get-involved", 1));
