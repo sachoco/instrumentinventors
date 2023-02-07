@@ -8,7 +8,14 @@ export default function ProductInfo({ id = null }) {
   return (
     <>
       {!state.loaded ? (
-        "loading"
+        <div className="h-64 min-w-64 sm:min-w-80 mr-6">
+          <div className="h-full flex flex-col justify-center items-center">
+            <div className="flex justify-center items-center">
+              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+            </div>
+            <div className="mt-3 text-xs inline-block">loading...</div>
+          </div>
+        </div>
       ) : (
         <div className="flex py-2 flex-col lg:flex-row items-start">
           <div className="w-full mr-3 leading-tight lg:w-1/2 mb-5 lg:mb-auto">
