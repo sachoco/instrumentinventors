@@ -2192,21 +2192,6 @@ h1, h2, h3, h4, h5 {
   text-decoration: underline;
 }
 
-.placeholder-black::-webkit-input-placeholder {
-  --tw-placeholder-opacity: 1;
-  color: rgba(0, 0, 0, var(--tw-placeholder-opacity));
-}
-
-.placeholder-black:-ms-input-placeholder {
-  --tw-placeholder-opacity: 1;
-  color: rgba(0, 0, 0, var(--tw-placeholder-opacity));
-}
-
-.placeholder-black::placeholder {
-  --tw-placeholder-opacity: 1;
-  color: rgba(0, 0, 0, var(--tw-placeholder-opacity));
-}
-
 .placeholder-light::-webkit-input-placeholder {
   --tw-placeholder-opacity: 1;
   color: rgba(112, 112, 112, var(--tw-placeholder-opacity));
@@ -2753,4 +2738,4 @@ body {
 }
 
 
-/*# sourceMappingURL=noreact-36ef054a.css.map*/
+/*# sourceMappingURL=noreact-aea08029.css.map*/

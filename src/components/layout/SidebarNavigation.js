@@ -105,6 +105,17 @@ const SidebarNavigation = ({
                 </li>
               ))}
             </ul>
+            <span className="inline-block text-xl mt-5">
+              {noreactrouter ? (
+                <a className=" hover:font-bold" href="/faq">
+                  FAQ
+                </a>
+              ) : (
+                <Link className=" hover:font-bold" to="/faq">
+                  FAQ
+                </Link>
+              )}
+            </span>
           </nav>
           <SearchForm noreactrouter={noreactrouter} />
           {/* <ul className="flex justify-start items-start w-full text-xl mt-12">
@@ -149,9 +160,13 @@ const SidebarNavigation = ({
             <li className="inline-block mx-4 hbp:mx-10">
               <span className="inline-block">
                 {noreactrouter ? (
-                  <a className=" hover:font-bold" href='/faq'>FAQ</a>
+                  <a className=" hover:font-bold" href="/faq">
+                    FAQ
+                  </a>
                 ) : (
-                  <Link className=" hover:font-bold" to='/faq'>FAQ</Link>
+                  <Link className=" hover:font-bold" to="/faq">
+                    FAQ
+                  </Link>
                 )}
               </span>
             </li>
