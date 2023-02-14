@@ -1,79 +1,81 @@
 import fetchProduct from "./rest-api/fetchProduct";
-import AddToCart from "./formsUI/AddToCart";
-import parse from "html-react-parser";
+import fetchVariations from "./rest-api/fetchVariations";
 
-export default function ProductInfo({ id = null }) {
+import AddToCart from "./formsUI/AddToCart";
+
+export default function ProductInfo({ item = null, id = null }) {
   const state = fetchProduct(id);
+  const variationsState = fetchVariations(id);
 
   return (
     <>
-      {!state.loaded ? (
-        <div className="h-64 min-w-64 sm:min-w-80 mr-6">
-          <div className="h-full flex flex-col justify-center items-center">
-            <div className="flex justify-center items-center">
-              <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-            </div>
-            <div className="mt-3 text-xs inline-block">loading...</div>
-          </div>
+      <div className="flex py-2 flex-col lg:flex-row items-start">
+        <div className="w-full mr-3 leading-tight lg:w-1/2 mb-5 lg:mb-auto">
+          {item?.acf?.date_from && (
+            <div className="mb-1">Date: {item?.acf?.date_from}</div>
+          )}
+          {item?.acf?.door_open && (
+            <div className="mb-1">Doors: {item?.acf?.door_open}</div>
+          )}
+          {item?.acf?.time && (
+            <div className="mb-1">Event Starts: {item?.acf?.time}</div>
+          )}
+          {item?.acf?.venue && (
+            <div className="mb-1">Location: {item?.acf?.venue}</div>
+          )}
         </div>
-      ) : (
-        <div className="flex py-2 flex-col lg:flex-row items-start">
-          <div className="w-full mr-3 leading-tight lg:w-1/2 mb-5 lg:mb-auto">
-            {state.item?.description
-              ? parse(state.item.description)
-              : typeof state.item.description === "string"
-              ? parse(state.item.description)
-              : ""}
-          </div>
-          <div className="w-full mr-3 leading-tight lg:w-1/2 mb-5 lg:mb-auto">
-            <div className="mb-8">
-              {state.item?.short_description
-                ? parse(state.item.short_description)
-                : typeof state.item.short_description === "string"
-                ? parse(state.item.short_description)
-                : ""}
+        <div className="w-full mr-3 leading-tight lg:w-1/2 mb-5 lg:mb-auto">
+          {!state.loaded || !variationsState.loaded ? (
+            <div className="h-16 min-w-16 sm:min-w-20 mr-6">
+              <div className="h-full flex flex-col justify-center items-center">
+                <div className="flex justify-center items-center">
+                  <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900"></div>
+                </div>
+                <div className="mt-3 text-xs inline-block">loading...</div>
+              </div>
             </div>
+          ) : (
             <div>
-              {
-                // console.log(state.item)
-                console.log(
-                  state.item.meta_data.find(
-                    (x) => x.key === "_alg_wc_product_open_pricing_enabled"
-                  ).value === "yes"
-                    ? true
-                    : false
-                )
-              }
-              <AddToCart
-                productID={id}
-                defaultPrice={
-                  state.item.meta_data.find(
-                    (x) =>
-                      x.key === "_alg_wc_product_open_pricing_default_price"
-                  ).value
-                }
-                openPrice={
-                  state.item.meta_data.find(
-                    (x) => x.key === "_alg_wc_product_open_pricing_enabled"
-                  ).value === "yes"
-                    ? true
-                    : false
-                }
-                minPrice={
-                  state.item.meta_data.find(
-                    (x) => x.key === "_alg_wc_product_open_pricing_min_price"
-                  ).value
-                }
-                maxPrice={
-                  state.item.meta_data.find(
-                    (x) => x.key === "_alg_wc_product_open_pricing_max_price"
-                  ).value
-                }
-              />
+              {state?.item?.meta_data?.find(
+                (x) => x.key === "_alg_wc_product_open_pricing_enabled"
+              ).value === "yes" ? (
+                <AddToCart
+                  productID={id}
+                  defaultPrice={
+                    state?.item?.meta_data?.find(
+                      (x) =>
+                        x.key === "_alg_wc_product_open_pricing_default_price"
+                    ).value
+                  }
+                  openPrice={true}
+                  minPrice={
+                    state?.item?.meta_data?.find(
+                      (x) => x.key === "_alg_wc_product_open_pricing_min_price"
+                    ).value
+                  }
+                  maxPrice={
+                    state?.item?.meta_data?.find(
+                      (x) => x.key === "_alg_wc_product_open_pricing_max_price"
+                    ).value
+                  }
+                />
+              ) : state?.item?.type == "variable" ? (
+                <AddToCart
+                  productID={id}
+                  defaultPrice="--"
+                  variablePrice={state?.item?.variations}
+                  variations={variationsState.items}
+                />
+              ) : (
+                <AddToCart
+                  productID={id}
+                  defaultPrice={state?.item?.price}
+                />
+              )}
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </>
   );
 }

@@ -80,7 +80,8 @@ const Single = ({ posttype = "posts", ...otherProps }) => {
               <Block 
                 bg={true} 
                 product_id={state.item.acf.shop_product_id}
-                shop_item={true}              
+                shop_item={true}
+                item={state.item}              
               />
             )}
           <Block className="single-item-content ">

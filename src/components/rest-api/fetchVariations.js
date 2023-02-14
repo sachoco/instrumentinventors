@@ -11,9 +11,9 @@ const api = new WooCommerceRestApi({
 	}
 });
 
-const fetchProduct = (id) => {
+const fetchVariations = (id) => {
   const initialState = {
-    item: {},
+    items: null,
     loaded: false,
     error: "",
     noItem: false,
@@ -21,7 +21,7 @@ const fetchProduct = (id) => {
 
   const [state, setState] = useState(initialState);
   const rest_call_url =
-    process.env.WC_SHOP_URL + "/wp-json/wc/v2/products/" + id;
+    process.env.WC_SHOP_URL + "/wp-json/wc/v2/products/" + id +"/variations";
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -32,7 +32,7 @@ const fetchProduct = (id) => {
   }, [id]);
 
   const getItems = (init = false) => {
-    console.log(rest_call_url);
+    // console.log(rest_call_url);
     if (init) {
       setState((state) => initialState);
     } else {
@@ -43,17 +43,14 @@ const fetchProduct = (id) => {
     }
 
     return api
-      .get("products/"+id)
+      .get("products/"+id+"/variations")
       .then((response) => {
         // console.log(response);
         setState((prevState, props) => {
           return {
             ...state,
-            item: Array.isArray(response.data)
-              ? response.data[0]
-              : response.data,
+            items: response.data.sort((p1,p2)=>(p1.menu_order > p2.menu_order) ? 1 : (p1.menu_order < p2.menu_order) ? -1 : 0 ),
             loaded: true,
-            noItem: response.headers["x-wp-total"] == 0 && !url2 ? true : false,
           };
         });
       })
@@ -68,8 +65,8 @@ const fetchProduct = (id) => {
         // Always executed.
       });
   };
-
+  // console.log(state.items.sort((p1,p2)=>(p1.menu_order > p2.menu_order) ? 1 : (p1.menu_order < p2.menu_order) ? -1 : 0 ))
   return state;
 };
 
-export default fetchProduct;
+export default fetchVariations;

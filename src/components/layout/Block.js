@@ -12,6 +12,7 @@ const Block = ({
   related_item = false,
   shop_item = false,
   product_id = null,
+  item = null,
   debug = false,
   className = null,
   ...otherProps
@@ -39,7 +40,7 @@ const Block = ({
         )}
         {carousel && <HorizontalSlider toggleDisable={toggleDisable} debug={debug} url={url} url2={url2} related_item={related_item} onScroll={ (value) => setScrollSine(value) } />}
         {/* {carousel && <HorizontalSlider toggleDisable={toggleDisable} debug={debug} url={url} url2={url2} related_item={related_item} />} */}
-        {shop_item && <ProductInfo id={product_id} /> }
+        {shop_item && <ProductInfo item={item} id={product_id} /> }
         {otherProps.children}
       </div>
     }
