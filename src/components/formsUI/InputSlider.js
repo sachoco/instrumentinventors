@@ -14,9 +14,11 @@ const HtmlTooltip = styled(({ className, ...props }) => (
     backgroundColor: "#f5f5f9",
     color: "rgba(0, 0, 0, 0.87)",
     maxWidth: 420,
-    fontSize: theme.typography.pxToRem(12),
+    // fontSize: theme.typography.pxToRem(12),
+    fontSize: "1rem",
     border: "1px solid #dadde9",
     lineHeight: "120%",
+    padding: "1rem"
   },
 }));
 

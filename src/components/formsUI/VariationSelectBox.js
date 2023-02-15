@@ -106,7 +106,7 @@ export default function VariationSelectBox({
           )}
           <FormHelperText></FormHelperText>
         </FormControl>
-        <div className="mt-2 text-xs opacity-60">{description}</div>
+        <div className="mt-2 opacity-60">{description}</div>
       </div>
     </div>
   );
