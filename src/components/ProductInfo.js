@@ -19,10 +19,13 @@ export default function ProductInfo({ item = null, id = null }) {
             <div className="mb-1">Doors: {item?.acf?.door_open}</div>
           )}
           {item?.acf?.time && (
-            <div className="mb-1">Event Starts: {item?.acf?.time}</div>
+            <div className="mb-1">Event time: {item?.acf?.time}</div>
           )}
           {item?.acf?.venue && (
             <div className="mb-1">Location: {item?.acf?.venue}</div>
+          )}
+          {item?.acf?.city && (
+            <div className="mb-1">City: {item?.acf?.city}</div>
           )}
         </div>
         <div className="w-full mr-3 leading-tight lg:w-1/2 mb-5 lg:mb-auto">
@@ -68,10 +71,7 @@ export default function ProductInfo({ item = null, id = null }) {
                   variations={variationsState.items}
                 />
               ) : (
-                <AddToCart
-                  productID={id}
-                  defaultPrice={state?.item?.price}
-                />
+                <AddToCart productID={id} defaultPrice={state?.item?.price} />
               )}
             </div>
           )}
