@@ -51,15 +51,15 @@ function iii_export_json_js() { ?>
 
 function prep_rest_call()
 {
-    register_rest_field(
-        array('post', 'page', 'artist', 'agenda', 'project'),
-        'content',
-        array(
-            'get_callback'    => 'htr_do_shortcodes',
-            'update_callback' => null,
-            'schema'          => null,
-        )
-    );
+    // register_rest_field(
+    //     array('post', 'page', 'artist', 'agenda', 'project'),
+    //     'content',
+    //     array(
+    //         'get_callback'    => 'htr_do_shortcodes',
+    //         'update_callback' => null,
+    //         'schema'          => null,
+    //     )
+    // );
 }
 
 function save_json($output)
@@ -117,12 +117,16 @@ add_action('save_post_page', 'export_page_in_json', 10, 3);
 function export_post_in_json($post_id, $post, $update)
 {
     if ($update && $post->post_type=="post") {
-        prep_rest_call();
+        // prep_rest_call();
+        WPBMap::addAllMappedShortcodes();
+
         $request = new WP_REST_Request('GET', '/wp/v2/posts/'.$post_id);
         // $request->set_query_params(['id' => $post_id]);
         $response = rest_do_request($request);
         $server = rest_get_server();
         $output = $server->response_to_data($response, false);
+        $output['content']['rendered'] = apply_filters('the_content', $post->post_content);
+
         save_json($output);
 
     }
@@ -135,12 +139,15 @@ add_action('save_post', 'export_post_in_json', 10, 3);
 function export_artist_in_json($post_id, $post, $update)
 {
     if ($update) {
-        prep_rest_call();
+        // prep_rest_call();
+        WPBMap::addAllMappedShortcodes();
+
         $request = new WP_REST_Request('GET', '/wp/v2/artist/'.$post_id);
         // $request->set_query_params(['id' => $post_id]);
         $response = rest_do_request($request);
         $server = rest_get_server();
         $output = $server->response_to_data($response, false);
+        $output['content']['rendered'] = apply_filters('the_content', $post->post_content);
 
         save_json($output);
 
@@ -154,12 +161,14 @@ add_action('save_post_artist', 'export_artist_in_json', 10, 3);
 function export_agenda_in_json($post_id, $post, $update)
 {
     if ($update) {
-        prep_rest_call();
+        // prep_rest_call();
+        WPBMap::addAllMappedShortcodes();
         $request = new WP_REST_Request('GET', '/wp/v2/agenda/'.$post_id);
         $request->set_query_params(['id' => $post_id]);
         $response = rest_do_request($request);
         $server = rest_get_server();
         $output = $server->response_to_data($response, false);
+        $output['content']['rendered'] = apply_filters('the_content', $post->post_content);
 
         save_json($output);
 
@@ -174,12 +183,14 @@ add_action('save_post_agenda', 'export_agenda_in_json', 10, 3);
 function export_project_in_json($post_id, $post, $update)
 {
     if ($update) {
-        prep_rest_call();
+        // prep_rest_call();
+        WPBMap::addAllMappedShortcodes();
         $request = new WP_REST_Request('GET', '/wp/v2/project/'.$post_id);
         $request->set_query_params(['id' => $post_id]);
         $response = rest_do_request($request);
         $server = rest_get_server();
         $output = $server->response_to_data($response, false);
+        $output['content']['rendered'] = apply_filters('the_content', $post->post_content);
 
         save_json($output);
     }

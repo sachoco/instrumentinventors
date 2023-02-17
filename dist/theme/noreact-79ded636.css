@@ -444,11 +444,6 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
   color: #9ca3af;
 }
 
-input:-ms-input-placeholder, textarea:-ms-input-placeholder {
-  opacity: 1;
-  color: #9ca3af;
-}
-
 input::placeholder,
 textarea::placeholder {
   opacity: 1;
@@ -2221,11 +2216,6 @@ h1, h2, h3, h4, h5 {
   color: rgba(112, 112, 112, var(--tw-placeholder-opacity));
 }
 
-.placeholder-light:-ms-input-placeholder {
-  --tw-placeholder-opacity: 1;
-  color: rgba(112, 112, 112, var(--tw-placeholder-opacity));
-}
-
 .placeholder-light::placeholder {
   --tw-placeholder-opacity: 1;
   color: rgba(112, 112, 112, var(--tw-placeholder-opacity));
@@ -2395,8 +2385,7 @@ h1, h2, h3, h4, h5 {
 }
 
 .scroll-snap-x {
-  -ms-scroll-snap-type: x mandatory;
-      scroll-snap-type: x mandatory;
+  scroll-snap-type: x mandatory;
 }
 
 .scroll-align-start {
@@ -2766,4 +2755,4 @@ body {
 }
 
 
-/*# sourceMappingURL=noreact-1ba135d3.css.map*/
+/*# sourceMappingURL=noreact-79ded636.css.map*/

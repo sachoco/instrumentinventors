@@ -120,15 +120,15 @@ export default function InputSlider({
               <path
                 d="M7.5 4.25H7.50813M8.3125 10.75H7.5V7.5H6.6875L8.3125 10.75Z"
                 stroke="black"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
               <path
                 d="M14 7.5C14 8.35359 13.8319 9.19883 13.5052 9.98744C13.1786 10.7761 12.6998 11.4926 12.0962 12.0962C11.4926 12.6998 10.7761 13.1786 9.98744 13.5052C9.19883 13.8319 8.35359 14 7.5 14C6.64641 14 5.80117 13.8319 5.01256 13.5052C4.22394 13.1786 3.50739 12.6998 2.90381 12.0962C2.30022 11.4926 1.82144 10.7761 1.49478 9.98744C1.16813 9.19883 1 8.35359 1 7.5C1 5.77609 1.68482 4.12279 2.90381 2.90381C4.12279 1.68482 5.77609 1 7.5 1C9.22391 1 10.8772 1.68482 12.0962 2.90381C13.3152 4.12279 14 5.77609 14 7.5Z"
                 stroke="black"
-                stroke-width="0.444444"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="0.444444"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
           </div>

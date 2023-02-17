@@ -42,7 +42,7 @@ add_filter( 'wp_rest_cache/allowed_endpoints', 'wprc_add_iii_endpoint', 10, 1);
 
 add_action( 'rest_api_init', function ()
 {
-  if ( ! is_admin() ) {
+  if ( ! is_admin_request() ) {
     register_rest_field(
        array('post','page','artist','agenda','project'),
        'content',

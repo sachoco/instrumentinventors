@@ -444,11 +444,6 @@ input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
   color: #9ca3af;
 }
 
-input:-ms-input-placeholder, textarea:-ms-input-placeholder {
-  opacity: 1;
-  color: #9ca3af;
-}
-
 input::placeholder,
 textarea::placeholder {
   opacity: 1;
@@ -2221,11 +2216,6 @@ h1, h2, h3, h4, h5 {
   color: rgba(112, 112, 112, var(--tw-placeholder-opacity));
 }
 
-.placeholder-light:-ms-input-placeholder {
-  --tw-placeholder-opacity: 1;
-  color: rgba(112, 112, 112, var(--tw-placeholder-opacity));
-}
-
 .placeholder-light::placeholder {
   --tw-placeholder-opacity: 1;
   color: rgba(112, 112, 112, var(--tw-placeholder-opacity));
@@ -2395,8 +2385,7 @@ h1, h2, h3, h4, h5 {
 }
 
 .scroll-snap-x {
-  -ms-scroll-snap-type: x mandatory;
-      scroll-snap-type: x mandatory;
+  scroll-snap-type: x mandatory;
 }
 
 .scroll-align-start {
@@ -7645,7 +7634,6 @@ iframe.twitter-share-button{
   padding:0;
   position:relative;
   -webkit-user-select:none;
-  -ms-user-select:none;
   user-select:none;
   font-weight:400
 }
@@ -10523,7 +10511,6 @@ a.wpb_button_a:hover{
   box-sizing:border-box;
   word-wrap:break-word;
   -webkit-user-select:none;
-  -ms-user-select:none;
   user-select:none;
   text-decoration:none;
   position:relative;
@@ -22339,13 +22326,11 @@ html[xmlns] .flexslider .slides{
 }
 
 .swiper-container-horizontal.swiper-container-css-mode>.swiper-wrapper{
-  -ms-scroll-snap-type:x mandatory;
-      scroll-snap-type:x mandatory
+  scroll-snap-type:x mandatory
 }
 
 .swiper-container-vertical.swiper-container-css-mode>.swiper-wrapper{
-  -ms-scroll-snap-type:y mandatory;
-      scroll-snap-type:y mandatory
+  scroll-snap-type:y mandatory
 }
 
 :root{
@@ -24329,4 +24314,4 @@ ul.ub_styled_list li{
 
 /* purgecss end ignore */
 
-/*# sourceMappingURL=main-c803f7e8.css.map*/
+/*# sourceMappingURL=main-9258b021.css.map*/
