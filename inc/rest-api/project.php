@@ -12,7 +12,7 @@ function query_project($args, $request)
         $args['meta_query'][] = array(
             'key' => 'category',
             'value' => $request["pricat"],
-            'compare' => 'LIKE'
+            'compare' => '='
         );
     }
     if(isset($request["in_pricat"])) {

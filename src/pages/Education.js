@@ -31,9 +31,15 @@ const Education = () => {
       />
 
       <Block
-        title="workshop portfolio"
+        title="workshops for adults portfolio"
         carousel
-        url="wp/v2/project/?pricat=workshop"
+        url="wp/v2/project/?pricat=workshops"
+      />
+
+      <Block
+        title="workshops for kids portfolio"
+        carousel
+        url="wp/v2/project/?pricat=workshops_kids"
       />
     </>
   );
