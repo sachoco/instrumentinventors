@@ -14,6 +14,7 @@ export default function AddToCart({
   variations = null,
   minPrice = "1",
   maxPrice = "9999999",
+  soldOut = false,
 }) {
   let FORM_VALIDATION = Yup.object().shape({
     price: Yup.number().required("Price is required"),
@@ -166,7 +167,17 @@ export default function AddToCart({
               <Field type="text" name="id" tabIndex="-1" />
             </div>
             <span className="lg:text-right mt-3 lg:mt-3">
-              <button
+              {soldOut ? (
+                <button
+                className="flex-grow bg-white opacity-25 border-black border-2 text-black py-1 px-6 font-title cursor-not-allowed"
+                type="button"
+                disabled={soldOut}
+                onClick={submitForm}
+              >
+                Sold Out
+              </button>
+              ):(
+                <button
                 className="flex-grow bg-white hover:bg-black hover:text-white border-black border-2 text-black py-1 px-6 font-title"
                 type="button"
                 disabled={isSubmitting}
@@ -174,6 +185,8 @@ export default function AddToCart({
               >
                 Get Your Ticket
               </button>
+              )}
+
             </span>
           </div>
         </Form>

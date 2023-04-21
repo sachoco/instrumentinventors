@@ -1539,6 +1539,10 @@ h1, h2, h3, h4, h5 {
   cursor: pointer;
 }
 
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
 .disabled\:cursor-wait:disabled {
   cursor: wait;
 }
@@ -2225,6 +2229,10 @@ h1, h2, h3, h4, h5 {
   opacity: 0;
 }
 
+.opacity-25 {
+  opacity: 0.25;
+}
+
 .opacity-50 {
   opacity: 0.5;
 }
@@ -2755,4 +2763,4 @@ body {
 }
 
 
-/*# sourceMappingURL=noreact-79ded636.css.map*/
+/*# sourceMappingURL=noreact-c412d17e.css.map*/

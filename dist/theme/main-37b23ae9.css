@@ -1539,6 +1539,10 @@ h1, h2, h3, h4, h5 {
   cursor: pointer;
 }
 
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
 .disabled\:cursor-wait:disabled {
   cursor: wait;
 }
@@ -2223,6 +2227,10 @@ h1, h2, h3, h4, h5 {
 
 .opacity-0 {
   opacity: 0;
+}
+
+.opacity-25 {
+  opacity: 0.25;
 }
 
 .opacity-50 {
@@ -24314,4 +24322,4 @@ ul.ub_styled_list li{
 
 /* purgecss end ignore */
 
-/*# sourceMappingURL=main-9258b021.css.map*/
+/*# sourceMappingURL=main-37b23ae9.css.map*/

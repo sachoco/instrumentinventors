@@ -62,6 +62,7 @@ export default function ProductInfo({ item = null, id = null }) {
                       (x) => x.key === "_alg_wc_product_open_pricing_max_price"
                     ).value
                   }
+                  soldOut={!state.item.stock_quantity > 0}
                 />
               ) : state?.item?.type == "variable" ? (
                 <AddToCart
@@ -69,9 +70,14 @@ export default function ProductInfo({ item = null, id = null }) {
                   defaultPrice="--"
                   variablePrice={state?.item?.variations}
                   variations={variationsState.items}
+                  soldOut={!state.item.stock_quantity > 0}
                 />
               ) : (
-                <AddToCart productID={id} defaultPrice={state?.item?.price} />
+                <AddToCart
+                  productID={id}
+                  defaultPrice={state?.item?.price}
+                  soldOut={!state.item.stock_quantity > 0}
+                />
               )}
             </div>
           )}
