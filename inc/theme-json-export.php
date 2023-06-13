@@ -8,9 +8,9 @@ function iii_export_json_btn($wp_admin_bar)
     );
     $wp_admin_bar->add_node($args);
 }
-add_action('admin_bar_menu', 'iii_export_json_btn', 500);
+// add_action('admin_bar_menu', 'iii_export_json_btn', 500);
 
-add_action( 'admin_footer', 'iii_export_json_js' );
+// add_action( 'admin_footer', 'iii_export_json_js' );
 
 function iii_export_json_js() { ?>
     <script type="text/javascript" >
@@ -91,6 +91,8 @@ function save_json($output)
     $f = fopen($save_path, "w"); //if json file doesn't gets saved, comment this and uncomment the one below
     fwrite($f, $data);
     fclose($f);
+
+    iii_export_json_callback();
 }
 /**
  * Exporting json for post-type 'page'
