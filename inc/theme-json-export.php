@@ -92,7 +92,9 @@ function save_json($output)
     fwrite($f, $data);
     fclose($f);
 
-    iii_export_json_callback();
+    export_filter_in_json();
+    export_featured_in_json();
+
 }
 /**
  * Exporting json for post-type 'page'
