@@ -27,8 +27,9 @@ function convertDateForIos(date) {
   return date;
 }
 function parseTwoDates(date_from, date_until) {
-  const yearDiff = date_from.diff(date_until, "year");
-  const monthDiff = date_from.diff(date_until, "month");
+  const yearDiff = date_until.year() - date_from.year();//date_from.diff(date_until, "year");
+  const monthDiff = date_until.month() - date_from.month();///date_from.diff(date_until, "month");
+  console.log(monthDiff);
   const dayDiff = date_from.diff(date_until, "day");
   if (yearDiff != 0) {
     return (
