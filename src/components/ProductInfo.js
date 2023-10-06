@@ -3,17 +3,48 @@ import fetchProduct from "./rest-api/fetchProduct";
 import fetchVariations from "./rest-api/fetchVariations";
 
 import AddToCart from "./formsUI/AddToCart";
+import moment from "moment";
+import "moment-timezone";
+
+function parseTwoDates(date_from, date_until) {
+  const yearDiff = date_until.year() - date_from.year(); //date_from.diff(date_until, "year");
+  const monthDiff = date_until.month() - date_from.month(); ///date_from.diff(date_until, "month");
+  console.log(monthDiff);
+  const dayDiff = date_from.diff(date_until, "day");
+  if (yearDiff != 0) {
+    return (
+      date_from.format("DD.MM.YYYY") + " - " + date_until.format("DD.MM.YYYY")
+    );
+  } else if (monthDiff != 0) {
+    return date_from.format("DD.MM") + " - " + date_until.format("DD.MM.YYYY");
+  } else {
+    return date_from.format("DD") + "-" + date_until.format("DD.MM.YYYY");
+  }
+}
 
 export default function ProductInfo({ item = null, id = null }) {
   const state = fetchProduct(id);
   const variationsState = fetchVariations(id);
 
+  let returnObj = {
+    date: "",
+  };
   return (
     <>
       <div className="flex py-2 flex-col lg:flex-row items-start">
         <div className="w-full mr-3 leading-tight lg:w-1/2 mb-5 lg:mb-auto">
           {item?.acf?.date_from && (
-            <div className="mb-1">Date: {item?.acf?.date_from}</div>
+            <div className="mb-1">
+              Date:{" "}
+              {item?.acf?.date_from
+                ? (returnObj.date = item.acf.date_until
+                    ? parseTwoDates(
+                        moment(item.acf.date_from, "DD.MM.YYYY"),
+                        moment(item.acf.date_until, "DD.MM.YYYY")
+                      )
+                    : `${item.acf.date_from}`)
+                : (returnObj.date = "")}
+            </div>
           )}
           {item?.acf?.door_open && (
             <div className="mb-1">Doors: {item?.acf?.door_open}</div>
