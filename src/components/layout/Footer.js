@@ -10,7 +10,7 @@ const Footer = () => (
       <p>
         Willem Dreespark 312
         <br />
-        2531 XS, The Hague
+        2531 SX, The Hague
       </p>
     </div>
     <div className="">
