@@ -33,8 +33,8 @@ const Footer = () => (
       <p>
         <a
           className="hover:underline"
-          href="/product-category/donation/"
-          target="_self"
+          href="https://shop.instrumentinventors.org/product/donation/"
+          target="_blank"
         >
           click for more info
         </a>
