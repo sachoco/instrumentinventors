@@ -15,6 +15,7 @@ export default function AddToCart({
   minPrice = "1",
   maxPrice = "9999999",
   soldOut = false,
+  type = "",
 }) {
   let FORM_VALIDATION = Yup.object().shape({
     price: Yup.number().required("Price is required"),
@@ -41,17 +42,16 @@ export default function AddToCart({
     id: productID,
     price: parseFloat(defaultPrice).toFixed(2),
     amount: 1,
-    variation_id: 0
+    variation_id: 0,
   };
   if (variablePrice) {
-    INITIAL_FORM_STATE =  {
+    INITIAL_FORM_STATE = {
       id: productID,
       price: defaultPrice,
       amount: 1,
-      variation_id: 0
+      variation_id: 0,
     };
   }
-
 
   const onSubmitHandler = (values) => {
     if (openPrice) {
@@ -84,7 +84,6 @@ export default function AddToCart({
       );
     }
   };
-  
 
   return (
     <Formik
@@ -93,7 +92,7 @@ export default function AddToCart({
       // validateOnChange={false}
       // validateOnBlur={false}
       onSubmit={async (values, { setSubmitting }) => {
-        console.log(values)
+        console.log(values);
         await onSubmitHandler(values);
         setSubmitting(false);
       }}
@@ -101,7 +100,12 @@ export default function AddToCart({
       {({ isSubmitting, submitForm }) => (
         <Form className="w-full max-w-4xl" autoComplete="off">
           <div className="flex pb-2 flex-col lg:flex-row items-start ">
-            {variablePrice && <VariationSelectBox productID={productID} variations={variations} />}
+            {variablePrice && (
+              <VariationSelectBox
+                productID={productID}
+                variations={variations}
+              />
+            )}
           </div>
           <div className="flex py-2 flex-col lg:flex-row items-start ">
             {openPrice ? (
@@ -169,24 +173,23 @@ export default function AddToCart({
             <span className="lg:text-right mt-3 lg:mt-3">
               {soldOut ? (
                 <button
-                className="flex-grow bg-white opacity-25 border-black border-2 text-black py-1 px-6 font-title cursor-not-allowed"
-                type="button"
-                disabled={soldOut}
-                onClick={submitForm}
-              >
-                Sold Out
-              </button>
-              ):(
+                  className="flex-grow bg-white opacity-25 border-black border-2 text-black py-1 px-6 font-title cursor-not-allowed"
+                  type="button"
+                  disabled={soldOut}
+                  onClick={submitForm}
+                >
+                  Sold Out
+                </button>
+              ) : (
                 <button
-                className="flex-grow bg-white hover:bg-black hover:text-white border-black border-2 text-black py-1 px-6 font-title"
-                type="button"
-                disabled={isSubmitting}
-                onClick={submitForm}
-              >
-                Get Your Ticket
-              </button>
+                  className="flex-grow bg-white hover:bg-black hover:text-white border-black border-2 text-black py-1 px-6 font-title"
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={submitForm}
+                >
+                  {type != "project" ? "Get Your Ticket" : "Purchase"}
+                </button>
               )}
-
             </span>
           </div>
         </Form>

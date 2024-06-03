@@ -143,8 +143,11 @@ const Item = (props) => {
               {title}
             </div>
             <div
-              className={`whitespace-nowrap text-sm ${
-                hasTouch === false ? "group-hover:flex-grow " : ""
+              className={`text-sm ${
+                hasTouch === false ? "group-hover:flex-grow " : " "
+              }
+              ${
+                date.length > 15 ? "whitespace-normal " : "whitespace-nowrap "
               }`}
             >
               {date}
