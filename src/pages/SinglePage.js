@@ -23,6 +23,49 @@ import "../assets/vc/assets/lib/vc_carousel/js/transition.min.js";
 // import "../assets/ultimate-blocks/src/blocks/content-toggle/front.build.js";
 import "../assets/ultimate-blocks/dist/blocks.style.build.css";
 
+// import "../assets/wp-includes/js/dist/vendor/wp-polyfill-inert.js";
+// import "../assets/wp-includes/js/dist/vendor/regenerator-runtime.js";
+// import "../assets/wp-includes/js/dist/vendor/wp-polyfill.js";
+// import "../assets/wp-includes/js/dist/vendor/lodash.js";
+
+// import "../assets/wp-includes/js/dist/dom-ready.js";
+// import "../assets/wp-includes/js/dist/escape-html.js";
+// import "../assets/wp-includes/js/dist/hooks.js";
+// import "../assets/wp-includes/js/dist/i18n.js";
+
+// import "../assets/jetpack/_inc/blocks/958.js";
+// import "../assets/jetpack/_inc/blocks/swiper.css";
+// import "../assets/jetpack/_inc/blocks/slideshow/view.js";
+// import "../assets/jetpack/_inc/blocks/slideshow/view.css";
+
+import "../assets/gutenslider/build/gutenslider-init.css";
+import "../assets/gutenslider/build/gutenslider-init.js";
+
+import "../assets/gutenslider/build/gutenslider-front.js";
+// import "../assets/gutenslider/build/gutenslider-js.js";
+
+// import "../assets/gutenslider/build/vendor/gs-swiper-base.css";
+
+// import "../assets/gutenslider/build/vendor/gs-base.css";
+// import "../assets/gutenslider/build/vendor/gs-base.js";
+
+// import "../assets/gutenslider/build/vendor/gs-content-change.css";
+// import "../assets/gutenslider/build/vendor/gs-content-change.js";
+
+// import "../assets/gutenslider/build/vendor/gs-gs-swiper-navigation.css";
+// import "../assets/gutenslider/build/vendor/gs-gs-swiper-navigation.js";
+
+// import "../assets/gutenslider/build/vendor/gs-navigation.css";
+// import "../assets/gutenslider/build/vendor/gs-navigation.js";
+
+// import "../assets/gutenslider/build/vendor/gs-swiper-pagination.css";
+// import "../assets/gutenslider/build/vendor/gs-swiper-pagination.js";
+
+// import "../assets/gutenslider/build/vendor/gs-pagination.css";
+// import "../assets/gutenslider/build/vendor/gs-pagination.js";
+
+
+
 const SinglePage = ({ pages, ...otherProps }) => {
   const metaCtx = useContext(MetaContext);
   const location = useLocation();
@@ -42,7 +85,8 @@ const SinglePage = ({ pages, ...otherProps }) => {
       $carousel.carousel($carousel.data());
     });
     // END VC Carousel Hack
-
+    // window.lodash = _.noConflict();
+    // wp.i18n.setLocaleData( { 'text direction\u0004ltr': [ 'ltr' ] } );
     // BEGIN Ultimate Block Hack
     function convertToPixels(amount, unit) {
       return unit === "%" ? (amount / 100) * window.innerWidth : amount;
