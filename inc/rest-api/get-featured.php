@@ -34,6 +34,28 @@ function get_featured_items($request)
     $featured_items = new WP_Query($args);
     $items = $featured_items->posts;
 
+  } elseif ($page == "program") {
+    $args = array(
+      'post_type' => array('agenda','project'),
+      'ignore_sticky_posts' => 1,
+      'post_status' => array('publish'),
+      'meta_query' => array(
+        'relation' => 'AND',
+        // array(
+        //   'key' => 'is_featured_program',
+        //   'compare' => 'EXISTS',
+        //   'value' => ''
+        // ),
+        array(
+          'key' => 'is_featured_program',
+          'value' => true,
+          'compare' => '=='
+        )
+      )
+    );
+    $featured_items = new WP_Query($args);
+    $items = $featured_items->posts;
+
   } elseif ($page == "hostedprogram") {
     $args = array(
       'post_type' => array('agenda'),

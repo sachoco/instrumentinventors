@@ -332,7 +332,7 @@ function export_filter_in_json()
 function export_featured_in_json()
 {
     global $wpdb,$sitepress;
-    $pages = Array('home','hostedprogram','agency','education');
+    $pages = Array('home','hostedprogram','agency','education','program');
     $lang = Array('en','nl');
     // var_dump($sitepress->get_current_language());
     $default_lang = ICL_LANGUAGE_CODE;

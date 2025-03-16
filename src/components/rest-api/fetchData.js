@@ -68,7 +68,8 @@ const fetchData = (
         // console.log(response);
         setState((prevState, props) => {
           let _hasMore = response.headers["x-wp-totalpages"] > prevState.page;
-          if (url2 && _url != url2 && !_hasMore) {
+          // console.log(_url)
+          if (url2 && _url.current != url2 && !_hasMore) {
             _url.current = url2;
             _hasMore = true;
           }

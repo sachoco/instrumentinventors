@@ -97,8 +97,8 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
                 </a>
               </li>
               <li>
-                <a className="relative hover:font-bold" href="/hosted-program/">
-                  hosted program
+                <a className="relative hover:font-bold" href="/program/">
+                  program
                 </a>
               </li>
               <li>
@@ -112,11 +112,17 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
                 </a>
               </li>
               <li>
-                <a
+                {/* <a
                   className="relative hover:font-bold"
                   href="/projects/?c=editions"
                 >
                   editions
+                </a> */}
+                <a
+                  className="relative hover:font-bold"
+                  href="https://shop.instrumentinventors.org"
+                >
+                  shop
                 </a>
               </li>
             </ul>
@@ -136,9 +142,9 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
                   <MyLink
                     activeClassName="font-bold active"
                     className="relative hover:font-bold"
-                    to="/hosted-program/"
+                    to="/program/"
                   >
-                    hosted program
+                    program
                   </MyLink>
                 </li>
                 <li>
@@ -160,7 +166,7 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
                   </MyLink>
                 </li>
                 <li>
-                  <MyLink
+                  {/* <MyLink
                     activeClassName="font-bold active"
                     className="relative hover:font-bold"
                     to="/projects/?c=editions"
@@ -174,7 +180,13 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
                     }}
                   >
                     editions
-                  </MyLink>
+                  </MyLink> */}
+                  <a
+                    className="relative hover:font-bold"
+                    href="https://shop.instrumentinventors.org"
+                  >
+                    shop
+                  </a>
                 </li>
               </ul>
               {metaCtx.translation && (

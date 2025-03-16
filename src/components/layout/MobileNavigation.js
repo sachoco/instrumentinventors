@@ -166,10 +166,10 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                   <MyLink
                     activeClassName="font-bold active"
                     className="relative hover:font-bold"
-                    to="/hosted-program/"
+                    to="/program/"
                     onClick={onMenuClick}
                   >
-                    hosted program
+                    program
                   </MyLink>
                 </li>
                 <li className="text-center">
@@ -193,7 +193,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                   </MyLink>
                 </li>
                 <li className="text-center">
-                  <MyLink
+                  {/* <MyLink
                     activeClassName="font-bold active"
                     className="relative hover:font-bold"
                     to="/projects/?c=editions"
@@ -210,7 +210,13 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                     }}
                   >
                     editions
-                  </MyLink>
+                  </MyLink> */}
+                  <a
+                    className="relative hover:font-bold"
+                    href="https://shop.instrumentinventors.org"
+                  >
+                    shop
+                  </a>
                 </li>
                 {metaCtx.translation && (
                   <li className="text-center">

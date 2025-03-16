@@ -7,6 +7,7 @@ import Aggregation from "./pages/Aggregation";
 import Single from "./pages/Single";
 import SinglePage from "./pages/SinglePage";
 
+import Program from "./pages/Program";
 import HostedProgram from "./pages/HostedProgram";
 import Agency from "./pages/Agency";
 import Education from "./pages/Education";
@@ -14,10 +15,9 @@ import Search from "./pages/Search";
 import loadPages from "./components/rest-api/loadPages";
 import fetchMenu from "./components/rest-api/fetchMenu";
 
-
 const App = () => {
   const menuItems = fetchMenu();
-  const pages = null;//loadPages(menuItems.items);
+  const pages = null; //loadPages(menuItems.items);
 
   return (
     <>
@@ -36,6 +36,7 @@ const App = () => {
             render={(props) => <Single {...props} posttype="artist" />}
           />
 
+          <Route path="/program/" exact component={Program} />
           <Route path="/hosted-program/" exact component={HostedProgram} />
           <Route path="/agency/" exact component={Agency} />
           <Route path="/education/" exact component={Education} />
@@ -44,11 +45,7 @@ const App = () => {
             path="/agenda/"
             exact
             render={(props) => (
-              <Aggregation
-                {...props}
-                url="wp/v2/agenda/?"
-                posttype="agenda"
-              />
+              <Aggregation {...props} url="wp/v2/agenda/?" posttype="agenda" />
             )}
           />
           <Route
@@ -86,12 +83,7 @@ const App = () => {
             path="/post/:slug"
             render={(props) => <Single {...props} posttype="posts" />}
           />
-          <Route
-            path="/search/"
-            render={(props) => (
-              <Search {...props} />
-            )}
-          />
+          <Route path="/search/" render={(props) => <Search {...props} />} />
           <Route
             path="/:p1/:p2?"
             render={(props) => <SinglePage {...props} pages={pages} />}
