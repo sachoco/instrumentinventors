@@ -57,7 +57,7 @@ const Agency = () => {
         url2="wp/v2/agenda/?subcat=circulation&past"
       /> */}
 
-      <Block title="commission" carousel url="wp/v2/project/?is_agency" />
+      <Block title="commissions" carousel url="wp/v2/project/?is_agency" />
 
       {/* <Block
         title="curated programs"

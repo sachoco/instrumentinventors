@@ -33,7 +33,7 @@ const Program = () => {
       />
 
       <Block
-        title="circulation programs"
+        title="circulation activities"
         bg={true}
         carousel
         url="wp/v2/agenda/?subcat=circulation&upcoming"
