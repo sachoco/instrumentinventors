@@ -32,7 +32,8 @@ const Agency = () => {
       <Block
         title="in the spotlight"
         carousel
-        url="wp/v2/project/?cat=curated_programs&subcat=circulation&is_highlighted"
+        url="wp/v2/project/?is_highlighted"
+        // url="wp/v2/project/?cat=curated_programs&subcat=circulation&is_highlighted"
         // url2="wp/v2/agenda/?subcat=circulation&past"
       />
 
