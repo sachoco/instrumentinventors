@@ -53,6 +53,13 @@ function query_project($args, $request)
             'compare' => '=='
         );
     }
+    if (isset($request["is_commission"])) {
+        $args['meta_query'][] = array(
+            'key' => 'is_commission',
+            'value' => true,
+            'compare' => '=='
+        );
+    }
     if (isset($request["is_highlighted"])) {
         $args['meta_query'][] = array(
             'key' => 'is_highlighted',
