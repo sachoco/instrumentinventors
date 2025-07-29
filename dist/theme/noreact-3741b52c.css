@@ -2986,6 +2986,10 @@ body {
     padding-right: 6rem;
   }
 
+  .lg\:pb-0 {
+    padding-bottom: 0px;
+  }
+
   .lg\:pb-2\/5 {
     padding-bottom: 40%;
   }
@@ -3068,4 +3072,4 @@ body {
 }
 
 
-/*# sourceMappingURL=noreact-6105360b.css.map*/
+/*# sourceMappingURL=noreact-3741b52c.css.map*/

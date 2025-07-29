@@ -4,28 +4,36 @@ import Slideshow from "../components/Slideshow";
 import Block from "../components/layout/Block";
 import Meta from "../components/layout/Meta";
 import MetaContext from "../store/meta-context";
+import { Link } from "react-router-dom";
 
 const Agency = () => {
   const metaCtx = useContext(MetaContext);
   useEffect(() => {
     metaCtx.setTranslation(false);
   }, []);
+  const onClickHandler = (e, link) => {
+    e.preventDefault();
+    history.push(link);
+  };
   return (
     <>
       <Meta title="Agency" />
       {/* <Slideshow url="iii/getFeatured/agency/?" /> */}
       {/* <Slideshow url="/data/featured/agency" /> */}
-      <Block title="about iii">
+      <Block title="about iii agency" className="pb-0 lg:pb-0">
         <p className="max-w-prose">
           iii is an artist run, community platform supporting new
           interdisciplinary practices linking performance, technology and the
-          human senses. Arising from the ArtScience tradition of The Hague, iii
-          strives to balance technological innovation, theoretical reflection
-          and human experience. iii contributes to international developments in
-          the field of Art, Science & Technology, functioning both as a cultural
-          incubator supporting research and creation, and as an agency
-          connecting creators to a broad audience via a wide (inter)national
-          partner network.
+          human senses. The agency offers both individual works and fully
+          curated shows. Shows curated by iii can present a selection of
+          existing works as well as a program of completely new commissions
+          developed for a specific space and occasion. More info{" "}
+          <span
+            onClick={(e) => onClickHandler(e, "/about/agency/")}
+            className="hover:underline cursor-pointer"
+          >
+            HERE
+          </span>
         </p>
       </Block>
 
@@ -58,7 +66,11 @@ const Agency = () => {
         url2="wp/v2/agenda/?subcat=circulation&past"
       /> */}
 
-      <Block title="commissions" carousel url="wp/v2/project/?is_agency&is_commission" />
+      <Block
+        title="commissions"
+        carousel
+        url="wp/v2/project/?is_agency&is_commission"
+      />
 
       {/* <Block
         title="curated programs"

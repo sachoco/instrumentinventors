@@ -2986,6 +2986,10 @@ body {
     padding-right: 6rem;
   }
 
+  .lg\:pb-0 {
+    padding-bottom: 0px;
+  }
+
   .lg\:pb-2\/5 {
     padding-bottom: 40%;
   }
@@ -24840,4 +24844,4 @@ ul.ub_styled_list li{
 /* purgecss end ignore */
 
 
-/*# sourceMappingURL=main-9b92ccf6.css.map*/
+/*# sourceMappingURL=main-fc3eb494.css.map*/
