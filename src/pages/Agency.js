@@ -1,4 +1,6 @@
 import React, { useEffect, useContext } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+
 import Slideshow from "../components/Slideshow";
 
 import Block from "../components/layout/Block";
@@ -8,6 +10,7 @@ import { Link } from "react-router-dom";
 
 const Agency = () => {
   const metaCtx = useContext(MetaContext);
+  let history = useHistory();  
   useEffect(() => {
     metaCtx.setTranslation(false);
   }, []);
