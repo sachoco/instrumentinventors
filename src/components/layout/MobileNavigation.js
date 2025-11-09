@@ -118,17 +118,23 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
           <nav className="flex-grow border-b-2 pb-4 sm:pb-8">
             {noreactrouter ? (
               <ul className="flex flex-col justify-around h-full  leading-10">
-                <li className="text-center">
-                  <a className="relative hover:font-bold" href="/artists/">
-                    artists
-                  </a>
-                </li>
+
                 <li className="text-center">
                   <a
                     className="relative hover:font-bold"
                     href="/hosted-progam/"
                   >
-                    hosted program
+                    program
+                  </a>
+                </li>
+                                <li className="text-center">
+                  <a className="relative hover:font-bold" href="/education/">
+                    education
+                  </a>
+                </li>
+                                <li className="text-center">
+                  <a className="relative hover:font-bold" href="/artists/">
+                    artists
                   </a>
                 </li>
                 <li className="text-center">
@@ -136,11 +142,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                     agency
                   </a>
                 </li>
-                <li className="text-center">
-                  <a className="relative hover:font-bold" href="/education/">
-                    education
-                  </a>
-                </li>
+
                 <li className="text-center">
                   <a
                     className="relative hover:font-bold"
@@ -156,20 +158,30 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                   <MyLink
                     activeClassName="font-bold active"
                     className="relative hover:font-bold"
-                    to="/artists/"
-                    onClick={onMenuClick}
-                  >
-                    artists
-                  </MyLink>
-                </li>
-                <li className="text-center">
-                  <MyLink
-                    activeClassName="font-bold active"
-                    className="relative hover:font-bold"
                     to="/program/"
                     onClick={onMenuClick}
                   >
                     program
+                  </MyLink>
+                </li>
+                                <li className="text-center">
+                  <MyLink
+                    activeClassName="font-bold active"
+                    className="relative hover:font-bold"
+                    to="/education/"
+                    onClick={onMenuClick}
+                  >
+                    education
+                  </MyLink>
+                </li>
+                                <li className="text-center">
+                  <MyLink
+                    activeClassName="font-bold active"
+                    className="relative hover:font-bold"
+                    to="/artists/"
+                    onClick={onMenuClick}
+                  >
+                    artists
                   </MyLink>
                 </li>
                 <li className="text-center">
@@ -182,16 +194,7 @@ const MobileNavigation = ({ menuItems, noreactrouter }) => {
                     agency
                   </MyLink>
                 </li>
-                <li className="text-center">
-                  <MyLink
-                    activeClassName="font-bold active"
-                    className="relative hover:font-bold"
-                    to="/education/"
-                    onClick={onMenuClick}
-                  >
-                    education
-                  </MyLink>
-                </li>
+
                 <li className="text-center">
                   {/* <MyLink
                     activeClassName="font-bold active"

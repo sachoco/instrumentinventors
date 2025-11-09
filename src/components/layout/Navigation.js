@@ -92,18 +92,8 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
           {noreactrouter ? (
             <ul className="hidden lg:flex justify-evenly items-center flex-grow h-full ">
               <li>
-                <a className="relative hover:font-bold" href="/artists/">
-                  artists
-                </a>
-              </li>
-              <li>
                 <a className="relative hover:font-bold" href="/program/">
                   program
-                </a>
-              </li>
-              <li>
-                <a className="relative hover:font-bold" href="/agency/">
-                  agency
                 </a>
               </li>
               <li>
@@ -111,6 +101,17 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
                   education
                 </a>
               </li>
+              <li>
+                <a className="relative hover:font-bold" href="/artists/">
+                  artists
+                </a>
+              </li>
+              <li>
+                <a className="relative hover:font-bold" href="/agency/">
+                  agency
+                </a>
+              </li>
+
               <li>
                 {/* <a
                   className="relative hover:font-bold"
@@ -133,27 +134,9 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
                   <MyLink
                     activeClassName="font-bold active"
                     className="relative hover:font-bold"
-                    to="/artists/"
-                  >
-                    artists
-                  </MyLink>
-                </li>
-                <li>
-                  <MyLink
-                    activeClassName="font-bold active"
-                    className="relative hover:font-bold"
                     to="/program/"
                   >
                     program
-                  </MyLink>
-                </li>
-                <li>
-                  <MyLink
-                    activeClassName="font-bold active"
-                    className="relative hover:font-bold"
-                    to="/agency/"
-                  >
-                    agency
                   </MyLink>
                 </li>
                 <li>
@@ -165,6 +148,25 @@ const Navigation = ({ menuItems, noreactrouter = false }) => {
                     education
                   </MyLink>
                 </li>
+                <li>
+                  <MyLink
+                    activeClassName="font-bold active"
+                    className="relative hover:font-bold"
+                    to="/artists/"
+                  >
+                    artists
+                  </MyLink>
+                </li>
+                <li>
+                  <MyLink
+                    activeClassName="font-bold active"
+                    className="relative hover:font-bold"
+                    to="/agency/"
+                  >
+                    agency
+                  </MyLink>
+                </li>
+
                 <li>
                   {/* <MyLink
                     activeClassName="font-bold active"
