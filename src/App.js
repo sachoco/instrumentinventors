@@ -8,6 +8,7 @@ import Single from "./pages/Single";
 import SinglePage from "./pages/SinglePage";
 
 import Program from "./pages/Program";
+import ProgramNew from "./pages/ProgramNew";
 import HostedProgram from "./pages/HostedProgram";
 import Agency from "./pages/Agency";
 import Education from "./pages/Education";
@@ -37,6 +38,7 @@ const App = () => {
           />
 
           <Route path="/program/" exact component={Program} />
+          <Route path="/program-new/" exact component={ProgramNew} />
           <Route path="/hosted-program/" exact component={HostedProgram} />
           <Route path="/agency/" exact component={Agency} />
           <Route path="/education/" exact component={Education} />

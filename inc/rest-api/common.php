@@ -88,6 +88,20 @@ class III_REST_API {
         
         $output["path"] = parse_url(esc_url(get_permalink($postId)),PHP_URL_PATH);
 
+        $related_posts_ids = get_field('related_posts', $postId);
+        $related_artists = get_posts(array('post__in' => $related_posts_ids, 'post_type' => array('artist'), 'posts_per_page' => -1 ));
+        if ($related_artists) {
+            usort($related_artists, fn($a, $b) => strcmp($a->post_name, $b->post_name));
+            foreach($related_artists as $artist) {
+                $output["artists"][] = array(
+                    'id' => $artist->ID,
+                    'name' => $artist->post_title, 
+                ); 
+            }
+        }else{
+            $output["artists"] = false;
+        }
+        
         return $output;
 	}
 }

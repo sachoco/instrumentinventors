@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import HorizontalSlider from "../HorizontalSlider";
 import ProductInfo from "../ProductInfo";
 import Wave from "../Wave";
+import ListBlock from "../ListBlock";
 
 const Block = ({
   title = null,
   bg = false,
   carousel = false,
+  list = false,
   url = null,
   url2 = null,
   related_item = false,
@@ -40,6 +42,7 @@ const Block = ({
         )}
         {carousel && <HorizontalSlider toggleDisable={toggleDisable} debug={debug} url={url} url2={url2} related_item={related_item} onScroll={ (value) => setScrollSine(value) } />}
         {/* {carousel && <HorizontalSlider toggleDisable={toggleDisable} debug={debug} url={url} url2={url2} related_item={related_item} />} */}
+        {list && <ListBlock posttype="agenda" debug={debug} url={url} url2={url2} />}
         {shop_item && <ProductInfo item={item} id={product_id} /> }
         {otherProps.children}
       </div>

@@ -48,9 +48,11 @@ const normalizePosttype = (item) => {
   let returnObj = {
     title: "",
     content: "",
+    excerpt: "",
     image: {},
     link: "",
     tag: he.decode("&nbsp;"),
+    artists: he.decode("&nbsp;"),
     subcategory: [],
     archive_base: "",
     subcat_link: "",
@@ -81,6 +83,7 @@ const normalizePosttype = (item) => {
           .split(/[/?#](.+)/)[1];
       returnObj.subcategory = item.subtype;
       returnObj.tag = item.tags ? item.tags : he.decode("&nbsp;"); //?.length > 0 ? item.tags : "";
+      returnObj.artists = item.artists ? item.artists : he.decode("&nbsp;"); //?.length > 0 ? item.tags : "";
       returnObj.posttype = item.subtype;
       if (item.subtype == "artist") {
         returnObj.subcategory = item.acf?.badges;
@@ -200,6 +203,7 @@ const normalizePosttype = (item) => {
           .replace("https://", "")
           .split(/[/?#](.+)/)[1];
       returnObj.tag = item.tags?.length > 0 ? item.tags : "";
+      returnObj.artists = item.artists?.length > 0 ? item.artists : "";
       returnObj.posttype = item.post_type;
       returnObj.date = item.date;
       returnObj.meta1 = item.meta1 ? item.meta1 : "";
@@ -226,6 +230,13 @@ const normalizePosttype = (item) => {
           ? parse(item.content)
           : "";
       }
+      if (item.excerpt) {
+        returnObj.excerpt = item.content?.rendered
+          ? parse(item.excerpt.rendered)
+          : typeof item.excerpt === 'string'
+          ? parse(item.excerpt)
+          : "";
+      }
 
       returnObj.image = item.iii?.featured_image
         ? {
@@ -249,6 +260,10 @@ const normalizePosttype = (item) => {
       returnObj.tag =
         Array.isArray(item.iii?.tags) && item.iii.tags?.length > 0
           ? item.iii.tags
+          : he.decode("&nbsp;");
+      returnObj.artists =
+        Array.isArray(item.iii?.artists) && item.iii.artists?.length > 0
+          ? item.iii.artists
           : he.decode("&nbsp;");
 
       if (item.type == "artist") {
@@ -352,7 +367,7 @@ const normalizePosttype = (item) => {
         returnObj.archive_base = "posts";
       }
     }
-    // console.log(returnObj)
+    console.log(returnObj)
   }
   return returnObj;
 };

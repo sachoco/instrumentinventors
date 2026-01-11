@@ -1,7 +1,13 @@
 import React from "react";
 import ListItem from "../ListItem";
+import ListItemAgenda from "../ListItemAgenda";
 
-export default function ListView({ items = null, posttype, ...otherProps }) {
+export default function ListView({
+  items = null,
+  posttype,
+  agendaview = false,
+  ...otherProps
+}) {
   const dummyItems = new Array(6).fill({});
 
   return (
@@ -49,9 +55,13 @@ export default function ListView({ items = null, posttype, ...otherProps }) {
           <div className="flex items-center border-b-2 py-4 px-2 font-title"></div>
         )}
         {items.length > 0
-          ? items?.map((item, i) => (
-              <ListItem key={i} item={item} posttype={posttype} />
-            ))
+          ? !agendaview
+            ? items?.map((item, i) => (
+                <ListItem key={i} item={item} posttype={posttype} />
+              ))
+            : items?.map((item, i) => (
+                <ListItemAgenda key={i} item={item} posttype={posttype} />
+              ))
           : dummyItems.map((item, i) => <ListItem key={i} className="" />)}
       </div>
     </>
