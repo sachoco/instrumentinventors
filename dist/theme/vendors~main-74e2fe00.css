@@ -55,7 +55,6 @@
 .slick-slider .slick-track,
 .slick-slider .slick-list
 {
-  -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
 }
 
@@ -176,7 +175,6 @@
   width: 20px;
   height: 20px;
   padding: 0;
-  -webkit-transform: translate(0, -50%);
   transform: translate(0, -50%);
   cursor: pointer;
   color: transparent;
@@ -347,4 +345,4 @@
 /* purgecss end ignore */
 
 
-/*# sourceMappingURL=vendors~main-14388dfa.css.map*/
+/*# sourceMappingURL=vendors~main-74e2fe00.css.map*/
