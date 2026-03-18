@@ -147,7 +147,7 @@ const Item = (props) => {
                 hasTouch === false ? "group-hover:flex-grow " : " "
               }
               ${
-                date.length > 15 ? "whitespace-normal " : "whitespace-nowrap "
+                date?.length > 15 ? "whitespace-normal " : "whitespace-nowrap "
               }`}
             >
               {date}

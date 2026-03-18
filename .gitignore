@@ -1,3 +1,4 @@
 node_modules
 wpackio.server.js
 .env
+.DS_Store
