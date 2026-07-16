@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 
 const Agency = () => {
   const metaCtx = useContext(MetaContext);
-  let history = useHistory();  
+  let history = useHistory();
   useEffect(() => {
     metaCtx.setTranslation(false);
   }, []);
@@ -30,7 +30,10 @@ const Agency = () => {
           human senses. The agency offers both individual works and fully
           curated shows. Shows curated by iii can present a selection of
           existing works as well as a program of completely new commissions
-          developed for a specific space and occasion. More info{" "}
+          developed for a specific space and occasion.
+        </p>
+        <p className="max-w-prose text-lg font-bold mt-5">
+          More info{" "}
           <span
             onClick={(e) => onClickHandler(e, "/about/agency/")}
             className="hover:underline cursor-pointer"
@@ -49,7 +52,6 @@ const Agency = () => {
         // url2="wp/v2/agenda/?subcat=circulation&past"
       />
 
-      
       <Block
         title="artworks"
         carousel
@@ -76,8 +78,6 @@ const Agency = () => {
         url="wp/v2/agenda/?subcat=circulation&upcoming"
         url2="wp/v2/agenda/?subcat=circulation&past"
       /> */}
-
-
 
       {/* <Block
         title="curated programs"
