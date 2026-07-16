@@ -1,14 +1,14 @@
 {
-  "main.css": "theme/main.css",
-  "main.css.map": "theme/main.css.map",
-  "main.js": "theme/main.js",
-  "main.js.map": "main.a0def499883dba4cac96.hot-update.js.map",
-  "noreact.css": "theme/noreact.css",
-  "noreact.css.map": "theme/noreact.css.map",
-  "noreact.js": "theme/noreact.js",
-  "noreact.js.map": "theme/noreact.js.map",
-  "runtime.js": "theme/runtime.js",
-  "runtime.js.map": "theme/runtime.js.map",
+  "main.css": "theme/main-cfeb415e.css",
+  "main.css.map": "theme/main-cfeb415e.css.map",
+  "main.js": "theme/main-4307d889.js",
+  "main.js.map": "theme/main-4307d889.js.map",
+  "noreact.css": "theme/noreact-7fb281ed.css",
+  "noreact.css.map": "theme/noreact-7fb281ed.css.map",
+  "noreact.js": "theme/noreact-e07fcfbd.js",
+  "noreact.js.map": "theme/noreact-e07fcfbd.js.map",
+  "runtime.js": "theme/runtime-9131fd6f.js",
+  "runtime.js.map": "theme/runtime-9131fd6f.js.map",
   "theme/assets/Antipol Extended Bold.otf": "theme/assets/Antipol%20Extended%20Bold-47719189.otf",
   "theme/assets/Antipol Extended Regular.otf": "theme/assets/Antipol%20Extended%20Regular-c41cd2ee.otf",
   "theme/assets/GT-Walsheim-Bold.eot": "theme/assets/GT-Walsheim-Bold-33f7eff5.eot",
@@ -80,56 +80,54 @@
   "theme/assets/vcpb-plugin-icons.ttf?f6ud62": "theme/assets/vcpb-plugin-icons-f6ede732.ttf",
   "theme/assets/vcpb-plugin-icons.woff?f6ud62": "theme/assets/vcpb-plugin-icons-e0e03562.woff",
   "theme/assets/video.png": "theme/assets/video-df20b626.png",
-  "theme/main.js.map": "theme/main.js.map",
-  "vendors~main.css": "theme/vendors~main.css",
-  "vendors~main.css.map": "theme/vendors~main.css.map",
-  "vendors~main.js": "theme/vendors~main.js",
-  "vendors~main.js.map": "theme/vendors~main.js.map",
-  "vendors~main~noreact.js": "theme/vendors~main~noreact.js",
-  "vendors~main~noreact.js.map": "theme/vendors~main~noreact.js.map",
+  "vendors~main.css": "theme/vendors~main-74e2fe00.css",
+  "vendors~main.css.map": "theme/vendors~main-74e2fe00.css.map",
+  "vendors~main.js": "theme/vendors~main-4eeb715c.js",
+  "vendors~main.js.map": "theme/vendors~main-4eeb715c.js.map",
+  "vendors~main~noreact.js": "theme/vendors~main~noreact-77af1449.js",
+  "vendors~main~noreact.js.map": "theme/vendors~main~noreact-77af1449.js.map",
   "wpackioEp": {
     "main": {
       "assets": {
         "js": [
-          "theme/runtime.js",
-          "theme/vendors~main~noreact.js",
-          "theme/vendors~main.js",
-          "theme/main.js"
+          "theme/runtime-9131fd6f.js",
+          "theme/vendors~main~noreact-77af1449.js",
+          "theme/vendors~main-4eeb715c.js",
+          "theme/main-4307d889.js"
         ],
         "js.map": [
-          "theme/runtime.js.map",
-          "theme/vendors~main~noreact.js.map",
-          "theme/vendors~main.js.map",
-          "theme/main.js.map",
-          "main.a0def499883dba4cac96.hot-update.js.map"
+          "theme/runtime-9131fd6f.js.map",
+          "theme/vendors~main~noreact-77af1449.js.map",
+          "theme/vendors~main-4eeb715c.js.map",
+          "theme/main-4307d889.js.map"
         ],
         "css": [
-          "theme/vendors~main.css",
-          "theme/main.css"
+          "theme/vendors~main-74e2fe00.css",
+          "theme/main-cfeb415e.css"
         ],
         "css.map": [
-          "theme/vendors~main.css.map",
-          "theme/main.css.map"
+          "theme/vendors~main-74e2fe00.css.map",
+          "theme/main-cfeb415e.css.map"
         ]
       }
     },
     "noreact": {
       "assets": {
         "js": [
-          "theme/runtime.js",
-          "theme/vendors~main~noreact.js",
-          "theme/noreact.js"
+          "theme/runtime-9131fd6f.js",
+          "theme/vendors~main~noreact-77af1449.js",
+          "theme/noreact-e07fcfbd.js"
         ],
         "js.map": [
-          "theme/runtime.js.map",
-          "theme/vendors~main~noreact.js.map",
-          "theme/noreact.js.map"
+          "theme/runtime-9131fd6f.js.map",
+          "theme/vendors~main~noreact-77af1449.js.map",
+          "theme/noreact-e07fcfbd.js.map"
         ],
         "css": [
-          "theme/noreact.css"
+          "theme/noreact-7fb281ed.css"
         ],
         "css.map": [
-          "theme/noreact.css.map"
+          "theme/noreact-7fb281ed.css.map"
         ]
       }
     }
