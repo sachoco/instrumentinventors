@@ -1289,6 +1289,14 @@ h1, h2, h3, h4, h5 {
   height: calc(100% - 40px);
 }
 
+.max-h-0 {
+  max-height: 0px;
+}
+
+.max-h-full {
+  max-height: 100%;
+}
+
 .min-h-0 {
   min-height: 0px;
 }
@@ -1498,6 +1506,10 @@ h1, h2, h3, h4, h5 {
 
 .-translate-y-full {
   --tw-translate-y: -100%;
+}
+
+.rotate-0 {
+  --tw-rotate: 0deg;
 }
 
 .rotate-90 {
@@ -2714,6 +2726,14 @@ body {
 
   .md\:w-4\/6 {
     width: 66.666667%;
+  }
+
+  .md\:w-1\/12 {
+    width: 8.333333%;
+  }
+
+  .md\:w-11\/12 {
+    width: 91.666667%;
   }
 
   .md\:w-full {
@@ -24468,4 +24488,4 @@ ul.ub_styled_list li{
 /* purgecss end ignore */
 
 
-/*# sourceMappingURL=main-cfeb415e.css.map*/
+/*# sourceMappingURL=main-85e29252.css.map*/
