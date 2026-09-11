@@ -18,17 +18,17 @@ function formatDate(date) {
 }
 function convertDateForIos(date) {
   var arr = date.split(/[- :]/);
-  if(arr[3]){
-    date = new Date(arr[0], arr[1]-1, arr[2], arr[3], arr[4], arr[5]);
-  }else{
-    date = new Date(arr[0], arr[1]-1, arr[2]);
+  if (arr[3]) {
+    date = new Date(arr[0], arr[1] - 1, arr[2], arr[3], arr[4], arr[5]);
+  } else {
+    date = new Date(arr[0], arr[1] - 1, arr[2]);
   }
   // console.log(date);
   return date;
 }
 function parseTwoDates(date_from, date_until) {
-  const yearDiff = date_until.year() - date_from.year();//date_from.diff(date_until, "year");
-  const monthDiff = date_until.month() - date_from.month();///date_from.diff(date_until, "month");
+  const yearDiff = date_until.year() - date_from.year(); //date_from.diff(date_until, "year");
+  const monthDiff = date_until.month() - date_from.month(); ///date_from.diff(date_until, "month");
   // console.log(monthDiff);
   const dayDiff = date_from.diff(date_until, "day");
   if (yearDiff != 0) {
@@ -63,6 +63,7 @@ const normalizePosttype = (item) => {
     meta2: he.decode("&nbsp;"),
     meta3: he.decode("&nbsp;"),
     posttype: "",
+    product_id: "",
   };
   if (
     !(
@@ -151,7 +152,7 @@ const normalizePosttype = (item) => {
           ? (returnObj.date = item.acf.date_until
               ? parseTwoDates(
                   moment(item.acf.date_from, "DD.MM.YYYY"),
-                  moment(item.acf.date_until, "DD.MM.YYYY")
+                  moment(item.acf.date_until, "DD.MM.YYYY"),
                 )
               : `${item.acf.date_from}`)
           : (returnObj.date = "");
@@ -171,6 +172,7 @@ const normalizePosttype = (item) => {
         }
         returnObj.meta3 = item.acf["host_|_circulation"];
         returnObj.archive_base = "agenda";
+
       } else {
         returnObj.subcategory = item.category
           ? item.category.map((cat) => {
@@ -226,16 +228,16 @@ const normalizePosttype = (item) => {
       if (item.content) {
         returnObj.content = item.content?.rendered
           ? parse(item.content.rendered)
-          : typeof item.content === 'string'
-          ? parse(item.content)
-          : "";
+          : typeof item.content === "string"
+            ? parse(item.content)
+            : "";
       }
       if (item.excerpt) {
         returnObj.excerpt = item.content?.rendered
           ? parse(item.excerpt.rendered)
-          : typeof item.excerpt === 'string'
-          ? parse(item.excerpt)
-          : "";
+          : typeof item.excerpt === "string"
+            ? parse(item.excerpt)
+            : "";
       }
 
       returnObj.image = item.iii?.featured_image
@@ -328,7 +330,7 @@ const normalizePosttype = (item) => {
         returnObj.date = item.acf.date_until
           ? parseTwoDates(
               moment(item.acf.date_from, "DD.MM.YYYY"),
-              moment(item.acf.date_until, "DD.MM.YYYY")
+              moment(item.acf.date_until, "DD.MM.YYYY"),
             )
           : `${item.acf.date_from}`;
         returnObj.full_date = item.acf.date_until
@@ -350,6 +352,13 @@ const normalizePosttype = (item) => {
         // returnObj.meta2 = item.acf.city ? item.acf.city : "no city value";
         returnObj.meta3 = item.acf["host_|_circulation"];
         returnObj.archive_base = "agenda";
+        if (
+          item.acf.shop_product_id &&
+          item.acf.shop_product_id != "" &&
+          item.acf.shop_product_id.length > 0
+        ) {
+          returnObj.product_id = item.acf.shop_product_id;
+        }
       } else {
         returnObj.subcategory = item.iii?.category
           ? item.iii.category.map((cat) => {
@@ -367,7 +376,7 @@ const normalizePosttype = (item) => {
         returnObj.archive_base = "posts";
       }
     }
-    console.log(returnObj)
+    console.log(returnObj);
   }
   return returnObj;
 };

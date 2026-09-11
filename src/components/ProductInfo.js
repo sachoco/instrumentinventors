@@ -9,7 +9,7 @@ import "moment-timezone";
 function parseTwoDates(date_from, date_until) {
   const yearDiff = date_until.year() - date_from.year(); //date_from.diff(date_until, "year");
   const monthDiff = date_until.month() - date_from.month(); ///date_from.diff(date_until, "month");
-  console.log(monthDiff);
+  // console.log(monthDiff);
   const dayDiff = date_from.diff(date_until, "day");
   if (yearDiff != 0) {
     return (
@@ -32,7 +32,7 @@ export default function ProductInfo({ item = null, id = null }) {
   return (
     <>
       <div className="flex py-2 flex-col lg:flex-row items-start">
-        {item?.type != "project" && (
+        {item && item?.type != "project" && (
           <div className="w-full mr-3 leading-tight lg:w-1/2 mb-5 lg:mb-auto">
             {item?.acf?.date_from && (
               <div className="mb-1">
