@@ -91,7 +91,8 @@ class III_REST_API {
         $related_posts_ids = get_field('related_posts', $postId);
         $related_artists = get_posts(array('post__in' => $related_posts_ids, 'post_type' => array('artist'), 'posts_per_page' => -1 ));
         if ($related_artists) {
-            usort($related_artists, fn($a, $b) => strcmp($a->post_name, $b->post_name));
+            // usort($related_artists, fn($a, $b) => strcmp($a->post_name, $b->post_name));
+            usort($related_artists, function($a, $b){ strcmp($a->post_name, $b->post_name); });
             foreach($related_artists as $artist) {
                 $output["artists"][] = array(
                     'id' => $artist->ID,

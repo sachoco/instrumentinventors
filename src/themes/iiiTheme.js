@@ -16,6 +16,16 @@ const iiiTheme = createTheme({
       disableRipple: true, // No more ripple, on the whole application 💣!
     },
   },
+  conponents: {
+    MuiTabs: {
+      styleOverrides: {
+        root: {
+          fontFamily: "Antipol Extended, sans-serif",
+          fontSize: '3rem',
+        }
+      },
+    },
+  },
   overrides: {
     // Style sheet name ⚛️
     // MuiTextField: {

@@ -376,7 +376,7 @@ const normalizePosttype = (item) => {
         returnObj.archive_base = "posts";
       }
     }
-    console.log(returnObj);
+    // console.log(returnObj);
   }
   return returnObj;
 };

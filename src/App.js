@@ -16,6 +16,9 @@ import Search from "./pages/Search";
 import loadPages from "./components/rest-api/loadPages";
 import fetchMenu from "./components/rest-api/fetchMenu";
 
+import { ThemeProvider } from '@mui/material/styles';
+import iiiTheme from "./themes/iiiTheme";
+
 const App = () => {
   const menuItems = fetchMenu();
   const pages = null; //loadPages(menuItems.items);

@@ -29,7 +29,8 @@ function get_related($request)
             return false;
         });
         if(!empty($artist_array)){
-            usort($artist_array, fn($a, $b) => strcmp($a->post_name, $b->post_name));
+            // usort($artist_array, fn($a, $b) => strcmp($a->post_name, $b->post_name));
+            usort($artist_array, function($a, $b){ strcmp($a->post_name, $b->post_name); } );
         }
         $project_array = array_filter($related_posts, function($post){
             if (isset($post->post_type)) {
@@ -38,7 +39,8 @@ function get_related($request)
             return false;
         });
         if(!empty($project_array)){
-            usort($project_array, fn($a, $b) => get_field('year',$b->ID) - get_field('year',$a->ID));
+            // usort($project_array, fn($a, $b) => get_field('year',$b->ID) - get_field('year',$a->ID));
+            usort($project_array, function($a, $b){ get_field('year',$b->ID) - get_field('year',$a->ID); });
         }
         $news_array = array_filter($related_posts, function($post){
             if (isset($post->post_type)) {
@@ -47,7 +49,8 @@ function get_related($request)
             return false;
         });
         if(!empty($news_array)){
-            usort($news_array, fn($a, $b) => -1 * strcmp($a->post_date, $b->post_date));
+            // usort($news_array, fn($a, $b) => -1 * strcmp($a->post_date, $b->post_date));
+            usort($news_array, function($a, $b){ -1 * strcmp($a->post_date, $b->post_date); });
         }
         $agenda_array = array_filter($related_posts, function($post){
             if (isset($post->post_type)) {
@@ -56,7 +59,8 @@ function get_related($request)
             return false;
         });
         if(!empty($agenda_array)){
-            usort($agenda_array, fn($a, $b) => strtotime(get_field('date_from',$b->ID)) - strtotime(get_field('date_from',$a->ID)));
+            // usort($agenda_array, fn($a, $b) => strtotime(get_field('date_from',$b->ID)) - strtotime(get_field('date_from',$a->ID)));
+            usort($agenda_array, function($a, $b){ strtotime(get_field('date_from',$b->ID)) - strtotime(get_field('date_from',$a->ID)); });
         }
         $related_posts_array = array_merge($artist_array,$project_array,$news_array,$agenda_array);
 

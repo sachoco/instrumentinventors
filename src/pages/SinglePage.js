@@ -14,6 +14,8 @@ import Meta from "../components/layout/Meta";
 import normalizePosttype from "../components/utilities/normalizePosttype";
 import getTitle from "../components/utilities/getTitle";
 
+import "../assets/wp-includes/css/dist/block-library/style.min.css";
+
 import "../assets/vc/assets/css/js_composer.min.css";
 import "../assets/vc/assets/js/dist/js_composer_front.min.js";
 import "../assets/vc/assets/lib/vc_carousel/css/vc_carousel.min.css";
