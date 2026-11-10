@@ -1,16 +1,12 @@
-import {
-	OldPanelContent,
-	PanelContent,
-	NewPanelContent,
-} from "./components/editorDisplay";
+import { OldPanelContent, NewPanelContent } from "./components/editorDisplay";
 
-const { __ } = wp.i18n;
-const { registerBlockType, createBlock } = wp.blocks;
-const { InnerBlocks, RichText } = wp.blockEditor || wp.editor;
+import { __ } from "@wordpress/i18n";
+import { registerBlockType, createBlock } from "@wordpress/blocks";
+import { InnerBlocks, RichText } from "@wordpress/blockEditor";
 
-const { compose } = wp.compose;
-const { withDispatch, withSelect } = wp.data;
-
+import { compose } from "@wordpress/compose";
+import { withDispatch, withSelect } from "@wordpress/data";
+import metadata from "./block.json";
 import icon from "./icon";
 
 const attributes = {
@@ -42,6 +38,14 @@ const attributes = {
 		type: "boolean",
 		default: true,
 	},
+	padding: {
+		type: "object",
+		default: {},
+	},
+	margin: {
+		type: "object",
+		default: {},
+	},
 	matchingOption: {
 		type: "string",
 		default: "", //options: matchAny (default), matchAll
@@ -63,11 +67,10 @@ registerBlockType("ub/content-filter", {
 	keywords: [__("Filtering")],
 	attributes,
 	supports: { inserter: false },
-
 	edit: compose([
 		withSelect((select, ownProps) => ({
 			block: (select("core/block-editor") || select("core/editor")).getBlock(
-				ownProps.clientId
+				ownProps.clientId,
 			),
 		})),
 		withDispatch((dispatch) => {
@@ -93,7 +96,7 @@ registerBlockType("ub/content-filter", {
 		} = props.attributes;
 
 		const currentSelection = filterArray.map((f) =>
-			f.canUseMultiple ? Array(f.filters.length).fill(false) : -1
+			f.canUseMultiple ? Array(f.filters.length).fill(false) : -1,
 		);
 		return (
 			<div data-currentSelection={JSON.stringify(currentSelection)}>
@@ -139,13 +142,26 @@ registerBlockType("ub/content-filter", {
 	},
 });
 
-registerBlockType("ub/content-filter-block", {
-	title: __("Content Filter"),
+registerBlockType(metadata.name, {
+	...metadata,
 	icon: icon,
-	category: "ultimateblocks",
-	keywords: [__("Filtering")],
-	attributes,
-
+	attributes: metadata.attributes,
+	example: {
+		attributes: {
+			filterArray: [
+				{
+					category: "First Category",
+					filters: ["Filter One", " Filter Two"],
+					canUseMultiple: true,
+				},
+				{
+					category: "Second Category",
+					filters: ["Filter One", " Filter Two"],
+					canUseMultiple: false,
+				},
+			],
+		},
+	},
 	transforms: {
 		to: [
 			{
@@ -155,33 +171,15 @@ registerBlockType("ub/content-filter-block", {
 					createBlock(
 						"core/group",
 						{},
-						innerBlocks.map((i) => createBlock("core/group", {}, i.innerBlocks))
+						innerBlocks.map((i) =>
+							createBlock("core/group", {}, i.innerBlocks),
+						),
 					),
 			},
 		],
 	},
 
-	edit: compose([
-		withSelect((select, ownProps) => {
-			const { getBlock, getClientIdsWithDescendants } =
-				select("core/block-editor") || select("core/editor");
-
-			return {
-				block: getBlock(ownProps.clientId),
-				getBlock,
-				getClientIdsWithDescendants,
-			};
-		}),
-		withDispatch((dispatch) => {
-			const { updateBlockAttributes, insertBlock } =
-				dispatch("core/block-editor") || dispatch("core/editor");
-
-			return {
-				updateBlockAttributes,
-				insertBlock,
-			};
-		}),
-	])(NewPanelContent),
+	edit: NewPanelContent,
 
 	save: () => <InnerBlocks.Content />,
 });

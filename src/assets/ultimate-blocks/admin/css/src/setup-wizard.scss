@@ -1,0 +1,1004 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+/* ─────────────────────────────────────────────
+   Tokens
+───────────────────────────────────────────── */
+
+$wiz-primary: #E11B4C;
+$wiz-primary-dark: #c01040;
+$wiz-bg: #F4F1EC;
+$wiz-surface: #FFF;
+$wiz-border: #E2E8F0;
+$wiz-text: #1A1A1A;
+$wiz-muted: #64748B;
+$wiz-gray-100: #F8FAFC;
+$wiz-gray-200: #E2E8F0;
+$wiz-green: #22C55E;
+$wiz-font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+$wiz-max-width: 900px;
+$wiz-header-h: 80px;
+$wiz-footer-h: 76px;
+$wiz-radius: 10px;
+$wiz-radius-sm: 6px;
+$wiz-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+
+/* ─────────────────────────────────────────────
+   Reset / base
+───────────────────────────────────────────── */
+
+#ub-setup-wizard {
+	position: fixed;
+	inset: 0;
+	z-index: 99999;
+	background: $wiz-bg;
+	font-family: $wiz-font;
+	font-size: 14px;
+	color: $wiz-text;
+	line-height: 1.5;
+}
+
+.ub-wiz {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+	overflow: hidden;
+
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+
+	a {
+		color: $wiz-primary;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	p {
+		margin: 0;
+	}
+
+	h1,
+	h2,
+	h3 {
+		margin: 0;
+		font-weight: 700;
+	}
+
+	button {
+		font-family: $wiz-font;
+		cursor: pointer;
+
+		&:disabled {
+			opacity: 0.55;
+			cursor: not-allowed;
+		}
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Header
+───────────────────────────────────────────── */
+
+.ub-wiz-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: $wiz-header-h;
+	padding: 0 40px;
+	background: $wiz-surface;
+	border-bottom: 1px solid $wiz-border;
+	flex-shrink: 0;
+
+	&__logo {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		min-width: 180px;
+
+		img {
+			width: 32px;
+			height: 32px;
+			object-fit: contain;
+		}
+	}
+
+	&__logo-text {
+		font-weight: 700;
+		font-size: 16px;
+		color: $wiz-primary;
+	}
+
+	&__product-name {
+		font-size: 15px;
+		font-weight: 600;
+		color: $wiz-text;
+	}
+
+	&__right {
+		min-width: 180px;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Stepper
+───────────────────────────────────────────── */
+
+.ub-wiz-stepper {
+	display: flex;
+	align-items: center;
+	gap: 0;
+
+	&__line {
+		width: 56px;
+		height: 2px;
+		background: $wiz-gray-200;
+		flex-shrink: 0;
+
+		&--done {
+			background: $wiz-primary;
+		}
+	}
+
+	&__step {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 5px;
+	}
+
+	&__circle {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		border: 2px solid $wiz-gray-200;
+		background: $wiz-surface;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 13px;
+		font-weight: 600;
+		color: $wiz-muted;
+		transition: all 0.2s ease;
+	}
+
+	&__label {
+		font-size: 11px;
+		color: $wiz-muted;
+		white-space: nowrap;
+		transition: color 0.2s ease;
+	}
+
+	&__step--active {
+		.ub-wiz-stepper__circle {
+			border-color: $wiz-primary;
+			background: $wiz-surface;
+			color: $wiz-primary;
+		}
+
+		.ub-wiz-stepper__label {
+			color: $wiz-primary;
+			font-weight: 600;
+		}
+	}
+
+	&__step--done {
+		.ub-wiz-stepper__circle {
+			border-color: $wiz-primary;
+			background: $wiz-primary;
+			color: #fff;
+		}
+
+		.ub-wiz-stepper__label {
+			color: $wiz-text;
+		}
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Body scroll container
+───────────────────────────────────────────── */
+
+.ub-wiz-body {
+	flex: 1;
+	overflow-y: auto;
+	padding: 40px 40px 0;
+	display: flex;
+	justify-content: center;
+
+	&__inner {
+		width: 100%;
+		max-width: $wiz-max-width;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Step header (title + subtitle)
+───────────────────────────────────────────── */
+
+.ub-wiz-step-header {
+	margin-bottom: 24px;
+
+	&__title {
+		font-size: 22px;
+		font-weight: 700;
+		color: $wiz-text;
+		margin-bottom: 6px;
+	}
+
+	&__subtitle {
+		font-size: 13px;
+		color: $wiz-muted;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Footer
+───────────────────────────────────────────── */
+
+.ub-wiz-footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: $wiz-footer-h;
+	padding: 0 40px;
+	background: $wiz-surface;
+	border-top: 1px solid $wiz-border;
+	flex-shrink: 0;
+
+	&__center {
+		display: flex;
+		align-items: center;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Buttons
+───────────────────────────────────────────── */
+
+.ub-wiz-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 9px 20px;
+	border-radius: $wiz-radius-sm;
+	font-size: 13px;
+	font-weight: 500;
+	border: none;
+	transition: all 0.15s ease;
+	text-decoration: none !important;
+
+	&--primary {
+		background: $wiz-text;
+		color: #fff !important;
+
+		&:hover {
+			background: #333;
+			text-decoration: none !important;
+		}
+	}
+
+	&--ghost {
+		background: transparent;
+		color: $wiz-text;
+		border: 1px solid $wiz-border;
+
+		&:hover {
+			background: $wiz-gray-100;
+		}
+	}
+
+	&--outline {
+		background: $wiz-surface;
+		color: $wiz-text;
+		border: 1px solid $wiz-border;
+		font-size: 13px;
+		padding: 7px 16px;
+
+		&:hover {
+			background: $wiz-gray-100;
+		}
+	}
+
+	&--upgrade {
+		background: $wiz-primary;
+		color: #fff !important;
+		padding: 13px 28px;
+		border-radius: 6px;
+		font-size: 15px;
+		font-weight: 600;
+		margin-top: 20px;
+
+		&:hover {
+			background: $wiz-primary-dark;
+			text-decoration: none !important;
+		}
+	}
+
+	&--loading,
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.75;
+	}
+}
+
+@keyframes ub-wiz-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.ub-wiz-spinner {
+	display: inline-block;
+	border: 2px solid $wiz-primary;
+	border-right-color: transparent;
+	border-radius: 50%;
+	animation: ub-wiz-spin 0.65s linear infinite;
+	flex-shrink: 0;
+
+	&--light {
+		border-color: rgba(255, 255, 255, 0.35);
+		border-top-color: #fff;
+		border-right-color: transparent;
+	}
+}
+
+.ub-wiz-skip-link {
+	background: none;
+	border: none;
+	padding: 0;
+	color: $wiz-muted;
+	font-size: 13px;
+	text-decoration: underline;
+	cursor: pointer;
+
+	&:hover {
+		color: $wiz-text;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Toggle switch
+───────────────────────────────────────────── */
+
+.ub-wiz-toggle {
+	position: relative;
+	width: 38px;
+	height: 20px;
+	border-radius: 999px;
+	background: #CBD5E1;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	transition: background 0.2s ease;
+	flex-shrink: 0;
+
+	&--on {
+		background: $wiz-primary;
+	}
+
+	&__knob {
+		position: absolute;
+		top: 2px;
+		left: 2px;
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: #fff;
+		transition: transform 0.2s ease;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+	}
+
+	&--on .ub-wiz-toggle__knob {
+		transform: translateX(18px);
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Badges
+───────────────────────────────────────────── */
+
+.ub-wiz-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 2px 8px;
+	border-radius: 999px;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.4;
+
+	&--free {
+		background: #D1FAE5;
+		color: #065F46;
+	}
+
+	&--pro {
+		background: $wiz-primary;
+		color: #fff;
+		font-size: 10px;
+		letter-spacing: 0.5px;
+	}
+
+	&--optional {
+		background: $wiz-gray-200;
+		color: $wiz-muted;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Step 1 – Blocks
+───────────────────────────────────────────── */
+
+.ub-wiz-step-blocks {
+	padding-bottom: 20px !important;
+
+	&__toolbar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 20px;
+	}
+
+	&__count {
+		font-size: 13px;
+		color: $wiz-muted;
+
+		strong {
+			color: $wiz-text;
+		}
+	}
+
+	&__toolbar-actions {
+		display: flex;
+		gap: 8px;
+	}
+}
+
+.ub-wiz-block-category {
+	margin-bottom: 28px;
+
+	&__label {
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.8px;
+		text-transform: uppercase;
+		color: $wiz-muted;
+		margin-bottom: 10px;
+		padding-bottom: 8px;
+		border-bottom: 1px solid $wiz-border;
+	}
+
+	&__grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill,
+				minmax(min(200px, 100%), 1fr));
+		gap: 8px;
+		align-items: stretch;
+	}
+}
+
+.ub-wiz-block-card {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	width: 100%;
+	min-width: 0;
+	background: $wiz-surface;
+	border: 1px solid $wiz-border;
+	border-radius: $wiz-radius-sm;
+	padding: 10px 14px;
+
+	&__name {
+		flex: 1;
+		min-width: 0;
+		font-size: 13px;
+		font-weight: 500;
+		color: $wiz-text;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	&--pro {
+		background: $wiz-gray-100;
+		opacity: 0.7;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Step 2 – Plugins
+───────────────────────────────────────────── */
+
+.ub-wiz-step-plugins {
+	&__section-label {
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 0.8px;
+		text-transform: uppercase;
+		color: $wiz-muted;
+		margin: 24px 0 12px;
+		padding-bottom: 8px;
+		border-bottom: 1px solid $wiz-border;
+
+		&:first-child {
+			margin-top: 0;
+		}
+	}
+
+	&__grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 12px;
+
+		@media (max-width: 640px) {
+			grid-template-columns: 1fr;
+		}
+
+		&--recommended {
+			grid-template-columns: 1fr 1fr;
+
+			@media (max-width: 640px) {
+				grid-template-columns: 1fr;
+			}
+		}
+	}
+
+	&__footnote {
+		margin-top: 20px !important;
+		font-size: 12px;
+		color: $wiz-muted;
+		text-align: center;
+	}
+}
+
+.ub-wiz-plugin-card {
+	display: flex;
+	align-items: flex-start;
+	gap: 14px;
+	background: $wiz-surface;
+	border: 2px solid $wiz-border;
+	border-radius: $wiz-radius;
+	padding: 16px;
+	cursor: pointer;
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+	user-select: none;
+
+	&:hover {
+		border-color: #C5CDD8;
+	}
+
+	&--selected {
+		border-color: $wiz-primary;
+		box-shadow: 0 0 0 1px $wiz-primary;
+	}
+
+	&--installing {
+		pointer-events: none;
+		cursor: default;
+	}
+
+	&--installed {
+		border-color: $wiz-green;
+		box-shadow: 0 0 0 1px $wiz-green;
+
+		.ub-wiz-plugin-card__check {
+			background: $wiz-green;
+			border-color: $wiz-green;
+		}
+	}
+
+	&--error {
+		border-color: #EF4444;
+		box-shadow: 0 0 0 1px #EF4444;
+
+		.ub-wiz-plugin-card__check {
+			background: #EF4444;
+			border-color: #EF4444;
+		}
+	}
+
+	&__check {
+		width: 20px;
+		height: 20px;
+		border-radius: 4px;
+		border: 2px solid $wiz-border;
+		background: $wiz-surface;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		transition: all 0.15s ease;
+
+		.ub-wiz-plugin-card--selected & {
+			background: $wiz-primary;
+			border-color: $wiz-primary;
+		}
+
+		.ub-wiz-plugin-card--installing & {
+			background: transparent;
+			border-color: transparent;
+		}
+	}
+
+	&__content {
+		flex: 1;
+	}
+
+	&__title {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-bottom: 4px;
+
+		strong {
+			font-size: 14px;
+			font-weight: 600;
+		}
+	}
+
+	&__desc {
+		font-size: 12px;
+		color: $wiz-muted;
+		line-height: 1.5;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Step 3 – Newsletter
+───────────────────────────────────────────── */
+
+.ub-wiz-step-newsletter {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 40px 20px 20px;
+	text-align: center;
+	max-width: 480px;
+	margin: 0 auto;
+
+	&__icon {
+		width: 64px;
+		height: 64px;
+		border-radius: 50%;
+		background: #FFF0F4;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 20px;
+	}
+
+	&__title {
+		font-size: 22px;
+		font-weight: 700;
+		margin-bottom: 10px;
+	}
+
+	&__subtitle {
+		font-size: 13px;
+		color: $wiz-muted;
+		line-height: 1.6;
+		margin-bottom: 24px;
+	}
+
+	&__privacy {
+		font-size: 12px;
+		color: $wiz-muted;
+		margin-top: 10px;
+	}
+}
+
+.ub-wiz-input {
+	width: 100%;
+	max-width: 380px;
+	padding: 11px 16px;
+	border: 1px solid $wiz-border;
+	border-radius: $wiz-radius-sm;
+	font-size: 14px;
+	font-family: $wiz-font;
+	color: $wiz-text;
+	background: $wiz-surface;
+	transition: border-color 0.15s ease;
+	margin-bottom: 12px;
+
+	&:focus {
+		outline: none;
+		border-color: $wiz-primary;
+		box-shadow: 0 0 0 3px rgba($wiz-primary, 0.12);
+	}
+
+	&::placeholder {
+		color: #94A3B8;
+	}
+}
+
+.ub-wiz-checkbox-label {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+	cursor: pointer;
+	margin-bottom: 8px;
+
+	input[type="checkbox"] {
+		width: 16px;
+		height: 16px;
+		accent-color: $wiz-primary;
+		cursor: pointer;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Step 4 – Upgrade
+───────────────────────────────────────────── */
+
+.ub-wiz-step-upgrade {
+	padding-bottom: 40px;
+	text-align: center;
+
+	&__title {
+		font-size: 30px;
+		font-weight: 700;
+		margin-bottom: 10px;
+		color: $wiz-text;
+
+		span {
+			color: #94A3B8;
+			font-weight: 400;
+		}
+	}
+
+	&__subtitle {
+		font-size: 14px;
+		color: $wiz-muted;
+		margin-bottom: 32px !important;
+	}
+
+	&__grid {
+		display: flex;
+		align-items: stretch;
+		gap: 14px;
+		justify-content: center;
+		flex-wrap: wrap;
+		margin-bottom: 32px !important;
+	}
+
+	&__benefits {
+		background: $wiz-surface;
+		border: 1px solid $wiz-border;
+		border-radius: $wiz-radius;
+		padding: 28px 36px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	&__benefits-title {
+		font-size: 18px;
+		font-weight: 700;
+		margin-bottom: 16px;
+		align-self: flex-start;
+	}
+
+	&__benefits-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px 40px;
+		width: 100%;
+		margin-bottom: 8px;
+
+		@media (max-width: 580px) {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	&__benefit-item {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 14px;
+		font-weight: 500;
+	}
+
+	&__testimonial {
+		margin-top: 24px !important;
+		font-size: 13px;
+		color: $wiz-muted;
+		max-width: 520px;
+		margin-left: auto !important;
+		margin-right: auto !important;
+		line-height: 1.6;
+	}
+}
+
+.ub-wiz-upgrade-plugin-card {
+	background: $wiz-surface;
+	border: 1px solid $wiz-border;
+	border-radius: $wiz-radius;
+	padding: 20px 18px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 6px;
+	min-width: 140px;
+	flex: 1 1 140px;
+
+	&__logo {
+		width: 52px;
+		height: 52px;
+		border-radius: 12px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 4px;
+
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			object-position: center;
+		}
+	}
+
+	strong {
+		font-size: 13px;
+		font-weight: 700;
+	}
+
+	span {
+		font-size: 11px;
+		color: $wiz-muted;
+	}
+
+	p {
+		font-size: 12px;
+		color: $wiz-muted;
+		line-height: 1.5;
+	}
+}
+
+.ub-wiz-upgrade-price-card {
+	background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+	border: 1px solid #C7D2FE;
+	border-radius: $wiz-radius;
+	padding: 24px 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	min-width: 160px;
+	flex: 1 1 160px;
+
+	&__label {
+		font-size: 12px;
+		font-weight: 700;
+		color: #3730A3;
+		text-align: center;
+	}
+
+	&__price {
+		font-size: 38px;
+		font-weight: 800;
+		color: #1E1B4B;
+		line-height: 1.1;
+	}
+
+	&__regular {
+		font-size: 12px;
+		color: #64748B;
+	}
+
+	&__saving {
+		font-size: 12px;
+		color: #64748B;
+	}
+}
+
+/* ─────────────────────────────────────────────
+   Step 5 – Done
+───────────────────────────────────────────── */
+
+.ub-wiz-step-done {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 40px 20px 32px;
+	text-align: center;
+
+	&__icon {
+		width: 64px;
+		height: 64px;
+		border-radius: 50%;
+		background: #DCFCE7;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 16px;
+	}
+
+	&__title {
+		font-size: 26px;
+		font-weight: 700;
+		margin-bottom: 8px;
+	}
+
+	&__subtitle {
+		font-size: 14px;
+		color: $wiz-muted;
+		margin-bottom: 32px;
+		max-width: 420px;
+	}
+
+	&__cards {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 16px;
+		width: 100%;
+		max-width: $wiz-max-width;
+		margin-bottom: 24px;
+
+		@media (max-width: 640px) {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	&__status-bar {
+		background: $wiz-gray-200;
+		border-radius: $wiz-radius-sm;
+		padding: 12px 20px;
+		font-size: 13px;
+		color: $wiz-muted;
+		width: 100%;
+		max-width: $wiz-max-width;
+		margin-bottom: 24px;
+	}
+
+	&__cta {
+		margin-top: 8px;
+	}
+}
+
+.ub-wiz-done-card {
+	background: $wiz-surface;
+	border: 1px solid $wiz-border;
+	border-radius: $wiz-radius;
+	padding: 22px 20px;
+	text-align: left;
+
+	&__icon {
+		color: $wiz-muted;
+		margin-bottom: 12px;
+	}
+
+	&__title {
+		font-size: 14px;
+		font-weight: 700;
+		margin-bottom: 6px;
+	}
+
+	&__desc {
+		font-size: 13px;
+		color: $wiz-muted;
+		line-height: 1.5;
+		margin-bottom: 14px;
+	}
+
+	&__link {
+		font-size: 13px;
+		font-weight: 500;
+		color: $wiz-primary;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}

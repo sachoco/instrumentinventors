@@ -37,16 +37,37 @@ Array.prototype.slice
 
 		const togglePanel = (e) => {
 			const blockRoot = instance.closest(".ub-expand");
-			blockRoot
-				.querySelector(".ub-expand-partial .ub-expand-toggle-button")
-				.classList.toggle("ub-hide");
+			const partialButton = blockRoot.querySelector(
+				".ub-expand-partial .ub-expand-toggle-button",
+			);
+			const fullButton = blockRoot.querySelector(
+				".ub-expand-full .ub-expand-toggle-button",
+			);
+			const partialSection = blockRoot.querySelector(".ub-expand-partial");
+			const fullSection = blockRoot.querySelector(".ub-expand-full");
 
-			const expandingPart = Array.prototype.slice
-				.call(blockRoot.children)
-				.filter((child) => child.classList.contains("ub-expand-full"))[0];
+			// Toggle visibility classes
+			partialButton.classList.toggle("ub-hide");
+			fullSection.classList.toggle("ub-hide");
 
-			expandingPart.classList.toggle("ub-hide");
+			// Update ARIA states based on new visibility
+			const isFullVisible = !fullSection.classList.contains("ub-hide");
 
+			// Update aria-expanded on both buttons (both control the full section)
+			partialButton.setAttribute(
+				"aria-expanded",
+				isFullVisible ? "true" : "false",
+			);
+			fullButton.setAttribute(
+				"aria-expanded",
+				isFullVisible ? "true" : "false",
+			);
+
+			// Update aria-hidden only on the full section (partial is always visible)
+			// Partial section should always have aria-hidden="false" since it's never hidden
+			partialSection.setAttribute("aria-hidden", "false");
+			fullSection.setAttribute("aria-hidden", isFullVisible ? "false" : "true");
+			const expandingPart = fullSection;
 			if (expandingPart.classList.contains("ub-hide")) {
 				const expandRoot = e.target.parentElement.parentElement;
 
@@ -70,12 +91,12 @@ Array.prototype.slice
 								try {
 									probableHeaders = document.elementsFromPoint(
 										window.innerWidth / 2,
-										0
+										0,
 									);
 								} catch (e) {
 									probableHeaders = document.msElementsFromPoint(
 										window.innerWidth / 2,
-										0
+										0,
 									);
 								}
 
@@ -83,12 +104,12 @@ Array.prototype.slice
 									.call(probableHeaders)
 									.filter((e) =>
 										["fixed", "sticky"].includes(
-											window.getComputedStyle(e).position
-										)
+											window.getComputedStyle(e).position,
+										),
 									);
 
 								const stickyHeaderHeights = stickyHeaders.map(
-									(h) => h.offsetHeight
+									(h) => h.offsetHeight,
 								);
 
 								window.scrollBy(
@@ -96,7 +117,7 @@ Array.prototype.slice
 									rootPosition -
 										(stickyHeaders.length
 											? Math.max.apply(Math, stickyHeaderHeights)
-											: 0)
+											: 0),
 								);
 								break;
 							case "fixedamount":
@@ -108,7 +129,7 @@ Array.prototype.slice
 									rootPosition -
 										(document.querySelector(target)
 											? document.querySelector(target).offsetHeight
-											: 0)
+											: 0),
 								);
 								break;
 							default:
@@ -124,7 +145,7 @@ Array.prototype.slice
 					.forEach((slider) => {
 						const swiper = new Swiper(
 							`#${slider.id}`,
-							JSON.parse(slider.dataset.swiperData)
+							JSON.parse(slider.dataset.swiperData),
 						);
 					});
 
@@ -151,7 +172,7 @@ Array.prototype.slice
 					.call(instance.parentElement.parentElement.children)
 					.filter((a) => a !== instance.parentElement)[0]
 					.querySelector(
-						`[aria-controls="${instance.getAttribute("aria-controls")}"]`
+						`[aria-controls="${instance.getAttribute("aria-controls")}"]`,
 					)
 					.focus();
 			}

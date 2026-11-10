@@ -36,7 +36,7 @@ export default function FeaturedImage(props) {
 	return (
 		<img
 			style={{
-				width: postImageWidth,
+				maxWidth: postImageWidth,
 				...(!preservePostImageAspectRatio && { height: postImageHeight }),
 			}}
 			src={imageUrl || props.imgSizeLandscape}

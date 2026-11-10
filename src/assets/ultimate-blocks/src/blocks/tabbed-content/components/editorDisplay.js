@@ -5,15 +5,33 @@ import {
 	arrayMove,
 } from "react-sortable-hoc";
 import Inspector from "./inspector";
-import { Component } from "react";
-import { upgradeButtonLabel, mergeRichTextArray } from "../../../common";
+import { Component, useEffect, useState } from "react";
+import {
+	upgradeButtonLabel,
+	mergeRichTextArray,
+	getParentBlock,
+} from "../../../common";
 
-const { __ } = wp.i18n;
-const { createBlock } = wp.blocks;
-const { RichText, InnerBlocks, BlockControls } = wp.blockEditor || wp.editor;
+import { __ } from "@wordpress/i18n";
+import { createBlock } from "@wordpress/blocks";
+import { dragHandle, plus, closeSmall, Icon } from "@wordpress/icons";
+import {
+	RichText,
+	InnerBlocks,
+	BlockControls,
+	BlockAlignmentControl,
+	useBlockProps,
+} from "@wordpress/block-editor";
 
-const { ToolbarGroup, ToolbarButton } = wp.components;
-
+import { ToolbarGroup, ToolbarButton } from "@wordpress/components";
+import {
+	generateStyles,
+	getSpacingCss,
+	getSpacingPresetCssVar,
+} from "../../utils/styling-helpers";
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
 export class OldTabHolder extends Component {
 	constructor(props) {
 		super(props);
@@ -88,7 +106,9 @@ export class OldTabHolder extends Component {
 		}
 
 		const DragHandle = SortableHandle(() => (
-			<span className="dashicons dashicons-move drag-handle" />
+			<span className="drag-handle">
+				<Icon icon={dragHandle} size={16} />
+			</span>
 		));
 
 		if (!block.SortableItem) {
@@ -126,14 +146,16 @@ export class OldTabHolder extends Component {
 							<DragHandle />
 							<span
 								className={
-									"dashicons dashicons-minus remove-tab-icon" +
+									"remove-tab-icon" +
 									(propz.attributes.tabsTitle.length === 1 ? " ub-hide" : "")
 								}
 								onClick={() => onRemoveTitle(i)}
-							/>
+							>
+								<Icon icon={closeSmall} size={15} />
+							</span>
 						</div>
 					</div>
-				)
+				),
 			);
 		}
 
@@ -165,15 +187,17 @@ export class OldTabHolder extends Component {
 							key={propz.attributes.tabsTitle.length}
 							onClick={() => onAddTab(propz.attributes.tabsTitle.length)}
 						>
-							<span className="dashicons dashicons-plus-alt" />
+							<span className="add-tab-icon">
+								<Icon icon={plus} size={20} />
+							</span>
 						</div>
 					</div>
-				)
+				),
 			);
 		}
 
 		const newArrangement = JSON.stringify(
-			tabs.map((tab) => tab.attributes.index)
+			tabs.map((tab) => tab.attributes.index),
 		);
 
 		if (newArrangement !== oldArrangement) {
@@ -181,7 +205,7 @@ export class OldTabHolder extends Component {
 				updateBlockAttributes(tab.clientId, {
 					index: i,
 					isActive: attributes.activeTab === i,
-				})
+				}),
 			);
 			this.setState({ oldArrangement: newArrangement });
 		}
@@ -220,7 +244,7 @@ export class OldTabHolder extends Component {
 									tabsTitle: tabsTitle
 										.map((title) => title.content)
 										.map((title) =>
-											Array.isArray(title) ? mergeRichTextArray(title) : title
+											Array.isArray(title) ? mergeRichTextArray(title) : title,
 										),
 								},
 								this.props.block.innerBlocks.map((innerBlock, i) =>
@@ -230,10 +254,10 @@ export class OldTabHolder extends Component {
 											index: i,
 											isActive: innerBlock.attributes.isActive,
 										},
-										innerBlock.innerBlocks
-									)
-								)
-							)
+										innerBlock.innerBlocks,
+									),
+								),
+							),
 						);
 					}}
 				>
@@ -256,7 +280,7 @@ export class OldTabHolder extends Component {
 									.clientId,
 								this.props.block.clientId,
 								this.props.block.clientId,
-								newIndex
+								newIndex,
 							);
 
 							showControls("tab-title", oldIndex);
@@ -275,7 +299,7 @@ export class OldTabHolder extends Component {
 							});
 
 							removeBlock(
-								tabs.filter((tab) => tab.attributes.index === i)[0].clientId
+								tabs.filter((tab) => tab.attributes.index === i)[0].clientId,
 							);
 
 							setAttributes({ activeTab: 0 });
@@ -294,17 +318,306 @@ export class OldTabHolder extends Component {
 	}
 }
 
-export class TabHolder extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			index: -1,
-			oldArrangement: [],
-		};
+export const TabHolder = (props) => {
+	const [state, setState] = useState({
+		index: -1,
+		oldArrangement: [],
+		editorActiveTab: props.attributes.activeTab,
+	});
+
+	const styleClipboard = createStyleClipboard(
+		"ub_tabbed_content_copied_style",
+		[
+			"tabsAlignment",
+			"tabsTitleAlignment",
+			"tabVertical",
+			"tabStyle",
+			"align",
+			"gap",
+			"tabButtonsGap",
+			"contentColor",
+			"contentBackground",
+			"padding",
+			"margin",
+		],
+	);
+
+	const {
+		setAttributes,
+		attributes,
+		isSelected,
+		moveBlockToPosition,
+		updateBlockAttributes,
+		removeBlock,
+		selectedBlock,
+		selectBlock,
+		insertBlock,
+		getBlock,
+		getClientIdsWithDescendants,
+		showIconControls,
+		showImageControls,
+		TabTitleImageElem,
+		TabTitleIconElem,
+		checkIsImageSelected,
+		checkIsIconSelected,
+		proOnSortEnd,
+		proOnRemoveTitle,
+		isCTAEnabled,
+		CTATab,
+		tabsSubTitleEnabled,
+		TabsSubTitleElem,
+		ProGeneralControls,
+		ProInspectorControls,
+		proTitleClass,
+	} = props;
+	const { oldArrangement, editorActiveTab } = state;
+
+	let className = "wp-block-ub-tabbed-content";
+
+	window.ubTabbedContentBlocks = window.ubTabbedContentBlocks || [];
+
+	const {
+		tabsTitle,
+		tabsTitleAlignment,
+		useAnchors,
+		tabsAnchor,
+		activeTab,
+		tabsAlignment,
+		tabVertical,
+		blockID,
+		tabStyle,
+		padding,
+		margin,
+		contentColor,
+		align,
+		contentBackground,
+		gap,
+	} = attributes;
+	let block = null;
+	const rootBlock = getParentBlock(props.rootBlockClientId, "core/block");
+
+	for (const bl of window.ubTabbedContentBlocks) {
+		if (bl.id === attributes.id) {
+			block = bl;
+			break;
+		}
 	}
 
-	componentDidMount() {
-		const { attributes, setAttributes } = this.props;
+	if (!block) {
+		block = {
+			id: props.block.clientId,
+			SortableItem: null,
+			SortableList: null,
+		};
+		window.ubTabbedContentBlocks.push(block);
+		if (!rootBlock) {
+			setAttributes({ id: block.id });
+		}
+	}
+
+	if (!attributes.tabsTitle) {
+		attributes.tabsTitle = [];
+	}
+
+	const tabs = props.block.innerBlocks;
+
+	const showControls = (type, index) => {
+		setAttributes({ activeControl: `${type}-${index}` });
+		setState((s) => ({ ...s, editorActiveTab: index }));
+
+		tabs.forEach((tab, i) => {
+			updateBlockAttributes(tab.clientId, { isActive: index === i });
+		});
+	};
+
+	const addTab = (i) => {
+		insertBlock(createBlock("ub/tab-block", {}), i, props.block.clientId);
+		setAttributes({
+			tabsTitle: [...tabsTitle, `Tab ${i + 1}`],
+			tabsTitleAlignment: [...tabsTitleAlignment, "left"],
+			tabsAnchor: useAnchors ? [...tabsAnchor, ""] : [],
+		});
+
+		showControls("tab-title", i);
+	};
+
+	if (attributes.tabsTitle.length === 0) {
+		addTab(0);
+	}
+
+	const DragHandle = SortableHandle(() => (
+		<span className="drag-handle">
+			<Icon icon={dragHandle} size={16} />
+		</span>
+	));
+	if (!block.SortableItem) {
+		block.SortableItem = SortableElement(
+			({ value, i, propz, onChangeTitle, onRemoveTitle, toggleTitle }) => (
+				<div
+					className={`${className}-tab-title-${
+						tabVertical ? "vertical-" : ""
+					}wrap SortableItem${
+						propz.attributes.activeTab === i ? " active" : ""
+					}${proTitleClass ? " " + proTitleClass : ""}`}
+					style={generateStyles({
+						textAlign: propz.attributes.tabsTitleAlignment[i],
+						backgroundColor:
+							propz.attributes.tabStyle === "underline"
+								? "inherit"
+								: propz.attributes.activeTab === i
+									? propz.attributes.theme
+									: propz.attributes.normalColor || "inherit",
+						color:
+							propz.attributes.activeTab === i
+								? propz.attributes.titleColor || "inherit"
+								: propz.attributes.normalTitleColor || "inherit",
+						borderBottom:
+							propz.attributes.activeTab === i &&
+							propz.attributes.tabStyle === "underline"
+								? `5px solid ${propz.attributes.titleColor || "inherit"}`
+								: null,
+						borderTopLeftRadius:
+							propz.attributes.tabButtonsBorderRadius?.topLeft,
+						borderTopRightRadius:
+							propz.attributes.tabButtonsBorderRadius?.topRight,
+						borderBottomLeftRadius:
+							propz.attributes.tabButtonsBorderRadius?.bottomLeft,
+						borderBottomRightRadius:
+							propz.attributes.tabButtonsBorderRadius?.bottomRight,
+						marginRight: tabVertical
+							? undefined
+							: getSpacingPresetCssVar(
+									propz.attributes.tabButtonsGap?.all,
+								),
+					})}
+					onClick={(e) => {
+						toggleTitle("tab-title", i);
+						checkIsImageSelected && checkIsImageSelected(e);
+						checkIsIconSelected && checkIsIconSelected(e);
+					}}
+				>
+					{TabTitleImageElem && <TabTitleImageElem i={i} {...propz} />}
+					{TabTitleIconElem && <TabTitleIconElem i={i} {...propz} />}
+					<RichText
+						tagName="div"
+						className={`${className}-tab-title`}
+						value={value}
+						allowedFormats={["core/bold", "core/italic"]}
+						isSelected={
+							propz.attributes.activeControl === `tab-title-${i}` &&
+							propz.isSelected
+						}
+						onChange={(content) => onChangeTitle(content, i)}
+						placeholder={`Tab ${i + 1}`}
+					/>
+					{propz?.tabsSubTitleEnabled && <TabsSubTitleElem i={i} {...propz} />}
+					<div
+						className={`ub-tab-actions${
+							propz.attributes.tabsTitle.length === 1 ? " ub-hide" : ""
+						}`}
+					>
+						<DragHandle />
+						<span
+							className="remove-tab-icon"
+							onClick={() => onRemoveTitle(i)}
+						>
+							<Icon icon={closeSmall} size={15} />
+						</span>
+					</div>
+				</div>
+			),
+		);
+	}
+
+	if (!block.SortableList) {
+		block.SortableList = SortableContainer(
+			({
+				items,
+				propz,
+				onChangeTitle,
+				onRemoveTitle,
+				toggleTitle,
+				onAddTab,
+			}) => (
+				<div
+					className={`${className}-tabs-title${
+						propz.attributes.tabVertical ? "-vertical-tab" : ""
+					} SortableList`}
+					style={{
+						justifyContent:
+							propz.attributes.tabsAlignment === "center"
+								? "center"
+								: `flex-${
+										propz.attributes.tabsAlignment === "left" ? "start" : "end"
+									}`,
+					}}
+					useWindowAsScrollContainer={true}
+				>
+					{items.map((value, index) => (
+						<block.SortableItem
+							propz={propz}
+							key={`item-${index}`}
+							i={index}
+							index={index}
+							value={value}
+							onChangeTitle={onChangeTitle}
+							onRemoveTitle={onRemoveTitle}
+							toggleTitle={toggleTitle}
+						/>
+					))}
+					<div
+						className={`${className}-tab-title-${
+							attributes.tabVertical ? "vertical-" : ""
+						}wrap`}
+						key={propz.attributes.tabsTitle.length}
+						onClick={() => onAddTab(propz.attributes.tabsTitle.length)}
+					>
+						<span className="add-tab-icon">
+							<Icon icon={plus} size={20} />
+						</span>
+					</div>
+				</div>
+			),
+		);
+	}
+
+	const newArrangement = tabs.map((tab) => tab.attributes.index);
+
+	if (!newArrangement.every((i, j) => i === oldArrangement[j]) && !rootBlock) {
+		tabs.forEach((tab, i) =>
+			updateBlockAttributes(tab.clientId, {
+				index: i,
+				isActive: editorActiveTab === i,
+			}),
+		);
+		setState((s) => ({ ...s, oldArrangement: newArrangement }));
+	}
+
+	if (selectedBlock && selectedBlock.clientId !== props.block.clientId) {
+		if (
+			tabs.filter((innerblock) => innerblock.attributes.isActive).length === 0
+		) {
+			showControls("tab-title", tabs.length - 1);
+		}
+		if (
+			tabs.filter((tab) => tab.clientId === selectedBlock.clientId).length >
+				0 &&
+			!selectedBlock.attributes.isActive
+		) {
+			selectBlock(props.block.clientId);
+		}
+	}
+
+	if (blockID === "") {
+		setAttributes({ blockID: props.block.clientId });
+	}
+	useEffect(() => {
+		if (!rootBlock) {
+			setAttributes({ blockID: props.block.clientId });
+		}
+	}, [props.block?.clientId]);
+	useEffect(() => {
+		const { attributes, setAttributes } = props;
 		const { tabsTitle, tabsTitleAlignment, tabsAnchor, useAnchors } =
 			attributes;
 
@@ -317,268 +630,70 @@ export class TabHolder extends Component {
 		if (useAnchors && tabsTitle.length > tabsAnchor.length) {
 			setAttributes({
 				tabsAnchor: tabsAnchor.concat(
-					Array(tabsTitle.length - tabsAnchor.length).fill("")
+					Array(tabsTitle.length - tabsAnchor.length).fill(""),
 				),
 			});
 		}
-	}
-	componentWillUnmount() {
-		window.removeEventListener("resize", this.checkWidth);
-	}
-	render() {
-		const {
-			setAttributes,
-			attributes,
-			isSelected,
-			moveBlockToPosition,
-			updateBlockAttributes,
-			removeBlock,
-			selectedBlock,
-			selectBlock,
-			insertBlock,
-			getBlock,
-			getClientIdsWithDescendants,
-		} = this.props;
+	}, []);
+	const paddingObj = getSpacingCss(padding);
+	const marginObj = getSpacingCss(margin);
+	const blockGap = getSpacingPresetCssVar(gap?.all) ?? "";
 
-		const { oldArrangement } = this.state;
+	let styles = {
+		paddingTop: paddingObj?.top,
+		paddingRight: paddingObj?.right,
+		paddingBottom: paddingObj?.bottom,
+		paddingLeft: paddingObj?.left,
+		marginTop: marginObj?.top,
+		marginRight: marginObj?.right,
+		marginBottom: marginObj?.bottom,
+		marginLeft: marginObj?.left,
+		gap: blockGap,
+	};
+	const blockProps = useBlockProps({
+		className: `${className}${tabStyle === "tabs" ? "" : `-${tabStyle}`} ${className}-holder ${
+			attributes.tabVertical ? "vertical-holder" : ""
+		}${attributes.showBorder === false ? " ub-tabs-no-border" : ""}`,
+		style: generateStyles(styles),
+	});
+	const tabContentsStyles = generateStyles({
+		borderTopLeftRadius: attributes.tabContentsBorderRadius?.topLeft,
+		borderTopRightRadius: attributes.tabContentsBorderRadius?.topRight,
+		borderBottomLeftRadius: attributes.tabContentsBorderRadius?.bottomLeft,
+		borderBottomRightRadius: attributes.tabContentsBorderRadius?.bottomRight,
+		color: contentColor,
+		backgroundColor: contentBackground,
+	});
 
-		let className = "wp-block-ub-tabbed-content";
-
-		window.ubTabbedContentBlocks = window.ubTabbedContentBlocks || [];
-
-		const {
-			tabsTitle,
-			tabsTitleAlignment,
-			useAnchors,
-			tabsAnchor,
-			activeTab,
-			tabsAlignment,
-			tabVertical,
-			blockID,
-			tabStyle,
-		} = attributes;
-		let block = null;
-
-		for (const bl of window.ubTabbedContentBlocks) {
-			if (bl.id === attributes.id) {
-				block = bl;
-				break;
-			}
-		}
-
-		if (!block) {
-			block = {
-				id: this.props.block.clientId,
-				SortableItem: null,
-				SortableList: null,
-			};
-			window.ubTabbedContentBlocks.push(block);
-			setAttributes({ id: block.id });
-		}
-
-		if (!attributes.tabsTitle) {
-			attributes.tabsTitle = [];
-		}
-
-		const tabs = this.props.block.innerBlocks;
-
-		const showControls = (type, index) => {
-			setAttributes({
-				activeControl: `${type}-${index}`,
-				activeTab: index,
-			});
-
-			tabs.forEach((tab, i) => {
-				updateBlockAttributes(tab.clientId, { isActive: index === i });
-			});
-		};
-
-		const addTab = (i) => {
-			insertBlock(
-				createBlock("ub/tab-block", {}),
-				i,
-				this.props.block.clientId
-			);
-			setAttributes({
-				tabsTitle: [...tabsTitle, `Tab ${i + 1}`],
-				tabsTitleAlignment: [...tabsTitleAlignment, "left"],
-				activeTab: i,
-				tabsAnchor: useAnchors ? [...tabsAnchor, ""] : [],
-			});
-
-			showControls("tab-title", i);
-		};
-
-		if (attributes.tabsTitle.length === 0) {
-			addTab(0);
-		}
-
-		const DragHandle = SortableHandle(() => (
-			<span className="dashicons dashicons-move drag-handle" />
-		));
-
-		if (!block.SortableItem) {
-			block.SortableItem = SortableElement(
-				({ value, i, propz, onChangeTitle, onRemoveTitle, toggleTitle }) => (
-					<div
-						className={`${className}-tab-title-${
-							tabVertical ? "vertical-" : ""
-						}wrap SortableItem${
-							propz.attributes.activeTab === i ? " active" : ""
-						}`}
-						style={{
-							textAlign: propz.attributes.tabsTitleAlignment[i],
-							backgroundColor:
-								propz.attributes.tabStyle === "underline"
-									? "inherit"
-									: propz.attributes.activeTab === i
-									? propz.attributes.theme
-									: propz.attributes.normalColor || "inherit",
-							color:
-								propz.attributes.activeTab === i
-									? propz.attributes.titleColor || "inherit"
-									: propz.attributes.normalTitleColor || "inherit",
-							borderBottom:
-								propz.attributes.activeTab === i &&
-								propz.attributes.tabStyle === "underline"
-									? `5px solid ${propz.attributes.titleColor || "inherit"}`
-									: null,
-						}}
-						onClick={() => toggleTitle("tab-title", i)}
-					>
-						<RichText
-							tagName="div"
-							className={`${className}-tab-title`}
-							value={value}
-							allowedFormats={["core/bold", "core/italic"]}
-							isSelected={
-								propz.attributes.activeControl === `tab-title-${i}` &&
-								propz.isSelected
-							}
-							onChange={(content) => onChangeTitle(content, i)}
-							placeholder={`Tab ${i + 1}`}
-						/>
-						<div
-							className={`ub-tab-actions${
-								propz.attributes.tabsTitle.length === 1 ? " ub-hide" : ""
-							}`}
-						>
-							<DragHandle />
-							<span
-								className={"dashicons dashicons-minus remove-tab-icon"}
-								onClick={() => onRemoveTitle(i)}
-							/>
-						</div>
-					</div>
-				)
-			);
-		}
-
-		if (!block.SortableList) {
-			block.SortableList = SortableContainer(
-				({
-					items,
-					propz,
-					onChangeTitle,
-					onRemoveTitle,
-					toggleTitle,
-					onAddTab,
-				}) => (
-					<div
-						className={`${className}-tabs-title${
-							propz.attributes.tabVertical ? "-vertical-tab" : ""
-						} SortableList`}
-						style={{
-							justifyContent:
-								propz.attributes.tabsAlignment === "center"
-									? "center"
-									: `flex-${
-											propz.attributes.tabsAlignment === "left"
-												? "start"
-												: "end"
-									  }`,
-						}}
-						useWindowAsScrollContainer={true}
-					>
-						{items.map((value, index) => (
-							<block.SortableItem
-								propz={propz}
-								key={`item-${index}`}
-								i={index}
-								index={index}
-								value={value}
-								onChangeTitle={onChangeTitle}
-								onRemoveTitle={onRemoveTitle}
-								toggleTitle={toggleTitle}
-							/>
-						))}
-						<div
-							className={`${className}-tab-title-${
-								attributes.tabVertical ? "vertical-" : ""
-							}wrap`}
-							key={propz.attributes.tabsTitle.length}
-							onClick={() => onAddTab(propz.attributes.tabsTitle.length)}
-						>
-							<span className="dashicons dashicons-plus-alt" />
-						</div>
-					</div>
-				)
-			);
-		}
-
-		const newArrangement = tabs.map((tab) => tab.attributes.index);
-
-		if (!newArrangement.every((i, j) => i === oldArrangement[j])) {
-			tabs.forEach((tab, i) =>
-				updateBlockAttributes(tab.clientId, {
-					index: i,
-					isActive: attributes.activeTab === i,
-				})
-			);
-			this.setState({ oldArrangement: newArrangement });
-		}
-
-		if (selectedBlock && selectedBlock.clientId !== this.props.block.clientId) {
-			if (
-				tabs.filter((innerblock) => innerblock.attributes.isActive).length === 0
-			) {
-				showControls("tab-title", tabs.length - 1);
-			}
-			if (
-				tabs.filter((tab) => tab.clientId === selectedBlock.clientId).length >
-					0 &&
-				!selectedBlock.attributes.isActive
-			) {
-				selectBlock(this.props.block.clientId);
-			}
-		}
-
-		if (
-			blockID === "" ||
-			getClientIdsWithDescendants().some(
-				(ID) =>
-					"blockID" in getBlock(ID).attributes &&
-					getBlock(ID).attributes.blockID === attributes.blockID
-			)
-		) {
-			setAttributes({ blockID: this.props.block.clientId });
-		}
-
-		return [
-			isSelected && (
+	return [
+		isSelected && (
+			<>
+				<BlockControls group="block">
+					<GenericStyleControl
+						attributes={attributes}
+						setAttributes={setAttributes}
+						clipboard={styleClipboard}
+						blockName="Tabs (UB)"
+					/>
+					<BlockAlignmentControl
+						value={align}
+						controls={["wide", "full"]}
+						onChange={(value) => setAttributes({ align: value })}
+					/>
+				</BlockControls>
 				<BlockControls>
 					<ToolbarGroup>
 						{["left", "center", "right"].map((a) => (
 							<ToolbarButton
 								icon={`editor-align${a}`}
 								label={__(`Align Tab Title ${a[0].toUpperCase() + a.slice(1)}`)}
-								isActive={tabsTitleAlignment[activeTab] === a}
+								isActive={tabsTitleAlignment[editorActiveTab] === a}
 								onClick={() =>
 									setAttributes({
 										tabsTitleAlignment: [
-											...tabsTitleAlignment.slice(0, activeTab),
+											...tabsTitleAlignment.slice(0, editorActiveTab),
 											a,
-											...tabsTitleAlignment.slice(activeTab + 1),
+											...tabsTitleAlignment.slice(editorActiveTab + 1),
 										],
 									})
 								}
@@ -595,102 +710,123 @@ export class TabHolder extends Component {
 						))}
 					</ToolbarGroup>
 				</BlockControls>
-			),
-			isSelected && <Inspector {...{ attributes, setAttributes }} />,
+			</>
+		),
+		isSelected && (
+			<Inspector
+				showIconControls={showIconControls}
+				showImageControls={showImageControls}
+				{...{
+					attributes,
+					setAttributes,
+					ProGeneralControls,
+					ProInspectorControls,
+					showControls,
+					editorActiveTab,
+					clientId: props.clientId,
+				}}
+			/>
+		),
+		<div {...blockProps}>
 			<div
-				className={`${className}${tabStyle === "tabs" ? "" : `-${tabStyle}`}`}
+				className={`${className}-tab-holder ${
+					attributes.tabVertical ? "vertical-tab-width" : ""
+				}`}
 			>
-				<div
-					className={`${className}-holder ${
-						attributes.tabVertical ? "vertical-holder" : ""
-					}`}
-				>
-					<div
-						className={`${className}-tab-holder ${
-							attributes.tabVertical ? "vertical-tab-width" : ""
-						}`}
-					>
-						<block.SortableList
-							axis={attributes.tabVertical ? "y" : "x"}
-							propz={this.props}
-							items={attributes.tabsTitle}
-							onSortEnd={({ oldIndex, newIndex }) => {
-								const titleItems = attributes.tabsTitle.slice(0);
-								const alignments = attributes.tabsTitleAlignment.slice(0);
-								setAttributes({
-									tabsTitle: arrayMove(titleItems, oldIndex, newIndex),
-									tabsTitleAlignment: arrayMove(alignments, oldIndex, newIndex),
-									activeTab: newIndex,
-								});
+				<block.SortableList
+					axis={attributes.tabVertical ? "y" : "x"}
+					propz={{
+						...props,
+						attributes: { ...attributes, activeTab: editorActiveTab },
+					}}
+					items={attributes.tabsTitle}
+					onSortEnd={({ oldIndex, newIndex }) => {
+						const titleItems = attributes.tabsTitle.slice(0);
+						const alignments = attributes.tabsTitleAlignment.slice(0);
 
-								moveBlockToPosition(
-									tabs.filter((tab) => tab.attributes.index === oldIndex)[0]
-										.clientId,
-									this.props.block.clientId,
-									this.props.block.clientId,
-									newIndex
-								);
+						// Keep activeTab pointing to the same tab content after reorder
+						let newActiveTab = activeTab;
+						if (activeTab === oldIndex) {
+							newActiveTab = newIndex;
+						} else if (oldIndex < activeTab && activeTab <= newIndex) {
+							newActiveTab = activeTab - 1;
+						} else if (newIndex <= activeTab && activeTab < oldIndex) {
+							newActiveTab = activeTab + 1;
+						}
 
-								setAttributes({
-									activeControl: `tab-title-${newIndex}`,
-									activeTab: newIndex,
-								});
+						setAttributes({
+							tabsTitle: arrayMove(titleItems, oldIndex, newIndex),
+							tabsTitleAlignment: arrayMove(alignments, oldIndex, newIndex),
+							activeControl: `tab-title-${newIndex}`,
+							activeTab: newActiveTab,
+						});
 
-								tabs.forEach((tab, i) => {
-									updateBlockAttributes(tab.clientId, {
-										isActive: oldIndex === i,
-									});
-								});
-							}}
-							onRemoveTitle={(i) => {
-								setAttributes({
-									tabsTitle: [
-										...tabsTitle.slice(0, i),
-										...tabsTitle.slice(i + 1),
-									],
-									tabsTitleAlignment: [
-										...tabsTitleAlignment.slice(0, i),
-										...tabsTitleAlignment.slice(i + 1),
-									],
-									activeTab: 0,
-									tabsAnchor: useAnchors
-										? [...tabsAnchor.slice(0, i), ...tabsAnchor.slice(i + 1)]
-										: [],
-								});
+						moveBlockToPosition(
+							tabs.filter((tab) => tab.attributes.index === oldIndex)[0]
+								.clientId,
+							props.block.clientId,
+							props.block.clientId,
+							newIndex,
+						);
 
-								removeBlock(
-									tabs.filter((tab) => tab.attributes.index === i)[0].clientId
-								);
+						setState((s) => ({ ...s, editorActiveTab: newIndex }));
+						tabs.forEach((tab, i) => {
+							updateBlockAttributes(tab.clientId, {
+								isActive: oldIndex === i,
+							});
+						});
+						proOnSortEnd && proOnSortEnd();
+					}}
+					onRemoveTitle={(i) => {
+						setAttributes({
+							tabsTitle: [...tabsTitle.slice(0, i), ...tabsTitle.slice(i + 1)],
+							tabsTitleAlignment: [
+								...tabsTitleAlignment.slice(0, i),
+								...tabsTitleAlignment.slice(i + 1),
+							],
+							activeTab: 0,
+							tabsAnchor: useAnchors
+								? [...tabsAnchor.slice(0, i), ...tabsAnchor.slice(i + 1)]
+								: [],
+						});
 
-								showControls("tab-title", 0);
-							}}
-							onAddTab={addTab}
-							toggleTitle={showControls}
-							useDragHandle={true}
-							onChangeTitle={(content, i) => {
-								setAttributes({
-									tabsTitle: [
-										...attributes.tabsTitle.slice(0, i),
-										content,
-										...attributes.tabsTitle.slice(i + 1),
-									],
-								});
-							}}
-						/>
-					</div>
-					<div
-						className={`${className}-tabs-content ${
-							this.props.attributes.tabVertical ? "vertical-content-width" : ""
-						}`}
-					>
-						<InnerBlocks
-							templateLock={false}
-							allowedBlocks={["ub/tab-block"]}
-							template={[["ub/tab-block"]]}
-						/>
-					</div>
-				</div>
-			</div>,
-		];
-	}
-}
+						removeBlock(
+							tabs.filter((tab) => tab.attributes.index === i)[0].clientId,
+						);
+
+						showControls("tab-title", 0);
+						proOnRemoveTitle && proOnRemoveTitle(i);
+					}}
+					onAddTab={addTab}
+					toggleTitle={showControls}
+					useDragHandle={true}
+					onChangeTitle={(content, i) => {
+						setAttributes({
+							tabsTitle: [
+								...attributes.tabsTitle.slice(0, i),
+								content,
+								...attributes.tabsTitle.slice(i + 1),
+							],
+						});
+					}}
+				/>
+			</div>
+			<div
+				className={`${className}-tabs-content ${
+					props.attributes.tabVertical ? "vertical-content-width" : ""
+				}`}
+				style={generateStyles(tabContentsStyles)}
+			>
+				{isCTAEnabled && isCTAEnabled ? (
+					CTATab && CTATab
+				) : (
+					<InnerBlocks
+						templateLock={false}
+						allowedBlocks={["ub/tab-block"]}
+						template={[["ub/tab-block"]]}
+					/>
+				)}
+			</div>
+		</div>,
+	];
+};

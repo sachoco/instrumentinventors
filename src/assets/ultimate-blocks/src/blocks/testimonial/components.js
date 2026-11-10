@@ -1,4 +1,7 @@
 const { __ } = wp.i18n;
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
 
 const {
 	RichText,
@@ -6,51 +9,75 @@ const {
 	MediaUpload,
 	InspectorControls,
 	ColorPalette,
-	PanelColorSettings,
 } = wp.blockEditor || wp.editor;
 
 const { Button, PanelBody, RangeControl, ToolbarGroup, ToolbarButton } =
 	wp.components;
+import { SpacingControl } from "../components";
+import { generateStyles, getSpacingCss } from "../utils/styling-helpers";
 
 import icons from "./icons";
 
 export const blockControls = (props) => {
-	const { setAttributes, setState, editable, activeAlignment } = props;
+	const { setAttributes, setState, editable, activeAlignment, attributes } =
+		props;
+
+	const styleClipboard = createStyleClipboard("ub_testimonial_copied_style", [
+		"textAlign",
+		"authorAlign",
+		"authorRoleAlign",
+		"imgURL",
+		"backgroundColor",
+		"textColor",
+		"textSize",
+		"padding",
+		"margin",
+	]);
 
 	return (
-		<BlockControls>
-			<ToolbarGroup>
-				{["left", "center", "right", "justify"]
-					.slice(0, editable.indexOf("text") > 0 ? 4 : 3)
-					.map((a) => (
-						<ToolbarButton
-							icon={`editor-${a === "justify" ? a : "align" + a}`}
-							label={__(
-								(a !== "justify" ? "Align " : "") +
-									a[0].toUpperCase() +
-									a.slice(1)
-							)}
-							isActive={a === activeAlignment}
-							onClick={() => {
-								switch (editable) {
-									case "testimonial_text":
-										setAttributes({ textAlign: a });
-										setState({ activeAlignment: a });
-										break;
-									case "author":
-										setAttributes({ authorAlign: a });
-										setState({ activeAlignment: a });
-										break;
-									case "author_role":
-										setAttributes({ authorRoleAlign: a });
-										setState({ activeAlignment: a });
-										break;
-								}
-							}}
-						/>
-					))}
-			</ToolbarGroup>
-		</BlockControls>
+		<>
+			<BlockControls>
+				<GenericStyleControl
+					attributes={attributes}
+					setAttributes={setAttributes}
+					clipboard={styleClipboard}
+					blockName="Testimonial"
+				/>
+			</BlockControls>
+			<BlockControls>
+				<ToolbarGroup>
+					{["left", "center", "right", "justify"]
+						.slice(0, editable.indexOf("text") > 0 ? 4 : 3)
+						.map((a) => (
+							<ToolbarButton
+								icon={`editor-${a === "justify" ? a : "align" + a}`}
+								label={__(
+									(a !== "justify" ? "Align " : "") +
+										a[0].toUpperCase() +
+										a.slice(1),
+								)}
+								isActive={a === activeAlignment}
+								onClick={() => {
+									switch (editable) {
+										case "testimonial_text":
+											setAttributes({ textAlign: a });
+											setState({ activeAlignment: a });
+											break;
+										case "author":
+											setAttributes({ authorAlign: a });
+											setState({ activeAlignment: a });
+											break;
+										case "author_role":
+											setAttributes({ authorRoleAlign: a });
+											setState({ activeAlignment: a });
+											break;
+									}
+								}}
+							/>
+						))}
+				</ToolbarGroup>
+			</BlockControls>
+		</>
 	);
 };
 
@@ -59,45 +86,55 @@ export const inspectorControls = (props) => {
 
 	const { backgroundColor, textColor, textSize } = attributes;
 	return (
-		<InspectorControls>
-			<PanelColorSettings
-				title={__("Background Color")}
-				initialOpen={true}
-				colorSettings={[
-					{
-						value: backgroundColor,
-						onChange: (backgroundColor) => setAttributes({ backgroundColor }),
-						label: "",
-					},
-				]}
-			/>
-			<PanelBody title={__("Testimonial Body")}>
-				<p>
-					{__("Font Color")}
-					{textColor && (
-						<span
-							class="component-color-indicator"
-							aria-label={`(Color: ${textColor})`}
-							style={{ background: textColor }}
-						/>
-					)}
-				</p>
-				<ColorPalette
-					value={textColor}
-					onChange={(textColor) => setAttributes({ textColor })}
-					allowReset
-				/>
-				<RangeControl
-					label={__("Font Size")}
-					value={textSize}
-					onChange={(value) => setAttributes({ textSize: value })}
-					min={14}
-					max={200}
-					beforeIcon="editor-textcolor"
-					allowReset
-				/>
-			</PanelBody>
-		</InspectorControls>
+		<>
+			<InspectorControls group="styles">
+				<PanelBody title={__("General")}>
+					<label for="ub-testimonial-bgcolor-select">
+						{__("Background Color")}
+					</label>
+					<ColorPalette
+						id="ub-testimonial-bgcolor-select"
+						value={backgroundColor}
+						onChange={(backgroundColor) => setAttributes({ backgroundColor })}
+						allowReset
+					/>
+					<label for="ub-testimonial-textcolor-select">
+						{__("Font Color")}
+					</label>
+					<ColorPalette
+						id="ub-testimonial-textcolor-select"
+						value={textColor}
+						onChange={(textColor) => setAttributes({ textColor })}
+						allowReset
+					/>
+					<RangeControl
+						label={__("Font Size")}
+						value={textSize}
+						onChange={(value) => setAttributes({ textSize: value })}
+						min={14}
+						max={200}
+						beforeIcon="editor-textcolor"
+						allowReset
+					/>
+				</PanelBody>
+				<PanelBody
+					title={__("Dimension Settings", "ultimate-blocks")}
+					initialOpen={false}
+				>
+					<SpacingControl
+						showByDefault
+						attrKey="padding"
+						label={__("Padding", "ultimate-blocks")}
+					/>
+					<SpacingControl
+						minimumCustomValue={-Infinity}
+						showByDefault
+						attrKey="margin"
+						label={__("Margin", "ultimate-blocks")}
+					/>
+				</PanelBody>
+			</InspectorControls>
+		</>
 	);
 };
 
@@ -105,8 +142,6 @@ export const editorDisplay = (props) => {
 	const { isSelected, setState, attributes, setAttributes } = props;
 
 	const {
-		backgroundColor,
-		textColor,
 		textSize,
 		imgID,
 		imgURL,
@@ -117,16 +152,27 @@ export const editorDisplay = (props) => {
 		textAlign,
 		authorAlign,
 		authorRoleAlign,
+		backgroundColor,
+		textColor,
+		padding,
+		margin,
 	} = attributes;
-
+	const paddingObj = getSpacingCss(padding);
+	const marginObj = getSpacingCss(margin);
+	const styles = {
+		backgroundColor: backgroundColor,
+		color: textColor || "inherit",
+		paddingTop: paddingObj?.top,
+		paddingRight: paddingObj?.right,
+		paddingBottom: paddingObj?.bottom,
+		paddingLeft: paddingObj?.left,
+		marginTop: marginObj?.top,
+		marginRight: marginObj?.right,
+		marginBottom: marginObj?.bottom,
+		marginLeft: marginObj?.left,
+	};
 	return (
-		<div
-			className="ub_testimonial"
-			style={{
-				backgroundColor: backgroundColor,
-				color: textColor || "inherit",
-			}}
-		>
+		<div className="ub_testimonial" style={generateStyles(styles)}>
 			<div className="ub_testimonial_img">
 				{!imgID ? (
 					<div className="ub_testimonial_upload_button">
@@ -174,7 +220,7 @@ export const editorDisplay = (props) => {
 			<div className="ub_testimonial_content">
 				<RichText
 					placeholder={__(
-						"This is the testimonial body. Add the testimonial text you want to add here."
+						"This is the testimonial body. Add the testimonial text you want to add here.",
 					)}
 					className="ub_testimonial_text"
 					style={{ fontSize: textSize, textAlign: textAlign }}

@@ -1,10 +1,9 @@
-const { __ } = wp.i18n;
-
-const { registerBlockType, createBlock } = wp.blocks;
-
-const { compose } = wp.compose;
-const { withDispatch, withSelect } = wp.data;
-
+import { __ } from "@wordpress/i18n";
+import metadata from "./block.json";
+import { registerBlockType, createBlock } from "@wordpress/blocks";
+import { useBlockProps } from "@wordpress/block-editor";
+import { compose } from "@wordpress/compose";
+import { withDispatch, withSelect, useSelect } from "@wordpress/data";
 import { EmptyStar, BlockIcon, FullStar } from "./icons";
 import {
 	oldAttributes,
@@ -14,47 +13,16 @@ import {
 	updateFrom,
 } from "./oldVersions";
 import { blockControls, inspectorControls, editorDisplay } from "./components";
-import { mergeRichTextArray, upgradeButtonLabel } from "../../common";
+import {
+	mergeRichTextArray,
+	upgradeButtonLabel,
+	getParentBlock,
+} from "../../common";
 import { useState, useEffect } from "react";
-
-const attributes = {
-	blockID: {
-		type: "string",
-		default: "",
-	},
-	starCount: {
-		type: "number",
-		default: 5,
-	},
-	starSize: {
-		type: "number",
-		default: 20,
-	},
-	starColor: {
-		type: "string",
-		default: "#FFB901", //previous defaut is #ffff00, new default is #ffb901, seet in uppercase to facilitate reverse compatibility
-	},
-	selectedStars: {
-		type: "number",
-		default: 0,
-	},
-	reviewText: {
-		type: "string",
-		default: "",
-	},
-	reviewTextAlign: {
-		type: "string",
-		default: "text",
-	},
-	reviewTextColor: {
-		type: "string",
-		default: "",
-	},
-	starAlign: {
-		type: "string",
-		default: "left",
-	},
-};
+import {
+	getSpacingCss,
+	getSpacingPresetCssVar,
+} from "../utils/styling-helpers";
 
 function OldStarRating(props) {
 	const [highlightedStars, setHighlightedStars] = useState(0);
@@ -75,8 +43,8 @@ function OldStarRating(props) {
 								"ub/star-rating-block",
 								Object.assign(otherAttributes, {
 									reviewText: mergeRichTextArray(reviewText),
-								})
-							)
+								}),
+							),
 						);
 					}}
 				>
@@ -92,12 +60,20 @@ function StarRating(props) {
 	const [highlightedStars, setHighlightedStars] = useState(0);
 	const {
 		isSelected,
-		block,
-		getBlock,
-		getClientIdsWithDescendants,
-		attributes: { starColor, blockID },
+		attributes: { blockID, textPosition, starAlign, padding, margin, gap },
 		setAttributes,
 	} = props;
+	const { block, rootBlockClientId } = useSelect((select) => {
+		const { getBlock, getBlockRootClientId } =
+			select("core/block-editor") || select("core/editor");
+		const block = getBlock(props.clientId);
+		const rootBlockClientId = getBlockRootClientId(block.clientId);
+
+		return {
+			block,
+			rootBlockClientId,
+		};
+	});
 
 	useEffect(() => {
 		if (blockID === "") {
@@ -105,25 +81,43 @@ function StarRating(props) {
 				blockID: block.clientId,
 				starColor: "#ffb901",
 			});
-		} else if (
-			getClientIdsWithDescendants().some(
-				(ID) =>
-					"blockID" in getBlock(ID).attributes &&
-					getBlock(ID).attributes.blockID === blockID
-			)
-		) {
-			setAttributes({ blockID: block.clientId });
 		}
 	});
+	useEffect(() => {
+		const rootBlock = getParentBlock(rootBlockClientId, "core/block");
+		if (!rootBlock) {
+			setAttributes({ blockID: block.clientId });
+		}
+	}, [block?.clientId]);
+	const blockProps = useBlockProps();
+	const paddingObj = getSpacingCss(padding);
+	const marginObj = getSpacingCss(margin);
+	const blockGap = getSpacingPresetCssVar(gap?.all) ?? "";
 
+	const styles = {
+		paddingTop: paddingObj?.top,
+		paddingRight: paddingObj?.right,
+		paddingBottom: paddingObj?.bottom,
+		paddingLeft: paddingObj?.left,
+		marginTop: marginObj?.top,
+		marginRight: marginObj?.right,
+		marginBottom: marginObj?.bottom,
+		marginLeft: marginObj?.left,
+		gap: blockGap,
+	};
+	const alignClass =
+		starAlign !== "" ? ` ub-star-rating-align-${starAlign}` : "";
 	return (
-		<>
+		<div {...blockProps}>
 			{isSelected && blockControls(props)}
 			{isSelected && inspectorControls(props)}
-			<div className="ub-star-rating">
+			<div
+				className={`ub-star-rating ub-star-rating-text-${textPosition}${alignClass}`}
+				style={styles}
+			>
 				{editorDisplay({ ...props, highlightedStars, setHighlightedStars })}
 			</div>
-		</>
+		</div>
 	);
 }
 
@@ -140,7 +134,7 @@ registerBlockType("ub/star-rating", {
 	edit: compose([
 		withSelect((select, ownProps) => ({
 			block: (select("core/block-editor") || select("core/editor")).getBlock(
-				ownProps.clientId
+				ownProps.clientId,
 			),
 		})),
 		withDispatch((dispatch) => ({
@@ -196,22 +190,15 @@ registerBlockType("ub/star-rating", {
 	],
 });
 
-registerBlockType("ub/star-rating-block", {
-	title: __("Star Rating"),
+registerBlockType(metadata.name, {
+	...metadata,
 	icon: BlockIcon,
-	category: "ultimateblocks",
-
-	attributes,
-
-	edit: withSelect((select, ownProps) => {
-		const { getBlock, getClientIdsWithDescendants } =
-			select("core/block-editor") || select("core/editor");
-
-		return {
-			block: getBlock(ownProps.clientId),
-			getBlock,
-			getClientIdsWithDescendants,
-		};
-	})(StarRating),
+	attributes: metadata.attributes,
+	example: {
+		attributes: {
+			selectedStars: 4,
+		},
+	},
+	edit: StarRating,
 	save: () => null,
 });

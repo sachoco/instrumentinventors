@@ -58,7 +58,7 @@
 			active: true
 		},
 		{
-			label: "Content Toggle",
+			label: "Accordions (UB)",
 			name: "ub/content-toggle",
 			active: true
 		},
@@ -123,7 +123,7 @@
 			active: true
 		},
 		{
-			label: "Tabbed Content",
+			label: "Tabs (UB)",
 			name: "ub/tabbed-content",
 			active: true
 		},

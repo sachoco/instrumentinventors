@@ -7,10 +7,18 @@ import {
 import { Component } from "react";
 import { getDescendantBlocks, mergeRichTextArray } from "../../common";
 import toLatin from "./localToLatin";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import filterDiacritics from "./removeDiacritics";
+import SavedStylesInspector from "$Inc/components/SavedStyles/SavedStylesInspector";
+import { BorderControl, SpacingControl } from "../components";
+import { Disabled } from "@wordpress/components";
+import { edit, Icon, trash } from "@wordpress/icons";
+import { ColorSettings, CustomFontSizePicker } from "../components";
+import { getSpacingCss } from "../utils/styling-helpers";
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
 
 library.add(faEye, faEyeSlash);
 
@@ -77,157 +85,176 @@ class TableOfContents extends Component {
 
 			let pageBreaks = [];
 
-			const rootBlocks = (
-				select("core/block-editor") || select("core/editor")
-			).getBlocks();
+			// Get all blocks including template parts and nested structures
+			const getAllBlocks = () => {
+				const blockEditorSelect =
+					select("core/block-editor") || select("core/editor");
+				const {
+					getBlocks,
+					getBlock,
+					getClientIdsWithDescendants,
+					getBlockRootClientId,
+				} = blockEditorSelect;
+
+				// Get root blocks
+				let rootBlocks = getBlocks();
+
+				const extractAllBlocks = (blocks) => {
+					if (!blocks || !Array.isArray(blocks)) {
+						return [];
+					}
+
+					let allBlocks = [];
+					for (let i = 0; i < blocks.length; i++) {
+						const block = blocks[i];
+
+						if (!block || block.name === "ub/table-of-contents-block") {
+							continue;
+						}
+
+						allBlocks.push(block);
+
+						// Recursively process inner blocks
+						if (block.innerBlocks && block.innerBlocks.length > 0) {
+							allBlocks.push(...extractAllBlocks(block.innerBlocks));
+						}
+					}
+					return allBlocks;
+				};
+
+				const allBlocks = extractAllBlocks(rootBlocks);
+
+				// Check if we're in template viewing mode (has core/post-content block)
+				const postContentBlock = allBlocks.find(
+					(b) => b.name === "core/post-content",
+				);
+
+				// If in template mode, ONLY get blocks from within core/post-content
+				// This excludes header and footer template parts
+				if (postContentBlock) {
+					const fullPostContentBlock = getBlock(postContentBlock.clientId);
+					if (fullPostContentBlock?.innerBlocks?.length > 0) {
+						return extractAllBlocks(fullPostContentBlock.innerBlocks);
+					}
+
+					// Fallback: get descendants and filter out TOC, post-content, and blocks in template-parts
+					const postContentDescendants = getClientIdsWithDescendants(
+						postContentBlock.clientId,
+					);
+					if (postContentDescendants?.length > 0) {
+						const fetchedBlocks = [];
+						const isInTemplatePart = (clientId) => {
+							let currentId = clientId;
+							while (currentId) {
+								const parentId = getBlockRootClientId(currentId);
+								if (!parentId) break;
+								const parentBlock = getBlock(parentId);
+								if (parentBlock?.name === "core/template-part") return true;
+								if (parentBlock?.name === "core/post-content") break;
+								currentId = parentId;
+							}
+							return false;
+						};
+
+						for (const descId of postContentDescendants) {
+							const block = getBlock(descId);
+							if (
+								block &&
+								block.name !== "ub/table-of-contents-block" &&
+								block.name !== "core/post-content" &&
+								!isInTemplatePart(descId)
+							) {
+								fetchedBlocks.push(block);
+							}
+						}
+						return fetchedBlocks;
+					}
+				}
+
+				return allBlocks;
+			};
+
+			const rootBlocks = getAllBlocks();
+
+			// Process all blocks (now flattened from all levels)
 			rootBlocks.forEach((block) => {
 				if (block.name === "core/heading") {
 					headings.push(block);
 					pageBreaks.push(pageNum);
-				} else {
+				} else if (block.name === "ub/advanced-heading") {
 					let newBlock = Object.assign({}, block);
 					let blockAttributes = block.attributes;
-					if (block.name === "ub/advanced-heading") {
-						newBlock.attributes = Object.assign({}, blockAttributes, {
-							level: Number(blockAttributes.level.charAt(1)),
-						});
-						headings.push(newBlock);
-						pageBreaks.push(pageNum);
-					} else if (block.name === "uagb/advanced-heading") {
+					newBlock.attributes = Object.assign({}, blockAttributes, {
+						level: Number(blockAttributes.level.charAt(1)),
+					});
+					headings.push(newBlock);
+					pageBreaks.push(pageNum);
+				} else if (block.name === "uagb/advanced-heading") {
+					let newBlock = Object.assign({}, block);
+					let blockAttributes = block.attributes;
+					newBlock.attributes = Object.assign(blockAttributes, {
+						content: blockAttributes.headingTitle || "",
+					});
+					headings.push(newBlock);
+					pageBreaks.push(pageNum);
+				} else if (block.name === "themeisle-blocks/advanced-heading") {
+					if (
+						["h1", "h2", "h3", "h4", "h5", "h6"].includes(block.attributes.tag)
+					) {
+						let newBlock = Object.assign({}, block);
+						let blockAttributes = block.attributes;
 						newBlock.attributes = Object.assign(blockAttributes, {
-							content: blockAttributes.headingTitle || "",
+							level: Number(blockAttributes.tag.charAt(1)),
+							anchor: `themeisle-otter ${blockAttributes.id}`,
 						});
 						headings.push(newBlock);
 						pageBreaks.push(pageNum);
-					} else if (block.name === "themeisle-blocks/advanced-heading") {
-						if (
-							["h1", "h2", "h3", "h4", "h5", "h6"].includes(
-								block.attributes.tag
-							)
-						) {
-							newBlock.attributes = Object.assign(blockAttributes, {
-								level: Number(blockAttributes.tag.charAt(1)),
-								anchor: `themeisle-otter ${blockAttributes.id}`,
-							});
-							headings.push(newBlock);
-							pageBreaks.push(pageNum);
-						}
-					} else if (block.name === "kadence/advancedheading") {
-						if (!("content" in newBlock.attributes)) {
-							newBlock.attributes.content = "";
-						}
+					}
+				} else if (block.name === "kadence/advancedheading") {
+					let newBlock = Object.assign({}, block);
+					if (!("content" in newBlock.attributes)) {
+						newBlock.attributes.content = "";
+					}
+					headings.push(newBlock);
+					pageBreaks.push(pageNum);
+				} else if (block.name === "generateblocks/headline") {
+					let newBlock = Object.assign({}, block);
+					let blockAttributes = block.attributes;
+					if (
+						["h1", "h2", "h3", "h4", "h5", "h6"].includes(
+							newBlock.attributes.element,
+						)
+					) {
+						newBlock.attributes = Object.assign(
+							{},
+							{
+								content: Array.isArray(blockAttributes.content)
+									? mergeRichTextArray(blockAttributes.content)
+									: blockAttributes.content,
+								level: Number(blockAttributes.element.charAt(1)),
+								anchor: blockAttributes.elementId,
+							},
+						);
 						headings.push(newBlock);
 						pageBreaks.push(pageNum);
-					} else if (block.name === "generateblocks/headline") {
-						if (
-							["h1", "h2", "h3", "h4", "h5", "h6"].includes(
-								newBlock.attributes.element
-							)
-						) {
-							newBlock.attributes = Object.assign(
-								{},
-								{
-									content: Array.isArray(blockAttributes.content)
-										? mergeRichTextArray(blockAttributes.content)
-										: blockAttributes.content,
-									level: Number(blockAttributes.element.charAt(1)),
-									anchor: blockAttributes.elementId,
-								}
-							);
-							//also set elementID to generated anchor value
-							headings.push(newBlock);
-						}
-					} else if (block.name === "ub/content-toggle-panel-block") {
-						if (block.attributes.useToggleInToC) {
-							newBlock.attributes = Object.assign(
-								{},
-								{
-									content: blockAttributes.panelTitle,
-									level: Number(blockAttributes.titleTag.charAt(1)),
-									anchor: blockAttributes.toggleID,
-								}
-							);
-
-							headings.push(newBlock);
-						}
-					} else if (block.name === "core/nextpage") {
-						pageNum++;
 					}
-
-					if (block.innerBlocks.length > 0) {
-						let internalHeadings = getDescendantBlocks(block).filter(
-							(block) =>
-								[
-									"core/heading",
-									"kadence/advancedheading",
-									"themeisle-blocks/advanced-heading",
-									"uagb/advanced-heading",
-									"generateblocks/headline",
-									"ub/advanced-heading",
-								].includes(block.name) ||
-								(block.name === "ub/content-toggle-panel-block" &&
-									block.attributes.useToggleInToC)
+				} else if (block.name === "ub/content-toggle-panel-block") {
+					if (block.attributes.useToggleInToC) {
+						let newBlock = Object.assign({}, block);
+						let blockAttributes = block.attributes;
+						newBlock.attributes = Object.assign(
+							{},
+							{
+								content: blockAttributes.panelTitle,
+								level: Number(blockAttributes.titleTag.charAt(1)),
+								anchor: blockAttributes.toggleID,
+							},
 						);
-
-						if (internalHeadings.length > 0) {
-							internalHeadings = internalHeadings.map((h) => {
-								switch (h.name) {
-									case "ub/advanced-heading":
-										h.attributes = Object.assign({}, h.attributes);
-										if (typeof h.attributes.level !== "number") {
-											h.attributes.level = Number(h.attributes.level.charAt(1));
-										}
-										break;
-									case "kadence/advancedheading":
-										if (!("content" in h.attributes)) {
-											h.attributes.content = "";
-										}
-										break;
-									case "themeisle-blocks/advanced-heading":
-										h.attributes.level = [...Array(6).keys()]
-											.map((a) => `h${a + 1}`)
-											.includes(h.attributes.tag)
-											? Number(h.attributes.tag.charAt(1))
-											: 0;
-										h.attributes.anchor = `themeisle-otter ${h.attributes.id}`;
-										break;
-									case "uagb/advanced-heading":
-										h.attributes.content = h.attributes.headingTitle || "";
-										break;
-									case "generateblocks/headline":
-										h.attributes = Object.assign({}, h.attributes);
-										h.attributes.level = [...Array(6).keys()]
-											.map((a) => `h${a + 1}`)
-											.includes(h.attributes.element)
-											? Number(h.attributes.element.charAt(1))
-											: 0;
-										if (Array.isArray(h.attributes.content)) {
-											h.attributes.content = mergeRichTextArray(
-												h.attributes.content
-											);
-										}
-										break;
-									case "ub/content-toggle-panel-block":
-										h.attributes.content = h.attributes.panelTitle;
-										h.attributes.level = Number(
-											blockAttributes.titleTag.charAt(1)
-										);
-										h.attributes.anchor = h.attributes.toggleID;
-
-										break;
-									default:
-										break;
-								}
-								return h;
-							});
-							internalHeadings.filter((h) => h.attributes.level > 0);
-						}
-
-						if (internalHeadings.length > 0) {
-							headings.push(...internalHeadings);
-							pageBreaks.push(...Array(internalHeadings.length).fill(pageNum));
-						}
+						headings.push(newBlock);
+						pageBreaks.push(pageNum);
 					}
+				} else if (block.name === "core/nextpage") {
+					pageNum++;
 				}
 			});
 
@@ -240,14 +267,19 @@ class TableOfContents extends Component {
 
 		const setHeadings = (checkIDs = true) => {
 			const { removeDiacritics } = this.props;
-			const headers = getHeadingBlocks().map((header) =>
-				Object.assign(header.attributes, {
-					clientId: header.clientId,
-					blockName: header.name,
-				})
-			);
+			const headers = getHeadingBlocks()
+				.filter((header) => header && header.attributes) // Filter out null/undefined
+				.map((header) =>
+					Object.assign(header.attributes, {
+						clientId: header.clientId,
+						blockName: header.name,
+					}),
+				);
 
 			headers.forEach((heading, key) => {
+				// Add null check for heading
+				if (!heading) return;
+
 				if (
 					!heading.anchor ||
 					heading.anchor.indexOf("themeisle-otter ") === -1
@@ -258,7 +290,7 @@ class TableOfContents extends Component {
 							: (this.props.allowToLatin
 									? toLatin("all", heading.content.toString())
 									: heading.content.toString()
-							  )
+								)
 									.toLowerCase()
 									.replace(/( |<.+?>|&nbsp;)/g, "-")
 					}`;
@@ -270,15 +302,20 @@ class TableOfContents extends Component {
 					if (removeDiacritics) {
 						heading.anchor = filterDiacritics(heading.anchor).replace(
 							/[\u0300-\u036F\u1AB0-\u1AFF\u1DC0-\u1DFF\u20D0-\u20FF]/g,
-							""
+							"",
 						);
 					}
 
 					heading.anchor = encodeURIComponent(heading.anchor);
 
+					// Get the current block once to avoid multiple calls
+					const currentBlock = getBlock(heading.clientId);
+
 					if (
 						heading.blockName === "generateblocks/headline" &&
-						heading.anchor !== getBlock(heading.clientId).attributes.anchor
+						currentBlock &&
+						currentBlock.attributes &&
+						heading.anchor !== currentBlock.attributes.anchor
 					) {
 						updateBlockAttributes(heading.clientId, {
 							anchor: heading.anchor,
@@ -287,7 +324,9 @@ class TableOfContents extends Component {
 
 					if (
 						heading.blockName === "ub/advanced-heading" &&
-						heading.anchor !== getBlock(heading.clientId).attributes.anchor
+						currentBlock &&
+						currentBlock.attributes &&
+						heading.anchor !== currentBlock.attributes.anchor
 					) {
 						updateBlockAttributes(heading.clientId, {
 							anchor: heading.anchor,
@@ -296,7 +335,9 @@ class TableOfContents extends Component {
 
 					if (
 						heading.blockName === "ub/content-toggle-panel-block" &&
-						heading.anchor !== getBlock(heading.clientId).attributes.toggleID
+						currentBlock &&
+						currentBlock.attributes &&
+						heading.anchor !== currentBlock.attributes.toggleID
 					) {
 						updateBlockAttributes(heading.clientId, {
 							toggleID: heading.anchor,
@@ -313,6 +354,7 @@ class TableOfContents extends Component {
 				Array.isArray(this.state.headers) && this.state.headers.length > 0;
 
 			const newHeaders = headers.map((header, i) => ({
+				blockName: header.blockName,
 				clientId: header.clientId,
 				content: header.content,
 				level: header.level,
@@ -348,7 +390,7 @@ class TableOfContents extends Component {
 						let hasMismatch = false;
 
 						this.state.headers.some(
-							(h, i) => h.clientId !== newHeaders[i].clientId
+							(h, i) => h.clientId !== newHeaders[i].clientId,
 						);
 
 						if (checkIDs && hasMismatch) {
@@ -397,7 +439,9 @@ class TableOfContents extends Component {
 	}
 
 	componentWillUnmount() {
-		this.state.unsubscribe();
+		if (this.state.unsubscribe) {
+			this.state.unsubscribe();
+		}
 	}
 
 	componentDidUpdate(prevProps, prevState) {
@@ -437,7 +481,7 @@ class TableOfContents extends Component {
 				}
 				let replacements = JSON.parse(JSON.stringify(replacementHeaders)).sort(
 					(a, b) =>
-						newIDs.indexOf(a.clientId) > newIDs.indexOf(b.clientId) ? 1 : -1
+						newIDs.indexOf(a.clientId) > newIDs.indexOf(b.clientId) ? 1 : -1,
 				);
 
 				if (mismatchLocs.length < 1) {
@@ -446,7 +490,7 @@ class TableOfContents extends Component {
 							disabled: headers[newIDs.indexOf(headers[i].clientId)].disabled,
 							customContent:
 								headers[newIDs.indexOf(headers[i].clientId)].customContent,
-						})
+						}),
 					);
 				}
 
@@ -465,7 +509,7 @@ class TableOfContents extends Component {
 
 					insertionSpots.forEach((index, i) => {
 						const currentHeader = replacementHeaders.filter(
-							(nh) => nh.clientId === diff[i]
+							(nh) => nh.clientId === diff[i],
 						)[0];
 						currentHeaders.splice(index, 0, currentHeader);
 					});
@@ -480,15 +524,26 @@ class TableOfContents extends Component {
 					});
 
 					if (newIDs.length) {
+						// Sort in reverse order to avoid index shifting when deleting
+						deletionSpots.sort((a, b) => b - a);
+
 						deletionSpots.forEach((index) => {
-							if (index !== currentHeaders[index].index) {
-								//heading split, transfer extra attributes of old heading to first of two new ones
-								Object.assign(currentHeaders[currentHeaders[index].index], {
-									disabled: currentHeaders[index].disabled,
-									customContent: currentHeaders[index].customContent,
-								});
+							// Check if the header exists at this index
+							if (currentHeaders[index]) {
+								// Check if heading was split and needs attribute transfer
+								if (
+									index !== currentHeaders[index].index &&
+									currentHeaders[currentHeaders[index].index]
+								) {
+									//heading split, transfer extra attributes of old heading to first of two new ones
+									Object.assign(currentHeaders[currentHeaders[index].index], {
+										disabled: currentHeaders[index].disabled,
+										customContent: currentHeaders[index].customContent,
+									});
+								}
+								// Remove the item
+								currentHeaders.splice(index, 1);
 							}
-							currentHeaders.splice(index, 1);
 						});
 					} else {
 						currentHeaders = [];
@@ -509,8 +564,16 @@ class TableOfContents extends Component {
 	}
 
 	render() {
-		const { allowedHeaders, blockProp, style, numColumns, listStyle } =
-			this.props;
+		const {
+			allowedHeaders,
+			blockProp,
+			style,
+			numColumns,
+			listStyle,
+			listIcon,
+		} = this.props;
+
+		const { parseProList } = blockProp;
 
 		const { isSelected } = blockProp;
 
@@ -543,7 +606,7 @@ class TableOfContents extends Component {
 			const revisedHeaders = JSON.parse(JSON.stringify(this.state.headers));
 
 			const currentlyEditedHeader = revisedHeaders.filter(
-				(h) => h.clientId === currentlyEditedItem
+				(h) => h.clientId === currentlyEditedItem,
 			)[0];
 
 			if (
@@ -573,7 +636,7 @@ class TableOfContents extends Component {
 								value={item.customContent}
 								onChange={(e) => {
 									const revisedHeaders = JSON.parse(
-										JSON.stringify(this.state.headers)
+										JSON.stringify(this.state.headers),
 									);
 									revisedHeaders[item.index].customContent = e.target.value;
 									this.setState({ headers: revisedHeaders });
@@ -599,34 +662,34 @@ class TableOfContents extends Component {
 									<button
 										onClick={() => {
 											const revisedHeaders = JSON.parse(
-												JSON.stringify(this.state.headers)
+												JSON.stringify(this.state.headers),
 											);
 
 											if (!revisedHeaders[item.index].customContent) {
 												revisedHeaders[item.index].customContent =
 													revisedHeaders[item.index].content.replace(
 														/<.+?>/g,
-														""
+														"",
 													);
 												this.setState({ headers: revisedHeaders });
 											}
 											this.setState({ currentlyEditedItem: item.clientId });
 										}}
 									>
-										<span className="dashicons dashicons-edit-large"></span>
+										<Icon icon={edit} />
 									</button>
 								)}
 								<button
 									onClick={() => {
 										const revisedHeaders = JSON.parse(
-											JSON.stringify(this.state.headers)
+											JSON.stringify(this.state.headers),
 										);
 										revisedHeaders[item.index].disabled =
 											!revisedHeaders[item.index].disabled;
 										this.setState({ headers: revisedHeaders });
 									}}
 								>
-									<FontAwesomeIcon icon={item.disabled ? faEye : faEyeSlash} />
+									<Icon icon={trash} />
 								</button>
 							</div>
 						)}
@@ -656,22 +719,48 @@ class TableOfContents extends Component {
 			headers.length > 0 &&
 			headers.filter((header) => allowedHeaders[header.level - 1]).length > 0
 		) {
+			const { itemSpacing } = this.props.blockProp.attributes;
+			const itemSpacingCss = getSpacingCss(itemSpacing || {});
+
 			return (
 				<div
-					style={style}
+					style={{
+						...style,
+						"--ub-toc-item-spacing": itemSpacingCss?.top || undefined,
+					}}
 					className={`ub_table-of-contents-container ub_table-of-contents-${numColumns}-column`}
 				>
 					{listStyle === "numbered" ? (
-						<ol>{parseList(makeHeaderArray(headers))}</ol>
+						<ol>
+							{parseProList
+								? parseProList(
+										makeHeaderArray(headers),
+										currentlyEditedItem,
+										this.state,
+										this.setState.bind(this),
+										readCustomHeadingInput,
+									)
+								: parseList(makeHeaderArray(headers))}
+						</ol>
 					) : (
 						<ul
+							className={listIcon ? "fa-ul" : null}
 							style={{
 								listStyle: listStyle === "plain" ? "none" : null,
 							}}
 						>
-							{parseList(makeHeaderArray(headers))}
+							{parseProList
+								? parseProList(
+										makeHeaderArray(headers),
+										currentlyEditedItem,
+										this.state,
+										this.setState.bind(this),
+										readCustomHeadingInput,
+									)
+								: parseList(makeHeaderArray(headers))}
 						</ul>
 					)}
+					{this.props.showMoreLink}
 				</div>
 			);
 		} else {
@@ -687,12 +776,24 @@ class TableOfContents extends Component {
 }
 
 export const inspectorControls = (props) => {
-	const { attributes, setAttributes } = props;
+	const {
+		attributes,
+		setAttributes,
+		stickyControl,
+		savedStylePro,
+		toggleButtonTypeControl,
+		iconControlPro,
+	} = props;
+
 	const {
 		allowedHeaders,
 		showList,
 		hideOnMobile,
 		allowToCHiding,
+		enableShowMore,
+		showMoreLimit,
+		showMoreText,
+		showLessText,
 		enableSmoothScroll,
 		allowToLatin,
 		removeDiacritics,
@@ -709,78 +810,97 @@ export const inspectorControls = (props) => {
 		numColumns,
 		showText,
 		hideText,
+		linkToDivider,
+		toggleButtonType,
+		isSticky,
+		titleFontSize,
+		listFontSize,
 	} = attributes;
 
 	const { updateBlockAttributes } =
 		dispatch("core/block-editor") || dispatch("core/editor");
 	const { getBlocks } = select("core/block-editor") || select("core/editor");
+	// Color settings are now handled by the ColorSettings component
 
 	return (
-		<InspectorControls>
-			<PanelBody title={__("Allowed Headings")}>
-				<div className="ub_toc_heading_selection">
-					{allowedHeaders.map((a, i) => (
-						<CheckboxControl
-							label={`H${i + 1}`}
-							checked={a}
-							onChange={() =>
-								setAttributes({
-									allowedHeaders: [
-										...allowedHeaders.slice(0, i),
-										!allowedHeaders[i],
-										...allowedHeaders.slice(i + 1),
-									],
-								})
-							}
-						/>
-					))}
-				</div>
-			</PanelBody>
-
-			<PanelColorSettings
-				title={__("Color Settings")}
-				initialOpen={false}
-				colorSettings={[
-					{
-						value: titleColor,
-						onChange: (titleColor) => setAttributes({ titleColor }),
-						label: __("Title Color"),
-					},
-					{
-						value: titleBackgroundColor,
-						onChange: (titleBackgroundColor) =>
-							setAttributes({ titleBackgroundColor }),
-						label: __("Title Background Color"),
-					},
-					{
-						value: listColor,
-						onChange: (listColor) => setAttributes({ listColor }),
-						label: __("List Color"),
-					},
-					{
-						value: listBackgroundColor,
-						onChange: (listBackgroundColor) =>
-							setAttributes({ listBackgroundColor }),
-						label: __("List Background Color"),
-					},
-					...[
-						listStyle !== "plain"
-							? {
-									value: listIconColor,
-									onChange: (listIconColor) => setAttributes({ listIconColor }),
-									label:
-										listStyle === "numbered"
-											? __("Item number color")
-											: __("List icon color"),
-							  }
-							: [],
-					],
-				]}
-			/>
-			<PanelBody title={__("Collapsible")} initialOpen={false}>
-				<PanelRow>
-					<label htmlFor="ub_toc_toggle_display">{__("Collapsible")}</label>
+		<>
+			<InspectorControls group="settings">
+				{savedStylePro && savedStylePro}
+				<PanelBody title={__("Allowed Headings")}>
+					<div className="ub_toc_heading_selection">
+						{allowedHeaders.map((a, i) => (
+							<CheckboxControl
+								label={`H${i + 1}`}
+								checked={a}
+								onChange={() =>
+									setAttributes({
+										allowedHeaders: [
+											...allowedHeaders.slice(0, i),
+											!allowedHeaders[i],
+											...allowedHeaders.slice(i + 1),
+										],
+									})
+								}
+							/>
+						))}
+					</div>
+				</PanelBody>
+				<PanelBody title={__("Layout")} initialOpen={false}>
+					<PanelRow>
+						<p>{__("Columns")}</p>
+						<ToolbarGroup>
+							<ToolbarButton
+								className={"ub_toc_column_selector"}
+								icon={oneColumnIcon}
+								label={__("One column")}
+								isPrimary={numColumns === 1}
+								onClick={() => setAttributes({ numColumns: 1 })}
+							/>
+							<ToolbarButton
+								className={"ub_toc_column_selector"}
+								icon={twoColumnsIcon}
+								label={__("Two columns")}
+								isPrimary={numColumns === 2}
+								onClick={() => setAttributes({ numColumns: 2 })}
+							/>
+							<ToolbarButton
+								className={"ub_toc_column_selector"}
+								icon={threeColumnsIcon}
+								label={__("Three columns")}
+								isPrimary={numColumns === 3}
+								onClick={() => setAttributes({ numColumns: 3 })}
+							/>
+						</ToolbarGroup>
+					</PanelRow>
+					<PanelRow>
+						<p>{__("List type")}</p>
+						<ToolbarGroup>
+							<ToolbarButton
+								icon="editor-ul"
+								label={__("Bulleted list")}
+								isPrimary={listStyle === "bulleted"}
+								onClick={() => setAttributes({ listStyle: "bulleted" })}
+							/>
+							<ToolbarButton
+								icon="editor-ol"
+								label={__("Numbered list")}
+								isPrimary={listStyle === "numbered"}
+								onClick={() => setAttributes({ listStyle: "numbered" })}
+							/>
+							<ToolbarButton
+								icon={plainList}
+								label={__("Plain list")}
+								isPrimary={listStyle === "plain"}
+								onClick={() => setAttributes({ listStyle: "plain" })}
+							/>
+						</ToolbarGroup>
+					</PanelRow>
+					<br></br>
+					{iconControlPro && iconControlPro}
+				</PanelBody>
+				<PanelBody title={__("Collapsible")} initialOpen={false}>
 					<ToggleControl
+						label={__("Collapsible", "ultimate-blocks")}
 						id="ub_toc_toggle_display"
 						checked={allowToCHiding}
 						onChange={(allowToCHiding) =>
@@ -791,173 +911,131 @@ export const inspectorControls = (props) => {
 							})
 						}
 					/>
-				</PanelRow>
-				{allowToCHiding && (
-					<>
-						<PanelRow>
-							<TextControl
-								label={__("Show text")}
-								value={showText}
-								onChange={(showText) => setAttributes({ showText })}
-							/>
-						</PanelRow>
-						<PanelRow>
-							<TextControl
-								label={__("Hide text")}
-								value={hideText}
-								onChange={(hideText) => setAttributes({ hideText })}
-							/>
-						</PanelRow>
-						<PanelRow>
-							<label htmlFor="ub_show_toc">{__("Initial Show")}</label>
+					{allowToCHiding && (
+						<>
+							{!toggleButtonType ||
+								(toggleButtonType && toggleButtonType === "text" && (
+									<>
+										<TextControl
+											label={__("Show text", "ultimate-blocks")}
+											value={showText}
+											onChange={(showText) => setAttributes({ showText })}
+										/>
+										<TextControl
+											label={__("Hide text", "ultimate-blocks")}
+											value={hideText}
+											onChange={(hideText) => setAttributes({ hideText })}
+										/>
+									</>
+								))}
+
 							<ToggleControl
+								label={__("Initial Show", "ultimate-blocks")}
 								id="ub_show_toc"
 								checked={showList}
 								onChange={() => setAttributes({ showList: !showList })}
 							/>
-						</PanelRow>
-						<PanelRow>
-							<label htmlFor="ub_hide_on_mobile">
-								{__("Initial Hide on Mobile")}
-							</label>
 							<ToggleControl
+								label={__("Initial Hide on Mobile", "ultimate-blocks")}
 								id="ub_hide_on_mobile"
 								checked={hideOnMobile}
 								onChange={() => setAttributes({ hideOnMobile: !hideOnMobile })}
 							/>
-						</PanelRow>
-					</>
-				)}
-			</PanelBody>
-			<PanelBody title={__("Body")} initialOpen={false}>
-				<PanelRow>
-					<p>{__("Columns")}</p>
-					<ToolbarGroup>
-						<ToolbarButton
-							className={"ub_toc_column_selector"}
-							icon={oneColumnIcon}
-							label={__("One column")}
-							isPrimary={numColumns === 1}
-							onClick={() => setAttributes({ numColumns: 1 })}
-						/>
-						<ToolbarButton
-							className={"ub_toc_column_selector"}
-							icon={twoColumnsIcon}
-							label={__("Two columns")}
-							isPrimary={numColumns === 2}
-							onClick={() => setAttributes({ numColumns: 2 })}
-						/>
-						<ToolbarButton
-							className={"ub_toc_column_selector"}
-							icon={threeColumnsIcon}
-							label={__("Three columns")}
-							isPrimary={numColumns === 3}
-							onClick={() => setAttributes({ numColumns: 3 })}
-						/>
-					</ToolbarGroup>
-				</PanelRow>
-				<PanelRow>
-					<p>{__("List type")}</p>
-					<ToolbarGroup>
-						<ToolbarButton
-							icon="editor-ul"
-							label={__("Bulleted list")}
-							isPrimary={listStyle === "bulleted"}
-							onClick={() => setAttributes({ listStyle: "bulleted" })}
-						/>
-						<ToolbarButton
-							icon="editor-ol"
-							label={__("Numbered list")}
-							isPrimary={listStyle === "numbered"}
-							onClick={() => setAttributes({ listStyle: "numbered" })}
-						/>
-						<ToolbarButton
-							icon={plainList}
-							label={__("Plain list")}
-							isPrimary={listStyle === "plain"}
-							onClick={() => setAttributes({ listStyle: "plain" })}
-						/>
-					</ToolbarGroup>
-				</PanelRow>
-			</PanelBody>
-			<PanelBody title={__("Additional Settings")} initialOpen={false}>
-				<PanelRow>
-					<label htmlFor="ub_toc_enable_latin_conversion">
-						{__("Romanize anchor links")}
-					</label>
+							{toggleButtonTypeControl && toggleButtonTypeControl}
+						</>
+					)}
+				</PanelBody>
+				<PanelBody title={__("Show more", "ultimate-blocks")} initialOpen={false}>
 					<ToggleControl
-						id="ub_toc_enable_latin_conversion"
-						checked={allowToLatin}
-						onChange={(e) => setAttributes({ allowToLatin: e })}
+						label={__("Show more link", "ultimate-blocks")}
+						help={__(
+							"Shorten long lists. The rest of the items appear when the link is clicked.",
+							"ultimate-blocks",
+						)}
+						checked={enableShowMore}
+						onChange={(enableShowMore) => setAttributes({ enableShowMore })}
 					/>
-				</PanelRow>
-				<PanelRow>
-					<label htmlFor="ub_toc_toggle_diacritics">
-						{__("Remove diacritics from anchor links")}
-					</label>
-					<ToggleControl
-						id="ub_toc_toggle_diacritics"
-						checked={removeDiacritics}
-						onChange={(removeDiacritics) => setAttributes({ removeDiacritics })}
+					{enableShowMore && (
+						<>
+							<RangeControl
+								label={__("Items shown", "ultimate-blocks")}
+								value={showMoreLimit}
+								onChange={(showMoreLimit) =>
+									setAttributes({ showMoreLimit: showMoreLimit || 1 })
+								}
+								min={1}
+								max={30}
+							/>
+							<TextControl
+								label={__("Show more text", "ultimate-blocks")}
+								placeholder={__("Show more", "ultimate-blocks")}
+								value={showMoreText}
+								onChange={(showMoreText) => setAttributes({ showMoreText })}
+							/>
+							<TextControl
+								label={__("Show less text", "ultimate-blocks")}
+								placeholder={__("Show less", "ultimate-blocks")}
+								value={showLessText}
+								onChange={(showLessText) => setAttributes({ showLessText })}
+							/>
+						</>
+					)}
+				</PanelBody>
+				<PanelBody title={__("Scroll")} initialOpen={false}>
+					<SelectControl
+						label={__("Scroll offset adjustment")}
+						value={scrollOption}
+						options={[
+							{
+								label: __("Relative to first available fixed/sticky element"),
+								value: "auto",
+							},
+							{
+								label: __("Relative to a specific element"),
+								value: "namedelement",
+							},
+							{ label: __("Fixed height"), value: "fixedamount" },
+							{ label: __("No adjustments"), value: "off" },
+						]}
+						onChange={(scrollOption) => setAttributes({ scrollOption })}
 					/>
-				</PanelRow>
-			</PanelBody>
-			<PanelBody title={__("Scroll Settings")} initialOpen={false}>
-				<SelectControl
-					label={__("Scroll offset adjustment")}
-					value={scrollOption}
-					options={[
-						{
-							label: __("Relative to first available fixed/sticky element"),
-							value: "auto",
-						},
-						{
-							label: __("Relative to a specific element"),
-							value: "namedelement",
-						},
-						{ label: __("Fixed height"), value: "fixedamount" },
-						{ label: __("No adjustments"), value: "off" },
-					]}
-					onChange={(scrollOption) => setAttributes({ scrollOption })}
-				/>
-				{scrollOption === "namedelement" && (
-					<>
-						<SelectControl
-							label={__("Scroll reference name type")}
-							value={scrollTargetType}
-							options={["id", "class", "element"].map((a) => ({
-								label: __(a),
-								value: a,
-							}))}
-							onChange={(scrollTargetType) =>
-								setAttributes({ scrollTargetType })
-							}
+					{scrollOption === "namedelement" && (
+						<>
+							<SelectControl
+								label={__("Scroll reference name type")}
+								value={scrollTargetType}
+								options={["id", "class", "element"].map((a) => ({
+									label: __(a),
+									value: a,
+								}))}
+								onChange={(scrollTargetType) =>
+									setAttributes({ scrollTargetType })
+								}
+							/>
+							<TextControl
+								label={__("Reference element for scroll offset")}
+								value={scrollTarget}
+								onChange={(scrollTarget) => setAttributes({ scrollTarget })}
+							/>
+						</>
+					)}
+					{scrollOption === "fixedamount" && (
+						<RangeControl
+							label={__("Scroll offset (pixels)")}
+							value={scrollOffset}
+							onChange={(scrollOffset) => setAttributes({ scrollOffset })}
+							min={0}
+							max={200}
+							allowReset
 						/>
-						<TextControl
-							label={__("Reference element for scroll offset")}
-							value={scrollTarget}
-							onChange={(scrollTarget) => setAttributes({ scrollTarget })}
-						/>
-					</>
-				)}
-				{scrollOption === "fixedamount" && (
-					<RangeControl
-						label={__("Scroll offset (pixels)")}
-						value={scrollOffset}
-						onChange={(scrollOffset) => setAttributes({ scrollOffset })}
-						min={0}
-						max={200}
-						allowReset
-					/>
-				)}
-				<PanelRow>
-					<label htmlFor="ub_toc_scroll">{__("Enable smooth scrolling")}</label>
+					)}
 					<ToggleControl
+						label={__("Enable smooth scrolling", "ultimate-blocks")}
 						id="ub_toc_scroll"
 						checked={enableSmoothScroll}
 						onChange={() => {
 							const tocInstances = getBlocks().filter(
-								(block) => block.name === "ub/table-of-contents-block"
+								(block) => block.name === "ub/table-of-contents-block",
 							);
 							tocInstances.forEach((instance) => {
 								updateBlockAttributes(instance.clientId, {
@@ -966,17 +1044,158 @@ export const inspectorControls = (props) => {
 							});
 						}}
 					/>
-				</PanelRow>
-			</PanelBody>
-		</InspectorControls>
+				</PanelBody>
+				{stickyControl && stickyControl}
+				<PanelBody title={__("Additional")} initialOpen={false}>
+					<Disabled isDisabled={isSticky} style={{ marginBottom: "24px" }}>
+						<ToggleControl
+							label={__("Link to divider", "ultimate-blocks")}
+							checked={linkToDivider}
+							onChange={() => setAttributes({ linkToDivider: !linkToDivider })}
+						/>
+					</Disabled>
+
+					<ToggleControl
+						label={__("Romanize anchor links", "ultimate-blocks")}
+						id="ub_toc_enable_latin_conversion"
+						checked={allowToLatin}
+						onChange={(e) => setAttributes({ allowToLatin: e })}
+					/>
+					<ToggleControl
+						label={__("Remove diacritics from anchor links", "ultimate-blocks")}
+						id="ub_toc_toggle_diacritics"
+						checked={removeDiacritics}
+						onChange={(removeDiacritics) => setAttributes({ removeDiacritics })}
+					/>
+				</PanelBody>
+			</InspectorControls>
+			<InspectorControls group="typography">
+				<CustomFontSizePicker
+					attrKey="titleFontSize"
+					label={__("Title Font Size", "ultimate-blocks")}
+				/>
+				<CustomFontSizePicker
+					attrKey="listFontSize"
+					label={__("List Font Size", "ultimate-blocks")}
+				/>
+			</InspectorControls>
+			<InspectorControls group="styles">
+				<SavedStylesInspector
+					attributes={() => {
+						// eslint-disable-next-line no-unused-vars
+						const { blockID, title, ...rest } = attributes;
+
+						return rest;
+					}}
+					setAttribute={setAttributes}
+					previewAttributeCallback={(attr) => attr}
+					previewElementCallback={(el) => el}
+					previewsEnabled={false}
+				/>
+				<PanelBody
+					title={__("Dimension Settings", "ultimate-blocks")}
+					initialOpen={false}
+				>
+					<SpacingControl
+						showByDefault
+						attrKey="padding"
+						label={__("Padding", "ultimate-blocks")}
+					/>
+					<SpacingControl
+						minimumCustomValue={-Infinity}
+						showByDefault
+						attrKey="margin"
+						label={__("Margin", "ultimate-blocks")}
+					/>
+					<SpacingControl
+						showByDefault
+						attrKey="itemSpacing"
+						label={__("Item Spacing", "ultimate-blocks")}
+						sides={["top"]}
+					/>
+				</PanelBody>
+			</InspectorControls>
+			<InspectorControls group="color">
+				<ColorSettings
+					label={__("Title Color", "ultimate-blocks")}
+					attrKey="titleColor"
+				/>
+				<ColorSettings
+					label={__("Title Background Color", "ultimate-blocks")}
+					attrKey="titleBackgroundColor"
+				/>
+				<ColorSettings
+					label={__("List Color", "ultimate-blocks")}
+					attrKey="listColor"
+				/>
+				<ColorSettings
+					label={__("List Background Color", "ultimate-blocks")}
+					attrKey="listBackgroundColor"
+				/>
+				{listStyle !== "plain" && (
+					<ColorSettings
+						label={
+							listStyle === "numbered"
+								? __("Item number color", "ultimate-blocks")
+								: __("List icon color", "ultimate-blocks")
+						}
+						attrKey="listIconColor"
+					/>
+				)}
+				{isSticky && (
+					<ColorSettings
+						label={__("Sticky Button Icon Color", "ultimate-blocks-pro")}
+						attrKey="stickyButtonIconColor"
+					/>
+				)}
+			</InspectorControls>
+			<InspectorControls group="border">
+				<BorderControl
+					showDefaultBorder
+					showDefaultBorderRadius
+					attrBorderKey="border"
+					attrBorderRadiusKey="borderRadius"
+					borderLabel={__("Border", "ultimate-blocks")}
+					borderRadiusLabel={__("Border Radius", "ultimate-blocks")}
+				/>
+			</InspectorControls>
+		</>
 	);
 };
 
 export const blockControls = (props) => {
 	const { setAttributes } = props;
 	const { numColumns, titleAlignment, listStyle } = props.attributes;
+
+	const styleClipboard = createStyleClipboard(
+		"ub_table_of_contents_copied_style",
+		[
+			"numColumns",
+			"listStyle",
+			"titleAlignment",
+			"listTextColor",
+			"listFontSize",
+			"linkColor",
+			"enableSmoothScroll",
+			"scrollOffset",
+			"backgroundColor",
+			"titleColor",
+			"titleFontSize",
+			"border",
+			"borderRadius",
+			"padding",
+			"margin",
+		],
+	);
+
 	return (
 		<BlockControls>
+			<GenericStyleControl
+				attributes={props.attributes}
+				setAttributes={setAttributes}
+				clipboard={styleClipboard}
+				blockName="Table of Contents"
+			/>
 			<ToolbarGroup>
 				<ToolbarButton
 					className={"ub_toc_column_selector"}
@@ -1029,7 +1248,18 @@ export const blockControls = (props) => {
 };
 
 export const editorDisplay = (props) => {
-	const { setAttributes, canRemoveItemFocus, toggleCanRemoveItemFocus } = props;
+	const {
+		setAttributes,
+		canRemoveItemFocus,
+		toggleCanRemoveItemFocus,
+		hideElementPro,
+		listIcon,
+		toggleButtonType,
+		styleTagPro,
+		showAllItems,
+		setShowAllItems,
+	} = props;
+
 	const {
 		links,
 		title,
@@ -1049,7 +1279,42 @@ export const editorDisplay = (props) => {
 		blockID,
 		showText,
 		hideText,
+		titleFontSize,
+		listFontSize,
+		enableShowMore,
+		showMoreLimit,
+		showMoreText,
+		showLessText,
 	} = props.attributes;
+
+	const visibleHeaderCount = (links ? JSON.parse(links) : []).filter(
+		(header) => allowedHeaders[header.level - 1] && !header.disabled,
+	).length;
+
+	const toggleShowAll = (event) => {
+		event.preventDefault();
+		setShowAllItems(!showAllItems);
+	};
+
+	const showMoreLink =
+		enableShowMore && visibleHeaderCount > showMoreLimit ? (
+			<a
+				className="ub_table-of-contents-show-more"
+				role="button"
+				tabIndex={0}
+				aria-expanded={showAllItems}
+				onClick={toggleShowAll}
+				onKeyDown={(event) => {
+					if (event.key === "Enter" || event.key === " ") {
+						toggleShowAll(event);
+					}
+				}}
+			>
+				{showAllItems
+					? showLessText || __("Show less", "ultimate-blocks")
+					: showMoreText || __("Show more", "ultimate-blocks")}
+			</a>
+		) : null;
 
 	return (
 		<>
@@ -1062,7 +1327,7 @@ export const editorDisplay = (props) => {
 			>
 				<div
 					className="ub_table-of-contents-title"
-					style={{ color: titleColor }}
+					style={{ color: titleColor, fontSize: titleFontSize || undefined }}
 				>
 					<RichText
 						placeholder={__("Optional title")}
@@ -1075,24 +1340,32 @@ export const editorDisplay = (props) => {
 				</div>
 				{allowToCHiding && (
 					<div id="ub_table-of-contents-header-toggle">
-						<div id="ub_table-of-contents-toggle" style={{ color: titleColor }}>
-							[
-							<a
-								className="ub_table-of-contents-toggle-link"
-								href="#"
-								style={{ color: titleColor }}
-								onClick={() => setAttributes({ showList: !showList })}
-							>
-								{showList ? hideText || __("hide") : showText || __("show")}
-							</a>
-							]
-						</div>
+						{!toggleButtonType ||
+							(toggleButtonType && toggleButtonType === "text" && (
+								<div
+									id="ub_table-of-contents-toggle"
+									style={{ color: titleColor }}
+								>
+									[
+									<a
+										className="ub_table-of-contents-toggle-link"
+										href="#"
+										style={{ color: titleColor }}
+										onClick={() => setAttributes({ showList: !showList })}
+									>
+										{showList ? hideText || __("hide") : showText || __("show")}
+									</a>
+									]
+								</div>
+							))}
+						{hideElementPro && hideElementPro}
 					</div>
 				)}
 			</div>
 			{showList && (
 				<TableOfContents
 					listStyle={listStyle}
+					listIcon={listIcon ? listIcon : ""}
 					numColumns={numColumns}
 					allowedHeaders={allowedHeaders}
 					headers={links && JSON.parse(links)}
@@ -1101,21 +1374,29 @@ export const editorDisplay = (props) => {
 					removeDiacritics={removeDiacritics}
 					canRemoveItemFocus={canRemoveItemFocus}
 					itemFocusRemoved={() => toggleCanRemoveItemFocus(false)}
-					style={{ backgroundColor: listBackgroundColor }}
+					style={{
+						backgroundColor: listBackgroundColor,
+						color: listColor,
+						fontSize: listFontSize || undefined,
+					}}
+					toggleButtonType={toggleButtonType}
+					showMoreLink={showMoreLink}
 				/>
 			)}
-			{
+			{styleTagPro ? (
+				styleTagPro
+			) : (
 				<style
 					dangerouslySetInnerHTML={{
-						__html: `#ub_table-of-contents-${blockID} .ub_table-of-contents-container li{
+						__html: `#block-${blockID} .ub_table-of-contents-container li{
 							color: ${listIconColor};
 						}
-						#ub_table-of-contents-${blockID} .ub_table-of-contents-container a{
+						#block-${blockID} .ub_table-of-contents-container a{
 							color: ${listColor};
 						}`,
 					}}
 				/>
-			}
+			)}
 		</>
 	);
 };

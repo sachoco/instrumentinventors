@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
+import { SpacingControl } from "../components";
+import { useSelect } from "@wordpress/data";
+import { __ } from "@wordpress/i18n";
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
 
-const { __ } = wp.i18n;
-
-const {
+import {
 	RichText,
 	ColorPalette,
 	InspectorControls,
 	URLInput,
 	BlockControls,
 	PanelColorSettings,
-} = wp.blockEditor || wp.editor;
+	useBlockProps,
+} from "@wordpress/block-editor";
 
-const {
+import {
 	PanelBody,
 	Icon,
 	Button,
@@ -21,7 +26,9 @@ const {
 	CheckboxControl,
 	ToggleControl,
 	SelectControl,
-} = wp.components;
+} from "@wordpress/components";
+import { getParentBlock } from "../../common";
+import { getSpacingCss } from "../utils/styling-helpers";
 
 export const blockControls = (props) => {
 	const { editable, attributes, setAttributes } = props;
@@ -40,7 +47,7 @@ export const blockControls = (props) => {
 								label={__(
 									(a !== "justify" ? "Align " : "") +
 										a[0].toUpperCase() +
-										a.slice(1)
+										a.slice(1),
 								)}
 								isActive={
 									(editable === "header" ? headAlign : contentAlign) === a
@@ -49,7 +56,7 @@ export const blockControls = (props) => {
 									setAttributes(
 										editable === "header"
 											? { headAlign: a }
-											: { contentAlign: a }
+											: { contentAlign: a },
 									)
 								}
 							/>
@@ -90,175 +97,196 @@ export const inspectorControls = (props) => {
 	];
 
 	return (
-		<InspectorControls>
-			<PanelColorSettings
-				title={__("Color Settings", "ultimate-blocks")}
-				initialOpen={false}
-				colorSettings={[
-					{
-						value: ctaBackgroundColor,
-						onChange: (ctaBackgroundColor) =>
-							setAttributes({ ctaBackgroundColor }),
-						label: __("Background Color", "ultimate-blocks"),
-					},
-					{
-						value: ctaBorderColor,
-						onChange: (ctaBorderColor) => setAttributes({ ctaBorderColor }),
-						label: __("Border Color", "ultimate-blocks"),
-					},
-				]}
-			/>
-
-			<PanelBody
-				title={__("Headline Settings", "ultimate-blocks")}
-				initialOpen={false}
-			>
-				<RangeControl
-					label={__("Font Size", "ultimate-blocks")}
-					value={headFontSize}
-					onChange={(value) => setAttributes({ headFontSize: value })}
-					min={10}
-					max={200}
-					beforeIcon="editor-textcolor"
-					allowReset
-				/>
-				{typeof useHeadingTag !== "undefined" && (
-					<ToggleControl
-						label={__("Use Heading Tag", "ultimate-blocks")}
-						checked={useHeadingTag}
-						onChange={() => setAttributes({ useHeadingTag: !useHeadingTag })}
+		<>
+			<InspectorControls group="settings">
+				<PanelBody
+					title={__("Headline", "ultimate-blocks")}
+					initialOpen={false}
+				>
+					{typeof useHeadingTag !== "undefined" && (
+						<ToggleControl
+							label={__("Use Heading Tag", "ultimate-blocks")}
+							checked={useHeadingTag}
+							onChange={() =>
+								setAttributes({
+									useHeadingTag: !useHeadingTag,
+								})
+							}
+						/>
+					)}
+					{useHeadingTag && (
+						<SelectControl
+							label={__("Select Heading Tag", "ultimate-blocks")}
+							options={headingTagOptions}
+							value={selectedHeadingTag}
+							onChange={(selectedHeadingTag) =>
+								setAttributes({ selectedHeadingTag })
+							}
+						/>
+					)}
+				</PanelBody>
+				<PanelBody title={__("Link", "ultimate-blocks")} initialOpen={false}>
+					<CheckboxControl
+						label={__("Add Nofollow to Link", "ultimate-blocks")}
+						checked={addNofollow}
+						onChange={() => setAttributes({ addNofollow: !addNofollow })}
 					/>
-				)}
-				{useHeadingTag && (
-					<SelectControl
-						label={__("Select Heading Tag", "ultimate-blocks")}
-						options={headingTagOptions}
-						value={selectedHeadingTag}
-						onChange={(selectedHeadingTag) =>
-							setAttributes({ selectedHeadingTag })
+					<CheckboxControl
+						label={__("Open Link in New Tab", "ultimate-blocks")}
+						checked={openInNewTab}
+						onChange={() => setAttributes({ openInNewTab: !openInNewTab })}
+					/>
+					<CheckboxControl
+						label={__("Mark link as sponsored")}
+						checked={linkIsSponsored}
+						onChange={() =>
+							setAttributes({
+								linkIsSponsored: !linkIsSponsored,
+							})
 						}
 					/>
-				)}
-				<p>
-					{__("Color", "ultimate-blocks")}
-					{headColor && (
-						<span
-							class="component-color-indicator"
-							aria-label={`(Color: ${headColor})`}
-							style={{ background: headColor }}
-						/>
-					)}
-				</p>
-				<ColorPalette
-					value={headColor}
-					onChange={(headColor) => setAttributes({ headColor })}
+				</PanelBody>
+			</InspectorControls>
+			<InspectorControls group="styles">
+				<PanelBody
+					title={__("Headline", "ultimate-blocks")}
+					initialOpen={false}
+				>
+					<RangeControl
+						label={__("Font Size", "ultimate-blocks")}
+						value={headFontSize}
+						onChange={(value) => setAttributes({ headFontSize: value })}
+						min={10}
+						max={200}
+						beforeIcon="editor-textcolor"
+						allowReset
+					/>
+					<p>
+						{__("Color", "ultimate-blocks")}
+						{headColor && (
+							<span
+								className="component-color-indicator"
+								aria-label={`(Color: ${headColor})`}
+								style={{ background: headColor }}
+							/>
+						)}
+					</p>
+					<ColorPalette
+						value={headColor}
+						onChange={(headColor) => setAttributes({ headColor })}
+					/>
+				</PanelBody>
+				<PanelColorSettings
+					title={__("Color", "ultimate-blocks")}
+					initialOpen={false}
+					colorSettings={[
+						{
+							value: ctaBackgroundColor,
+							onChange: (ctaBackgroundColor) =>
+								setAttributes({ ctaBackgroundColor }),
+							label: __("Background Color", "ultimate-blocks"),
+						},
+						{
+							value: ctaBorderColor,
+							onChange: (ctaBorderColor) => setAttributes({ ctaBorderColor }),
+							label: __("Border Color", "ultimate-blocks"),
+						},
+					]}
 				/>
-			</PanelBody>
+				<PanelBody title={__("Content", "ultimate-blocks")} initialOpen={false}>
+					<RangeControl
+						label={__("Font Size", "ultimate-blocks")}
+						value={contentFontSize}
+						onChange={(value) => setAttributes({ contentFontSize: value })}
+						min={10}
+						max={200}
+						beforeIcon="editor-textcolor"
+						allowReset
+					/>
+					<p>
+						{__("Color", "ultimate-blocks")}
+						{contentColor && (
+							<span
+								className="component-color-indicator"
+								aria-label={`(Color: ${contentColor})`}
+								style={{ background: contentColor }}
+							/>
+						)}
+					</p>
 
-			<PanelBody
-				title={__("Content Settings", "ultimate-blocks")}
-				initialOpen={false}
-			>
-				<RangeControl
-					label={__("Font Size", "ultimate-blocks")}
-					value={contentFontSize}
-					onChange={(value) => setAttributes({ contentFontSize: value })}
-					min={10}
-					max={200}
-					beforeIcon="editor-textcolor"
-					allowReset
-				/>
-				<p>
-					{__("Color", "ultimate-blocks")}
-					{contentColor && (
-						<span
-							class="component-color-indicator"
-							aria-label={`(Color: ${contentColor})`}
-							style={{ background: contentColor }}
-						/>
-					)}
-				</p>
+					<ColorPalette
+						value={contentColor}
+						onChange={(contentColor) => setAttributes({ contentColor })}
+					/>
+				</PanelBody>
+				<PanelBody title={__("Button", "ultimate-blocks")} initialOpen={false}>
+					<RangeControl
+						label={__("Button Width", "ultimate-blocks")}
+						value={buttonWidth}
+						onChange={(value) => setAttributes({ buttonWidth: value })}
+						min={10}
+						max={500}
+						beforeIcon="editor-code"
+						allowReset
+					/>
 
-				<ColorPalette
-					value={contentColor}
-					onChange={(contentColor) => setAttributes({ contentColor })}
-				/>
-			</PanelBody>
+					<RangeControl
+						label={__("Font Size", "ultimate-blocks")}
+						value={buttonFontSize}
+						onChange={(value) => setAttributes({ buttonFontSize: value })}
+						min={10}
+						max={200}
+						beforeIcon="editor-textcolor"
+						allowReset
+					/>
+					<p>
+						{__("Button Color", "ultimate-blocks")}
+						{buttonColor && (
+							<span
+								className="component-color-indicator"
+								aria-label={`(Color: ${buttonColor})`}
+								style={{ background: buttonColor }}
+							/>
+						)}
+					</p>
+					<ColorPalette
+						value={buttonColor}
+						onChange={(buttonColor) => setAttributes({ buttonColor })}
+					/>
 
-			<PanelBody
-				title={__("Button Settings", "ultimate-blocks")}
-				initialOpen={false}
-			>
-				<RangeControl
-					label={__("Button Width", "ultimate-blocks")}
-					value={buttonWidth}
-					onChange={(value) => setAttributes({ buttonWidth: value })}
-					min={10}
-					max={500}
-					beforeIcon="editor-code"
-					allowReset
-				/>
-
-				<RangeControl
-					label={__("Font Size", "ultimate-blocks")}
-					value={buttonFontSize}
-					onChange={(value) => setAttributes({ buttonFontSize: value })}
-					min={10}
-					max={200}
-					beforeIcon="editor-textcolor"
-					allowReset
-				/>
-				<p>
-					{__("Button Color", "ultimate-blocks")}
-					{buttonColor && (
-						<span
-							class="component-color-indicator"
-							aria-label={`(Color: ${buttonColor})`}
-							style={{ background: buttonColor }}
-						/>
-					)}
-				</p>
-				<ColorPalette
-					value={buttonColor}
-					onChange={(buttonColor) => setAttributes({ buttonColor })}
-				/>
-
-				<p>
-					{__("Button Text Color", "ultimate-blocks")}
-					{buttonTextColor && (
-						<span
-							class="component-color-indicator"
-							aria-label={`(Color: ${buttonTextColor})`}
-							style={{ background: buttonTextColor }}
-						/>
-					)}
-				</p>
-				<ColorPalette
-					value={buttonTextColor}
-					onChange={(buttonTextColor) => setAttributes({ buttonTextColor })}
-				/>
-			</PanelBody>
-			<PanelBody
-				title={__("Link Settings", "ultimate-blocks")}
-				initialOpen={false}
-			>
-				<CheckboxControl
-					label={__("Add Nofollow to Link", "ultimate-blocks")}
-					checked={addNofollow}
-					onChange={() => setAttributes({ addNofollow: !addNofollow })}
-				/>
-				<CheckboxControl
-					label={__("Open Link in New Tab", "ultimate-blocks")}
-					checked={openInNewTab}
-					onChange={() => setAttributes({ openInNewTab: !openInNewTab })}
-				/>
-				<CheckboxControl
-					label={__("Mark link as sponsored")}
-					checked={linkIsSponsored}
-					onChange={() => setAttributes({ linkIsSponsored: !linkIsSponsored })}
-				/>
-			</PanelBody>
-		</InspectorControls>
+					<p>
+						{__("Button Text Color", "ultimate-blocks")}
+						{buttonTextColor && (
+							<span
+								className="component-color-indicator"
+								aria-label={`(Color: ${buttonTextColor})`}
+								style={{ background: buttonTextColor }}
+							/>
+						)}
+					</p>
+					<ColorPalette
+						value={buttonTextColor}
+						onChange={(buttonTextColor) => setAttributes({ buttonTextColor })}
+					/>
+				</PanelBody>
+				<PanelBody
+					title={__("Dimension Settings", "ultimate-blocks")}
+					initialOpen={false}
+				>
+					<SpacingControl
+						showByDefault
+						attrKey="padding"
+						label={__("Padding", "ultimate-blocks")}
+					/>
+					<SpacingControl
+						minimumCustomValue={-Infinity}
+						showByDefault
+						attrKey="margin"
+						label={__("Margin", "ultimate-blocks")}
+					/>
+				</PanelBody>
+			</InspectorControls>
+		</>
 	);
 };
 
@@ -266,9 +294,6 @@ export const editorDisplay = (props) => {
 	const { isSelected, attributes, setAttributes, setEditable } = props;
 
 	const {
-		ctaBackgroundColor,
-		ctaBorderColor,
-		ctaBorderSize,
 		headFontSize,
 		headColor,
 		headAlign,
@@ -283,17 +308,30 @@ export const editorDisplay = (props) => {
 		ub_cta_content_text,
 		ub_cta_button_text,
 		useHeadingTag,
+		padding,
+		margin,
+		ctaBackgroundColor,
+		ctaBorderColor,
+		ctaBorderSize,
 	} = attributes;
+	const paddingObj = getSpacingCss(padding);
+	const marginObj = getSpacingCss(margin);
+	const callToActionStyles = {
+		paddingTop: paddingObj?.top,
+		paddingRight: paddingObj?.right,
+		paddingBottom: paddingObj?.bottom,
+		paddingLeft: paddingObj?.left,
+		marginTop: marginObj?.top,
+		marginRight: marginObj?.right,
+		marginBottom: marginObj?.bottom,
+		marginLeft: marginObj?.left,
+		backgroundColor: ctaBackgroundColor,
+		borderWidth: ctaBorderSize + "px",
+		borderColor: ctaBorderColor,
+	};
 	return (
 		<>
-			<div
-				className="ub_call_to_action"
-				style={{
-					backgroundColor: ctaBackgroundColor,
-					borderWidth: ctaBorderSize + "px",
-					borderColor: ctaBorderColor,
-				}}
-			>
+			<div className="ub_call_to_action" style={callToActionStyles}>
 				<div className="ub_call_to_action_headline">
 					<RichText
 						tagName={useHeadingTag ? "h2" : "p"}
@@ -305,7 +343,9 @@ export const editorDisplay = (props) => {
 							textAlign: headAlign,
 						}}
 						onChange={(value) =>
-							setAttributes({ ub_call_to_action_headline_text: value })
+							setAttributes({
+								ub_call_to_action_headline_text: value,
+							})
 						}
 						value={ub_call_to_action_headline_text}
 						allowedFormats={["core/bold", "core/italic", "core/strikethrough"]}
@@ -365,6 +405,7 @@ export const editorDisplay = (props) => {
 							<Icon icon="admin-links" />
 						</div>
 						<URLInput
+							__nextHasNoMarginBottom
 							autoFocus={false}
 							className="button-url"
 							value={props.attributes.url}
@@ -387,34 +428,67 @@ export function CallToAction(props) {
 	const {
 		attributes: { blockID },
 		isSelected,
-		block,
-		getBlock,
-		getClientIdsWithDescendants,
 		setAttributes,
 	} = props;
 
+	const styleClipboard = createStyleClipboard(
+		"ub_call_to_action_copied_style",
+		[
+			"headFontSize",
+			"headColor",
+			"headAlign",
+			"contentFontSize",
+			"contentColor",
+			"buttonFontSize",
+			"buttonColor",
+			"buttonTextColor",
+			"buttonWidth",
+			"ctaBackgroundColor",
+			"ctaBorderColor",
+			"ctaBorderSize",
+			"contentAlign",
+			"useHeadingTag",
+			"selectedHeadingTag",
+		],
+	);
+
+	const { block, rootBlockClientId } = useSelect((select) => {
+		const { getBlock, getBlockRootClientId } =
+			select("core/block-editor") || select("core/editor");
+		const block = getBlock(props.clientId);
+		const rootBlockClientId = getBlockRootClientId(block.clientId);
+
+		return {
+			block,
+			rootBlockClientId,
+		};
+	});
 	useEffect(() => {
-		if (
-			blockID === "" ||
-			getClientIdsWithDescendants().some(
-				(ID) =>
-					"blockID" in getBlock(ID).attributes &&
-					getBlock(ID).attributes.blockID === blockID
-			)
-		) {
+		if (blockID === "") {
 			setAttributes({ blockID: block.clientId });
 		}
 	}, []);
-
+	useEffect(() => {
+		const rootBlock = getParentBlock(rootBlockClientId, "core/block");
+		if (!rootBlock) {
+			setAttributes({ blockID: block.clientId });
+		}
+	}, [block?.clientId]);
 	const [editable, setEditable] = useState("");
 
 	return (
-		<>
+		<div {...useBlockProps()}>
 			{isSelected && blockControls({ ...props, editable, setEditable })}
 			{isSelected && inspectorControls({ ...props, editable, setEditable })}
+			<GenericStyleControl
+				attributes={props.attributes}
+				setAttributes={props.setAttributes}
+				clipboard={styleClipboard}
+				blockName="Call To Action"
+			/>
 			<div className={props.className}>
 				{editorDisplay({ ...props, editable, setEditable })}
 			</div>
-		</>
+		</div>
 	);
 }

@@ -10,14 +10,23 @@ import icon from "./icons/icon";
 
 import { richTextToHTML, mergeRichTextArray } from "../../common";
 import { OldPanelContent, PanelContent } from "./components/editorDisplay";
-
+import metadata from "./block.json";
 import { version_1_1_2 } from "./oldVersions";
 
-const { __ } = wp.i18n;
-const { registerBlockType, createBlock } = wp.blocks;
-const { compose } = wp.compose;
-const { withSelect, withDispatch } = wp.data;
-const { InnerBlocks } = wp.blockEditor || wp.editor;
+import { __ } from "@wordpress/i18n";
+import {
+	registerBlockType,
+	createBlock,
+	createBlocksFromInnerBlocksTemplate,
+} from "@wordpress/blocks";
+import { compose } from "@wordpress/compose";
+import {
+	withSelect,
+	withDispatch,
+	useSelect,
+	useDispatch,
+} from "@wordpress/data";
+import { InnerBlocks } from "@wordpress/block-editor";
 
 const attributes = {
 	blockID: {
@@ -101,6 +110,185 @@ const oldAttributes = Object.assign(Object.assign({}, attributes), {
 	},
 });
 
+const CONTENT_TOGGLE_DEFAULTS = {
+	theme: "#f1f1f1",
+	titleColor: "",
+	titleLinkColor: "",
+	hasFAQSchema: false,
+	toggleLocation: "right",
+	toggleColor: "#000000",
+	toggleIcon: "chevron",
+	border: true,
+	showOnlyOne: false,
+};
+
+const cloneBlocks = (blocks = []) =>
+	createBlocksFromInnerBlocksTemplate(blocks);
+
+const stripHTML = (content = "") =>
+	content
+		.replace(/<[^>]+>/g, " ")
+		.replace(/&nbsp;/gi, " ")
+		.replace(/\s+/g, " ")
+		.trim();
+
+const trimLeadingAnswerMarkup = (content = "") => {
+	const withoutLeadingBreaks = content.replace(
+		/^(?:\s|&nbsp;|<br\s*\/?>)+/gi,
+		"",
+	);
+
+	return withoutLeadingBreaks.replace(/^(?:[:\-\u2013\u2014]\s*)+/u, "").trim();
+};
+
+const getQuestionParagraphParts = (block) => {
+	if (block?.name !== "core/paragraph") {
+		return null;
+	}
+
+	const content = block?.attributes?.content?.trim();
+
+	if (!content) {
+		return null;
+	}
+
+	const match = content.match(
+		/^\s*<(strong|b)(?:\s[^>]*)?>([\s\S]*?)<\/\1>([\s\S]*)$/i,
+	);
+
+	if (!match) {
+		return null;
+	}
+
+	const title = match[2].trim();
+	const remainder = trimLeadingAnswerMarkup(match[3] || "");
+	const plainTitle = stripHTML(title);
+
+	if (!plainTitle) {
+		return null;
+	}
+
+	if (remainder && !/[?:]$/.test(plainTitle)) {
+		return null;
+	}
+
+	return { title, remainder };
+};
+
+const getPanelTitleFromBlock = (block) => {
+	if (["core/heading", "ub/advanced-heading"].includes(block?.name)) {
+		return block?.attributes?.content?.trim() || "";
+	}
+
+	return getQuestionParagraphParts(block)?.title || "";
+};
+
+const getQuestionContentBlocks = (block) => {
+	const questionParagraphParts = getQuestionParagraphParts(block);
+
+	if (!questionParagraphParts?.remainder) {
+		return [];
+	}
+
+	return [
+		createBlock(
+			block.name,
+			{
+				...block.attributes,
+				content: questionParagraphParts.remainder,
+			},
+			cloneBlocks(block.innerBlocks),
+		),
+	];
+};
+
+const createContentTogglePanelBlock = ({
+	panelTitle,
+	innerBlocks = [],
+	collapsed = false,
+}) =>
+	createBlock(
+		"ub/content-toggle-panel-block",
+		{
+			panelTitle: panelTitle || __("Toggle"),
+			collapsed,
+			...CONTENT_TOGGLE_DEFAULTS,
+		},
+		innerBlocks.length ? innerBlocks : [createBlock("core/paragraph")],
+	);
+
+const createContentToggleBlock = ({ innerBlocks, collapsed = false }) =>
+	createBlock(
+		"ub/content-toggle-block",
+		{
+			blockID: Math.random().toString(36).substring(2, 11),
+			collapsed,
+			...CONTENT_TOGGLE_DEFAULTS,
+		},
+		innerBlocks,
+	);
+
+const createPanelsFromFAQBlocks = (selectedBlocks = []) => {
+	const panels = [];
+	let currentPanel = null;
+	let leadingContentBlocks = [];
+
+	selectedBlocks.forEach((block) => {
+		const panelTitle = getPanelTitleFromBlock(block);
+
+		if (panelTitle) {
+			if (currentPanel) {
+				panels.push(currentPanel);
+			}
+
+			currentPanel = {
+				panelTitle,
+				innerBlocks: [
+					...leadingContentBlocks,
+					...getQuestionContentBlocks(block),
+				],
+			};
+			leadingContentBlocks = [];
+			return;
+		}
+
+		const clonedBlock = cloneBlocks([block])[0];
+
+		if (!clonedBlock) {
+			return;
+		}
+
+		if (!currentPanel) {
+			leadingContentBlocks.push(clonedBlock);
+			return;
+		}
+
+		currentPanel.innerBlocks.push(clonedBlock);
+	});
+
+	if (currentPanel) {
+		panels.push(currentPanel);
+	}
+
+	if (!panels.length && leadingContentBlocks.length) {
+		panels.push({
+			panelTitle: __("Toggle"),
+			innerBlocks: leadingContentBlocks,
+		});
+	}
+
+	return panels.map((panel) =>
+		createContentTogglePanelBlock({
+			panelTitle: panel.panelTitle,
+			innerBlocks: panel.innerBlocks,
+		}),
+	);
+};
+
+const canCreateFAQPanelsFromBlocks = (selectedBlocks = []) =>
+	selectedBlocks.length > 1 &&
+	selectedBlocks.some((block) => Boolean(getPanelTitleFromBlock(block)));
+
 /**
  * Register: aa Gutenberg Block.
  *
@@ -181,7 +369,7 @@ registerBlockType("ub/content-toggle", {
 								panelContent.push(
 									createBlock("core/paragraph", {
 										content: paragraph,
-									})
+									}),
 								);
 							} else if (paragraph.type === "br") {
 								if (a.content[i - 1].type === "br") {
@@ -191,7 +379,7 @@ registerBlockType("ub/content-toggle", {
 								panelContent.push(
 									createBlock("core/paragraph", {
 										content: richTextToHTML(paragraph),
-									})
+									}),
 								);
 							}
 						});
@@ -204,7 +392,7 @@ registerBlockType("ub/content-toggle", {
 								collapsed: attributes.collapsed,
 								panelTitle: mergeRichTextArray(a.title),
 							},
-							panelContent
+							panelContent,
 						);
 					}),
 				];
@@ -214,61 +402,99 @@ registerBlockType("ub/content-toggle", {
 	],
 });
 
-registerBlockType("ub/content-toggle-block", {
-	title: __("Content Toggle"),
+registerBlockType(metadata.name, {
+	...metadata,
 	icon: icon,
-	category: "ultimateblocks",
-	keywords: [
-		__("Content Accordion"),
-		__("Toggle Collapse"),
-		__("Ultimate Blocks"),
-		__("FAQ"),
-	],
-
-	attributes,
-
 	transforms: {
-		to: [
+		from: [
 			{
 				type: "block",
-				blocks: "core/group",
-				transform: (_, innerBlocks) =>
-					createBlock(
-						"core/group",
-						{},
-						innerBlocks.map((i) => createBlock("core/group", {}, i.innerBlocks))
-					),
+				blocks: ["core/details"],
+				transform: (attributes, innerBlocks) => {
+					return createContentToggleBlock({
+						collapsed: !attributes.showContent,
+						innerBlocks: [
+							createContentTogglePanelBlock({
+								panelTitle: attributes.summary || __("Toggle"),
+								collapsed: !attributes.showContent,
+								innerBlocks,
+							}),
+						],
+					});
+				},
+			},
+			{
+				type: "block",
+				blocks: ["*"],
+				isMultiBlock: true,
+				isMatch: (selectedAttributes, selectedBlocks) =>
+					selectedAttributes.length > 1 &&
+					canCreateFAQPanelsFromBlocks(selectedBlocks),
+				__experimentalConvert: (selectedBlocks) =>
+					createContentToggleBlock({
+						innerBlocks: createPanelsFromFAQBlocks(selectedBlocks),
+					}),
 			},
 		],
 	},
+	attributes: metadata.attributes,
+	example: { attributes: { titleLinkColor: "invalid" } }, //indicator for displaying in preview
+	edit: (props) => {
+		const {
+			block,
+			selectedBlock,
+			getBlock,
+			getClientIdsWithDescendants,
+			rootBlockClientId,
+		} = useSelect(
+			(select) => {
+				const {
+					getBlock,
+					getSelectedBlockClientId,
+					getClientIdsWithDescendants,
+					getBlockRootClientId,
+				} = select("core/block-editor");
+				// `block` is null when this instance was never actually inserted
+				// into the real block-editor store (e.g. a <BlockPreview> preview
+				// render), so it can't be looked up by clientId, guard against
+				// that instead of throwing here and blanking the whole render.
+				const block = getBlock(props.clientId);
+				return {
+					block,
+					selectedBlock: getSelectedBlockClientId(),
+					getBlock,
+					getClientIdsWithDescendants,
+					rootBlockClientId: block
+						? getBlockRootClientId(block.clientId)
+						: null,
+				};
+			},
+			[props.clientId],
+		);
+		const {
+			updateBlockAttributes,
+			insertBlock,
+			insertBlocks,
+			removeBlock,
+			selectBlock,
+		} = useDispatch("core/block-editor");
 
-	edit: compose([
-		withSelect((select, ownProps) => {
-			const {
-				getBlock,
-				getSelectedBlockClientId,
-				getClientIdsWithDescendants,
-			} = select("core/block-editor") || select("core/editor");
-
-			return {
-				block: getBlock(ownProps.clientId),
-				selectedBlock: getSelectedBlockClientId(),
-				getBlock,
-				getClientIdsWithDescendants,
-			};
-		}),
-		withDispatch((dispatch) => {
-			const { updateBlockAttributes, insertBlock, removeBlock, selectBlock } =
-				dispatch("core/block-editor") || dispatch("core/editor");
-
-			return {
-				updateBlockAttributes,
-				insertBlock,
-				removeBlock,
-				selectBlock,
-			};
-		}),
-	])(PanelContent),
+		return (
+			<PanelContent
+				{...props}
+				block={block}
+				selectedBlock={selectedBlock}
+				getBlock={getBlock}
+				getClientIdsWithDescendants={getClientIdsWithDescendants}
+				rootBlockClientId={rootBlockClientId}
+				updateBlockAttributes={updateBlockAttributes}
+				insertBlock={insertBlock}
+				insertBlocks={insertBlocks}
+				removeBlock={removeBlock}
+				selectBlock={selectBlock}
+			/>
+		);
+	},
 
 	save: () => <InnerBlocks.Content />,
 });

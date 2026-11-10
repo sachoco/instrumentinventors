@@ -19,7 +19,7 @@ if (!Element.prototype.closest) {
 function ub_hashHeaderScroll(scrollType = "auto", target = "", offset = 0) {
 	if (window.location.hash) {
 		const targetHeading = document.getElementById(
-			window.location.hash.slice(1)
+			window.location.hash.slice(1),
 		);
 
 		let probableHeaders;
@@ -33,7 +33,7 @@ function ub_hashHeaderScroll(scrollType = "auto", target = "", offset = 0) {
 		const stickyHeaders = Array.prototype.slice
 			.call(probableHeaders)
 			.filter((e) =>
-				["fixed", "sticky"].includes(window.getComputedStyle(e).position)
+				["fixed", "sticky"].includes(window.getComputedStyle(e).position),
 			);
 
 		const stickyHeaderHeights = stickyHeaders.map((h) => h.offsetHeight);
@@ -55,7 +55,7 @@ function ub_hashHeaderScroll(scrollType = "auto", target = "", offset = 0) {
 					deficit -
 						(stickyHeaders.length
 							? Math.max.apply(Math, stickyHeaderHeights)
-							: 0)
+							: 0),
 				);
 				break;
 			case "fixedamount":
@@ -67,7 +67,7 @@ function ub_hashHeaderScroll(scrollType = "auto", target = "", offset = 0) {
 					deficit -
 						(document.querySelector(target)
 							? document.querySelector(target).offsetHeight
-							: 0)
+							: 0),
 				);
 				break;
 		}
@@ -80,17 +80,16 @@ document.addEventListener("DOMContentLoaded", function () {
 		instances.push(document.getElementById("ub_table-of-contents-toggle-link"));
 	} else {
 		instances = Array.prototype.slice.call(
-			document.getElementsByClassName("ub_table-of-contents-toggle-link")
+			document.getElementsByClassName("ub_table-of-contents-toggle-link"),
 		);
 	}
 	instances.forEach((instance) => {
 		const block = instance.closest(".ub_table-of-contents");
-
 		const tocContainer = block.querySelector(".ub_table-of-contents-container");
 		const containerStyle = tocContainer.style;
 
 		const tocExtraContainer = block.querySelector(
-			".ub_table-of-contents-extra-container"
+			".ub_table-of-contents-extra-container",
 		);
 		const extraContainerStyle = tocExtraContainer.style;
 
@@ -111,16 +110,14 @@ document.addEventListener("DOMContentLoaded", function () {
 					instance.innerHTML = showButton;
 					tocContainer.classList.add("ub-hide");
 				}
-			} else {
-				if (JSON.parse(tocMain.dataset.initiallyshow)) {
-					tocMain.classList.remove("ub_table-of-contents-collapsed");
-					instance.innerHTML = hideButton;
-					tocContainer.classList.remove("ub-hide");
-				}
+			} else if (JSON.parse(tocMain.dataset.initiallyshow)) {
+				tocMain.classList.remove("ub_table-of-contents-collapsed");
+				instance.innerHTML = hideButton;
+				tocContainer.classList.remove("ub-hide");
 			}
 		}
 
-		let mobileQuery = window.matchMedia("(max-width: 800px)");
+		const mobileQuery = window.matchMedia("(max-width: 800px)");
 
 		if (JSON.parse(block.getAttribute("data-initiallyhideonmobile"))) {
 			mobileQuery.addListener(mobileEvent);
@@ -191,10 +188,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 					padding =
 						parseInt(
-							getComputedStyle(tocExtraContainer).paddingLeft.slice(0, -2)
+							getComputedStyle(tocExtraContainer).paddingLeft.slice(0, -2),
 						) +
 						parseInt(
-							getComputedStyle(tocExtraContainer).paddingRight.slice(0, -2)
+							getComputedStyle(tocExtraContainer).paddingRight.slice(0, -2),
 						);
 
 					//measure width of toc title + toggle button, then use it as width of block
@@ -252,6 +249,47 @@ document.addEventListener("DOMContentLoaded", function () {
 			setTimeout(() => ub_hashHeaderScroll(type, target, offset), 50);
 		}
 	}
+
+	// Link to divider block.
+	const tableOfContents = document.querySelectorAll(
+		'.ub_table-of-contents[data-linktodivider="true"]',
+	);
+
+	const dividers = document.querySelectorAll(
+		".wp-block-ub-divider:not(.ub-divider-orientation-vertical)",
+	);
+
+	if (tableOfContents.length > 0 && dividers.length > 0) {
+		dividers.forEach((divider) => {
+			let closestTOC = null;
+			let minDistance = Infinity;
+
+			tableOfContents.forEach((toc) => {
+				const dividerTop = divider.getBoundingClientRect().top;
+				const tocTop = toc.getBoundingClientRect().top;
+				const distance = Math.abs(dividerTop - tocTop);
+
+				if (distance < minDistance) {
+					minDistance = distance;
+					closestTOC = toc;
+				}
+			});
+
+			if (closestTOC) {
+				const linkToTOC = document.createElement("a");
+				linkToTOC.href = `#${closestTOC.getAttribute("id")}`;
+				linkToTOC.classList.add("ub-linked-to-toc");
+				linkToTOC.innerText = "Table Of Contents";
+				divider.appendChild(linkToTOC);
+			}
+		});
+	}
+	const smoothScrollElements = document.querySelectorAll(
+		'[data-enablesmoothscroll="true"]',
+	);
+	smoothScrollElements.forEach((element) => {
+		element.style.scrollBehavior = "smooth";
+	});
 });
 
 window.onhashchange = function () {
@@ -288,3 +326,27 @@ Array.prototype.slice
 			}
 		});
 	});
+
+document.addEventListener("DOMContentLoaded", function () {
+	document
+		.querySelectorAll(".ub_table-of-contents-show-more")
+		.forEach(function (toggle) {
+			const container = toggle.closest(".ub_table-of-contents-container");
+
+			const flip = function (event) {
+				event.preventDefault();
+				const expanded = container.classList.toggle("ub-toc-show-all");
+				toggle.setAttribute("aria-expanded", String(expanded));
+				toggle.textContent = expanded
+					? toggle.dataset.showlesstext
+					: toggle.dataset.showmoretext;
+			};
+
+			toggle.addEventListener("click", flip);
+			toggle.addEventListener("keydown", function (event) {
+				if (event.key === "Enter" || event.key === " ") {
+					flip(event);
+				}
+			});
+		});
+});

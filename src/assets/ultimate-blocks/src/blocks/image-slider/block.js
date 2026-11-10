@@ -1,3 +1,4 @@
+import { isEmpty } from "lodash";
 import icon, { editGallery } from "./icon";
 
 import { Slider } from "./components";
@@ -5,11 +6,15 @@ import { Slider } from "./components";
 import { version_1_1_4 } from "./oldVersions";
 
 import { useEffect, useState } from "react";
-
-const { __ } = wp.i18n;
-const { registerBlockType } = wp.blocks;
-
-const {
+import { __ } from "@wordpress/i18n";
+import { registerBlockType } from "@wordpress/blocks";
+import {
+	ColorSettings,
+	ColorSettingsWithGradient,
+	SpacingControl,
+	CustomToggleGroupControl,
+} from "../components";
+import {
 	MediaUpload,
 	MediaPlaceholder,
 	BlockControls,
@@ -17,8 +22,10 @@ const {
 	InspectorControls,
 	mediaUpload,
 	RichText,
-} = wp.blockEditor || wp.editor;
-const {
+	useBlockProps,
+	BlockAlignmentControl,
+} from "@wordpress/block-editor";
+import {
 	Icon,
 	Button,
 	ToolbarGroup,
@@ -28,10 +35,19 @@ const {
 	RangeControl,
 	PanelBody,
 	SelectControl,
-} = wp.components;
+} from "@wordpress/components";
 
-const { withSelect } = wp.data;
-
+import { useSelect } from "@wordpress/data";
+import metadata from "./block.json";
+import { getParentBlock } from "../../common";
+import {
+	generateStyles,
+	getBackgroundColorVar,
+	getSpacingCss,
+} from "../utils/styling-helpers";
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
 const attributes = {
 	blockID: {
 		type: "string",
@@ -136,6 +152,32 @@ function ImageSliderMain(props) {
 	const [componentKey, setComponentKey] = useState(0);
 	const [activeSlide, setActiveSlide] = useState(0);
 
+	const styleClipboard = createStyleClipboard("ub_image_slider_copied_style", [
+		"sliderHeight",
+		"transition",
+		"slideShadows",
+		"rotate",
+		"stretch",
+		"depth",
+		"modifier",
+		"limitRotation",
+		"shadow",
+		"shadowOffset",
+		"shadowScale",
+		"slidesPerView",
+		"spaceBetween",
+		"speed",
+		"align",
+		"navigationPosition",
+		"navigationColor",
+		"navigationBackgroundColor",
+		"navigationGradientColor",
+		"paginationColor",
+		"activePaginationColor",
+		"padding",
+		"margin",
+	]);
+
 	const {
 		attributes: {
 			images,
@@ -161,16 +203,34 @@ function ImageSliderMain(props) {
 			shadow,
 			shadowOffset,
 			shadowScale,
+			slidesPerView,
+			spaceBetween,
+			useNavigation,
+			align,
+			speed,
+			padding,
+			margin,
+			navigationColor,
+			paginationColor,
+			activePaginationColor,
+			navigationPosition,
 		},
 		setAttributes,
 		isSelected,
 		block,
-		getBlock,
-		getClientIdsWithDescendants,
+		rootBlockClientId,
+		proProps,
 	} = props;
 
-	//maybe use useEffect for some of the values here?
+	const { showThumbnails, showThumbnailsToggle, thumbnails, thumbSwiper } =
+		proProps || {};
 
+	// Reset activeSlide to 0 when navigation position changes to prevent DOM errors
+	useEffect(() => {
+		setActiveSlide(0);
+	}, [navigationPosition]);
+
+	//maybe use useEffect for some of the values here?
 	if (images && JSON.parse(images).length !== 0 && pics.length === 0) {
 		setAttributes({
 			pics: JSON.parse(images),
@@ -182,19 +242,17 @@ function ImageSliderMain(props) {
 	const imageArray = pics;
 	const captionArray = descriptions;
 
-	if (
-		blockID === "" ||
-		getClientIdsWithDescendants().some(
-			(ID) =>
-				"blockID" in getBlock(ID).attributes &&
-				getBlock(ID).attributes.blockID === blockID
-		)
-	) {
+	if (blockID === "") {
 		setAttributes({ blockID: block.clientId });
 	} else if (!showPageDots && usePagination) {
 		setAttributes({ usePagination: false });
 	}
-
+	useEffect(() => {
+		const rootBlock = getParentBlock(rootBlockClientId, "core/block");
+		if (!rootBlock) {
+			setAttributes({ blockID: block.clientId });
+		}
+	}, [block?.clientId]);
 	if (paginationType === "") {
 		setAttributes({ paginationType: "bullets" });
 	}
@@ -202,11 +260,57 @@ function ImageSliderMain(props) {
 	if (paginationType !== "" && componentKey === 0) {
 		setComponentKey(componentKey + 1);
 	}
-
+	let classes = ["ub_image_slider"];
+	if (!isEmpty(align)) {
+		classes.push("align" + align);
+	}
+	if (
+		props.attributes.useNavigation &&
+		props.attributes.navigationPosition === "outside"
+	) {
+		classes.push("ub-navigation-outside");
+	}
+	const paddingObj = getSpacingCss(padding);
+	const marginObj = getSpacingCss(margin);
+	const imageSliderWrapperStyles = {
+		minHeight: `${30 + (imageArray.length ? sliderHeight : 200)}px`,
+		paddingTop: paddingObj?.top,
+		paddingRight: paddingObj?.right,
+		paddingBottom: paddingObj?.bottom,
+		paddingLeft: paddingObj?.left,
+		marginTop: marginObj?.top,
+		marginRight: marginObj?.right,
+		marginBottom: marginObj?.bottom,
+		marginLeft: marginObj?.left,
+		"--swiper-navigation-color": navigationColor,
+		"--swiper-pagination-color": activePaginationColor,
+		"--swiper-inactive-pagination-color": paginationColor,
+		"--swiper-navigation-background-color": getBackgroundColorVar(
+			props.attributes,
+			"navigationBackgroundColor",
+			"navigationGradientColor",
+		),
+	};
+	const blockProps = useBlockProps({
+		id: `ub_image_slider_${blockID}`,
+		className: classes.join(" "),
+		style: generateStyles(imageSliderWrapperStyles),
+	});
 	return (
 		<>
 			{isSelected && (
-				<BlockControls>
+				<BlockControls group="block">
+					<GenericStyleControl
+						attributes={props.attributes}
+						setAttributes={setAttributes}
+						clipboard={styleClipboard}
+						blockName="Image Slider"
+					/>
+					<BlockAlignmentControl
+						value={align}
+						controls={["full", "wide"]}
+						onChange={(newAlign) => setAttributes({ align: newAlign })}
+					/>
 					{imageArray.length > 0 && (
 						<ToolbarGroup>
 							<MediaUpload
@@ -229,7 +333,7 @@ function ImageSliderMain(props) {
 													text: img.caption,
 													link: "",
 													id: img.id,
-											  }
+												},
 									);
 
 									setAttributes({
@@ -243,199 +347,289 @@ function ImageSliderMain(props) {
 				</BlockControls>
 			)}
 			{isSelected && imageArray.length > 0 && (
-				<InspectorControls>
-					<PanelBody title={__("Slider Settings")} initialOpen={false}>
-						<ToggleControl
-							label={__("Wrap around")}
-							checked={wrapsAround}
-							onChange={() => {
-								setAttributes({ wrapsAround: !wrapsAround });
-								setComponentKey(componentKey + 1);
-							}}
-						/>
-						<ToggleControl
-							label={__("Allow dragging")}
-							checked={isDraggable}
-							onChange={() => {
-								setAttributes({ isDraggable: !isDraggable });
-								setComponentKey(componentKey + 1);
-							}}
-						/>
-						<ToggleControl
-							label={__("Use pagination")}
-							checked={usePagination}
-							onChange={() => {
-								setAttributes({ usePagination: !usePagination });
-								setComponentKey(componentKey + 1);
-							}}
-						/>
-						{usePagination && (
-							<SelectControl
-								label={__("Pagination type")}
-								value={paginationType}
-								options={["bullets", "fraction", "progressbar"].map((o) => ({
-									label: __(o),
-									value: o,
-								}))}
-								onChange={(paginationType) => {
-									setAttributes({ paginationType });
-									setComponentKey(componentKey + 1);
-								}}
+				<>
+					<InspectorControls group="settings">
+						<PanelBody title={__("Slider Settings")}>
+							<RangeControl
+								min={1}
+								max={6}
+								allowReset
+								value={slidesPerView}
+								resetFallbackValue={1}
+								label={__("Slides Per View", "ultimate-blocks")}
+								onChange={(newValue) =>
+									setAttributes({ slidesPerView: newValue })
+								}
 							/>
-						)}
-						<SelectControl
-							label={__("Transition")}
-							value={transition}
-							options={["slide", "fade", "cube", "coverflow", "flip"].map(
-								(o) => ({
-									label: __(o),
-									value: o,
-								})
-							)}
-							onChange={(transition) => {
-								setAttributes({ transition });
-								setComponentKey(componentKey + 1);
-							}}
-						/>
-						{["cube", "coverflow", "flip"].includes(transition) && (
+							<RangeControl
+								min={0}
+								max={500}
+								allowReset
+								value={spaceBetween}
+								resetFallbackValue={20}
+								label={__("Space Between", "ultimate-blocks")}
+								onChange={(newValue) =>
+									setAttributes({ spaceBetween: newValue })
+								}
+							/>
+							<RangeControl
+								min={50}
+								max={5000}
+								allowReset
+								value={speed}
+								step={50}
+								resetFallbackValue={300}
+								label={__("Speed", "ultimate-blocks")}
+								onChange={(newValue) => setAttributes({ speed: newValue })}
+							/>
 							<ToggleControl
-								label={__("Enable slide shadows")}
-								checked={slideShadows}
+								label={__("Wrap around")}
+								checked={wrapsAround}
 								onChange={() => {
-									setAttributes({ slideShadows: !slideShadows });
+									setAttributes({ wrapsAround: !wrapsAround });
 									setComponentKey(componentKey + 1);
 								}}
 							/>
-						)}
-						{transition === "coverflow" && (
-							<>
-								<RangeControl
-									label={__("Slide rotation")}
-									value={rotate}
-									onChange={(rotate) => {
-										setAttributes({ rotate });
-										setComponentKey(componentKey + 1);
-									}}
-									min={0}
-									max={180} //change if this proves to be excessive
+							<ToggleControl
+								label={__("Allow dragging")}
+								checked={isDraggable}
+								onChange={() => {
+									setAttributes({ isDraggable: !isDraggable });
+									setComponentKey(componentKey + 1);
+								}}
+							/>
+							<ToggleControl
+								label={__("Use Navigation Arrows", "ultimate-blocks")}
+								checked={useNavigation}
+								onChange={() => {
+									setAttributes({ useNavigation: !useNavigation });
+									setComponentKey(componentKey + 1);
+								}}
+							/>{" "}
+							{useNavigation && (
+								<CustomToggleGroupControl
+									label={__("Navigation Position", "ultimate-blocks")}
+									attributeKey="navigationPosition"
+									isBlock
+									options={[
+										{ label: __("Inside", "ultimate-blocks"), value: "inside" },
+										{
+											label: __("Outside", "ultimate-blocks"),
+											value: "outside",
+										},
+									]}
 								/>
-								<RangeControl
-									label={__("Stretch space")}
-									value={stretch}
-									onChange={(stretch) => {
-										setAttributes({ stretch });
-										setComponentKey(componentKey + 1);
-									}}
-									min={0}
-									max={180} //change if this proves to be excessive
-								/>
-								<RangeControl
-									label={__("Depth offset")}
-									value={depth}
-									onChange={(depth) => {
-										setAttributes({ depth });
-										setComponentKey(componentKey + 1);
-									}}
-									min={0}
-									max={200}
-								/>
-								<RangeControl
-									label={__("Effect multiplier")}
-									value={modifier}
-									onChange={(modifier) => {
-										setAttributes({ modifier });
-										setComponentKey(componentKey + 1);
-									}}
-									min={0}
-									max={3} //change if this proves to be excessive
-									step={0.05}
-								/>
-							</>
-						)}
-						{transition === "cube" && (
-							<>
-								<ToggleControl
-									label={__("Enable main slider shadow")}
-									checked={shadow}
-									onChange={() => {
-										setAttributes({ shadow: !shadow });
+							)}{" "}
+							<ToggleControl
+								label={__("Use pagination")}
+								checked={usePagination}
+								onChange={() => {
+									setAttributes({ usePagination: !usePagination });
+									setComponentKey(componentKey + 1);
+								}}
+							/>
+							{usePagination && (
+								<SelectControl
+									label={__("Pagination type")}
+									value={paginationType}
+									options={["bullets", "fraction", "progressbar"].map((o) => ({
+										label: __(o),
+										value: o,
+									}))}
+									onChange={(paginationType) => {
+										setAttributes({ paginationType });
 										setComponentKey(componentKey + 1);
 									}}
 								/>
+							)}
+							<ToggleControl
+								label={__("Enable autoplay")}
+								checked={autoplays}
+								onChange={() => {
+									setAttributes({ autoplays: !autoplays });
+									setComponentKey(componentKey + 1);
+								}}
+							/>
+							{autoplays && (
 								<RangeControl
-									label={__("Shadow offset")}
-									value={shadowOffset}
-									onChange={(shadowOffset) => {
-										setAttributes({ shadowOffset });
+									label={__("Autoplay duration (seconds)")}
+									value={autoplayDuration}
+									onChange={(value) => {
+										setAttributes({ autoplayDuration: value });
 										setComponentKey(componentKey + 1);
 									}}
 									min={1}
-									max={100}
+									max={10}
 								/>
-								<RangeControl
-									label={__("Shadow scale")}
-									value={shadowScale}
-									onChange={(shadowScale) => {
-										setAttributes({ shadowScale });
+							)}
+							{showThumbnailsToggle && showThumbnailsToggle}
+						</PanelBody>
+					</InspectorControls>
+					<InspectorControls group="styles">
+						<PanelBody title={__("Slider Settings")}>
+							<SelectControl
+								label={__("Transition")}
+								value={transition}
+								options={["slide", "fade", "cube", "coverflow", "flip"].map(
+									(o) => ({
+										label: __(o),
+										value: o,
+									}),
+								)}
+								onChange={(transition) => {
+									setAttributes({ transition });
+									setComponentKey(componentKey + 1);
+								}}
+							/>
+							{["cube", "coverflow", "flip"].includes(transition) && (
+								<ToggleControl
+									label={__("Enable slide shadows")}
+									checked={slideShadows}
+									onChange={() => {
+										setAttributes({ slideShadows: !slideShadows });
 										setComponentKey(componentKey + 1);
 									}}
-									min={0}
-									max={2}
-									scale={0.01}
 								/>
-							</>
-						)}
-						{transition === "flip" && (
-							<ToggleControl
-								label={__("Limit rotation")}
-								checked={limitRotation}
-								onChange={() => {
-									setAttributes({ limitRotation: !limitRotation });
-									setComponentKey(componentKey + 1);
-								}}
-							/>
-						)}
-						<ToggleControl
-							label={__("Enable autoplay")}
-							checked={autoplays}
-							onChange={() => {
-								setAttributes({ autoplays: !autoplays });
-								setComponentKey(componentKey + 1);
-							}}
-						/>
-						{autoplays && (
+							)}
+							{transition === "coverflow" && (
+								<>
+									<RangeControl
+										label={__("Slide rotation")}
+										value={rotate}
+										onChange={(rotate) => {
+											setAttributes({ rotate });
+											setComponentKey(componentKey + 1);
+										}}
+										min={0}
+										max={180} //change if this proves to be excessive
+									/>
+									<RangeControl
+										label={__("Stretch space")}
+										value={stretch}
+										onChange={(stretch) => {
+											setAttributes({ stretch });
+											setComponentKey(componentKey + 1);
+										}}
+										min={0}
+										max={180} //change if this proves to be excessive
+									/>
+									<RangeControl
+										label={__("Depth offset")}
+										value={depth}
+										onChange={(depth) => {
+											setAttributes({ depth });
+											setComponentKey(componentKey + 1);
+										}}
+										min={0}
+										max={200}
+									/>
+									<RangeControl
+										label={__("Effect multiplier")}
+										value={modifier}
+										onChange={(modifier) => {
+											setAttributes({ modifier });
+											setComponentKey(componentKey + 1);
+										}}
+										min={0}
+										max={3} //change if this proves to be excessive
+										step={0.05}
+									/>
+								</>
+							)}
+							{transition === "cube" && (
+								<>
+									<ToggleControl
+										label={__("Enable main slider shadow")}
+										checked={shadow}
+										onChange={() => {
+											setAttributes({ shadow: !shadow });
+											setComponentKey(componentKey + 1);
+										}}
+									/>
+									<RangeControl
+										label={__("Shadow offset")}
+										value={shadowOffset}
+										onChange={(shadowOffset) => {
+											setAttributes({ shadowOffset });
+											setComponentKey(componentKey + 1);
+										}}
+										min={1}
+										max={100}
+									/>
+									<RangeControl
+										label={__("Shadow scale")}
+										value={shadowScale}
+										onChange={(shadowScale) => {
+											setAttributes({ shadowScale });
+											setComponentKey(componentKey + 1);
+										}}
+										min={0}
+										max={2}
+										scale={0.01}
+									/>
+								</>
+							)}
+							{transition === "flip" && (
+								<ToggleControl
+									label={__("Limit rotation")}
+									checked={limitRotation}
+									onChange={() => {
+										setAttributes({ limitRotation: !limitRotation });
+										setComponentKey(componentKey + 1);
+									}}
+								/>
+							)}
 							<RangeControl
-								label={__("Autoplay duration (seconds)")}
-								value={autoplayDuration}
-								onChange={(value) => {
-									setAttributes({ autoplayDuration: value });
-									setComponentKey(componentKey + 1);
+								label={__("Height")}
+								value={sliderHeight}
+								onChange={(newHeight) => {
+									setAttributes({ sliderHeight: newHeight });
+									setComponentKey(componentKey + 1); //ensure proper placement of arrows and page dots
 								}}
-								min={1}
-								max={10}
+								min={200}
+								max={2000}
 							/>
-						)}
-						<RangeControl
-							label={__("Height")}
-							value={sliderHeight}
-							onChange={(newHeight) => {
-								setAttributes({ sliderHeight: newHeight });
-								setComponentKey(componentKey + 1); //ensure proper placement of arrows and page dots
-							}}
-							min={200}
-							max={500}
+						</PanelBody>
+						<PanelBody
+							title={__("Dimension Settings", "ultimate-blocks")}
+							initialOpen={false}
+						>
+							<SpacingControl
+								showByDefault
+								attrKey="padding"
+								label={__("Padding", "ultimate-blocks")}
+							/>
+							<SpacingControl
+								minimumCustomValue={-Infinity}
+								showByDefault
+								attrKey="margin"
+								label={__("Margin", "ultimate-blocks")}
+							/>
+						</PanelBody>
+					</InspectorControls>
+					<InspectorControls group="color">
+						<ColorSettings
+							attrKey="navigationColor"
+							label={__("Navigation Color", "ultimate-blocks")}
 						/>
-					</PanelBody>
-				</InspectorControls>
+						<ColorSettings
+							attrKey="paginationColor"
+							label={__("Inactive Pagination Color", "ultimate-blocks")}
+						/>
+						<ColorSettings
+							attrKey="activePaginationColor"
+							label={__("Active Pagination Color", "ultimate-blocks")}
+						/>
+						<ColorSettingsWithGradient
+							attrBackgroundKey="navigationBackgroundColor"
+							attrGradientKey="navigationGradientColor"
+							label={__("Navigation Background", "ultimate-blocks")}
+						/>
+					</InspectorControls>
+				</>
 			)}
 
-			<div
-				id={`ub_image_slider_${blockID}`}
-				className="ub_image_slider"
-				style={{
-					minHeight: `${20 + (imageArray.length ? sliderHeight : 200)}px`,
-				}}
-			>
+			<div {...blockProps}>
 				{imageArray.length === 0 ? (
 					<MediaPlaceholder
 						onSelect={(newImages) =>
@@ -465,9 +659,16 @@ function ImageSliderMain(props) {
 							draggable={isDraggable}
 							wrapAround={wrapsAround}
 							pageDots={showPageDots}
+							speed={speed}
+							thumbSwiper={thumbSwiper}
+							showThumbnails={showThumbnails}
+							useNavigation={useNavigation}
+							navigationPosition={props.attributes.navigationPosition}
 							paginationType={usePagination ? paginationType : "none"}
 							autoplay={autoplays ? autoplayDuration : 0}
 							transition={transition}
+							slidesPerView={slidesPerView}
+							spaceBetween={spaceBetween}
 							slides={[
 								...imageArray.map((c, i) => (
 									<figure>
@@ -501,7 +702,7 @@ function ImageSliderMain(props) {
 																	id: img.id,
 																	text: img.text,
 																	link: "",
-																}))
+																})),
 															),
 														}),
 												})
@@ -527,7 +728,7 @@ function ImageSliderMain(props) {
 									onChange={(text) => {
 										const currentItem = Object.assign(
 											{},
-											descriptions[activeSlide]
+											descriptions[activeSlide],
 										);
 
 										setAttributes({
@@ -571,7 +772,7 @@ function ImageSliderMain(props) {
 									onChange={(link) => {
 										const currentItem = Object.assign(
 											{},
-											captionArray[activeSlide]
+											captionArray[activeSlide],
 										);
 
 										setAttributes({
@@ -590,6 +791,7 @@ function ImageSliderMain(props) {
 								/>
 							</form>
 						)}
+						{showThumbnails && thumbnails}
 					</>
 				)}
 			</div>
@@ -597,23 +799,32 @@ function ImageSliderMain(props) {
 	);
 }
 
-registerBlockType("ub/image-slider", {
-	title: __("Image Slider"),
+registerBlockType(metadata.name, {
+	...metadata,
 	icon: icon,
-	category: "ultimateblocks",
-	keywords: [__("Image Slider"), __("Slideshow"), __("Ultimate Blocks")],
-	attributes,
+	example: {},
+	attributes: metadata.attributes,
+	edit: (props) => {
+		const { block, rootBlockClientId } = useSelect(
+			(select) => {
+				const { getBlock, getBlockRootClientId } = select("core/block-editor");
+				const block = getBlock(props.clientId);
+				return {
+					block,
+					rootBlockClientId: getBlockRootClientId(block.clientId),
+				};
+			},
+			[props.clientId],
+		);
 
-	edit: withSelect((select, ownProps) => {
-		const { getBlock, getClientIdsWithDescendants } =
-			select("core/block-editor") || select("core/editor");
-
-		return {
-			block: getBlock(ownProps.clientId),
-			getBlock,
-			getClientIdsWithDescendants,
-		};
-	})(ImageSliderMain),
+		return (
+			<ImageSliderMain
+				{...props}
+				block={block}
+				rootBlockClientId={rootBlockClientId}
+			/>
+		);
+	},
 	save() {
 		return null;
 	},

@@ -5,9 +5,64 @@
  * which makes it higher in priority.
  */
 @import "../../common";
-
+.ub-selected {
+	position: relative;
+	&::before {
+		bottom: 0;
+		content: "";
+		left: 0;
+		outline-color: var(--wp-admin-theme-color);
+		outline-offset: calc(
+			(
+					(-1 * var(--wp-admin-border-width-focus)) /
+						var(--wp-block-editor-iframe-zoom-out-scale, 1)
+				) * 1
+		);
+		outline-style: solid;
+		outline-width: calc(
+			(
+					var(--wp-admin-border-width-focus) /
+						var(--wp-block-editor-iframe-zoom-out-scale, 1)
+				) * 1
+		);
+		pointer-events: none;
+		position: absolute;
+		right: 0;
+		top: 0;
+		z-index: 1;
+	}
+}
 .wp-block-ub-button-block {
 	margin: 0 auto;
+}
+.ub-buttons {
+	&.orientation-button-row {
+		.ub-add-button {
+			align-self: center;
+		}
+	}
+	&.orientation-button-column {
+		&.align-button-center {
+			.ub-add-button {
+				align-self: center;
+			}
+		}
+		&.align-button-left {
+			.ub-add-button {
+				align-self: flex-start;
+			}
+		}
+		&.align-button-right {
+			.ub-add-button {
+				align-self: flex-end;
+			}
+		}
+		&.align-button-space-between {
+			.ub-add-button {
+				align-self: flex-start;
+			}
+		}
+	}
 }
 
 .ub_button_url_input {
@@ -54,13 +109,6 @@
 
 .ub-button-block-main {
 	cursor: auto;
-}
-
-.block-editor-block-inspector .ub-button-group button {
-	border: 1px solid #0075af;
-	&:hover {
-		border-color: #005d8c;
-	}
 }
 
 .ub_button_popover {

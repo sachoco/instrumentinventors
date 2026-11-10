@@ -1,28 +1,59 @@
-const { __ } = wp.i18n;
-const { loadPromise, models } = wp.api;
-const { createBlock } = wp.blocks;
-const {
+import { __ } from "@wordpress/i18n";
+import { isEmpty } from "lodash";
+import { loadPromise, models } from "@wordpress/api";
+import { createBlock } from "@wordpress/blocks";
+import { useSelect, useDispatch } from "@wordpress/data";
+import { store as editorStore } from "@wordpress/editor";
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
+import {
 	RichText,
 	InnerBlocks,
 	InspectorControls,
-	ColorPalette,
 	AlignmentToolbar,
 	BlockControls,
-} = wp.blockEditor || wp.editor;
-const { Button, Dropdown, PanelBody, RangeControl, ToggleControl } =
-	wp.components;
+	useBlockProps,
+	JustifyContentControl,
+} from "@wordpress/block-editor";
+import {
+	Button,
+	Dropdown,
+	PanelBody,
+	RangeControl,
+	ToggleControl,
+	ToolbarGroup,
+	RadioControl,
+	TextareaControl,
+	Notice,
+} from "@wordpress/components";
+import classnames from "classnames";
+import { IconControl } from "$Library/ub-common/Components";
+import { DeviceControlSwitcher } from "../components";
 
 import {
 	dashesToCamelcase,
 	splitArrayIntoChunks,
 	splitArray,
+	getParentBlock,
 } from "../../common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { useState, useEffect, useRef } from "react";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import colorList from "./colorlist";
+import { ColorSettings, SpacingControl } from "../components";
+import {
+	FontFamilyControl,
+	CustomFontSizePicker,
+	FontAppearanceControl,
+	LineHeightControl,
+	LetterSpacingControl,
+	TextDecorationControl,
+	TextTransformControl,
+} from "../components";
+import { generateStyles, getSpacingCss } from "../utils/styling-helpers";
+import { isValidSVG } from "./utils";
 
 library.add(fas, fab);
 
@@ -45,7 +76,7 @@ function convertOldStyledList(list) {
 
 			closingTagLocs.forEach((tagLoc) => {
 				pairs[pairs.findLastIndex((a) => a[0] < tagLoc && a.length === 1)].push(
-					tagLoc
+					tagLoc,
 				);
 			});
 		}
@@ -58,10 +89,10 @@ function convertOldStyledList(list) {
 
 		list.forEach((item, i) => {
 			const subitems = list.filter(
-				(li) => li[0] > list[i][0] && li[1] < list[i][1]
+				(li) => li[0] > list[i][0] && li[1] < list[i][1],
 			);
 			const parentItems = list.filter(
-				(li) => li[0] < list[i][0] && li[1] > list[i][1]
+				(li) => li[0] < list[i][0] && li[1] > list[i][1],
 			);
 
 			if (!parentItems.length) {
@@ -89,9 +120,9 @@ function convertOldStyledList(list) {
 						item[0] + 4,
 						Math.min(
 							item[1],
-							...openingUlLocs.filter((ul) => ul > item[0] && ul < item[1])
-						)
-					)
+							...openingUlLocs.filter((ul) => ul > item[0] && ul < item[1]),
+						),
+					),
 				);
 			}
 		});
@@ -111,24 +142,51 @@ function EditorComponent(props) {
 	const [selectionTime, setSelectionTime] = useState(0);
 	const [setFontSize, toggleSetFontSize] = useState(false);
 	const [hasApiAccess, setHasApiAccess] = useState(false);
-
 	const {
-		isSelected,
 		block,
 		getBlock,
 		getBlockParentsByBlockName,
 		getClientIdsOfDescendants,
 		getClientIdsWithDescendants,
-		replaceInnerBlocks,
-		updateBlockAttributes,
-		attributes,
-		setAttributes,
-	} = props;
+		rootBlockClientId,
+	} = useSelect((select) => {
+		const {
+			getBlock,
+			getBlockParentsByBlockName,
+			getClientIdsOfDescendants,
+			getClientIdsWithDescendants,
+			getBlockRootClientId,
+		} = select("core/block-editor");
+		const block = getBlock(props.clientId);
+		const rootBlockClientId = getBlockRootClientId(block.clientId);
+
+		return {
+			block,
+			getBlock,
+			getBlockParentsByBlockName,
+			getClientIdsOfDescendants,
+			getClientIdsWithDescendants,
+			rootBlockClientId,
+		};
+	});
+
+	// Get device type from Gutenberg's responsive preview to apply correct columns
+	const { deviceType } = useSelect((select) => {
+		const { getDeviceType } = select(editorStore);
+		return {
+			deviceType: getDeviceType ? getDeviceType() : "Desktop",
+		};
+	});
+	const { replaceInnerBlocks, updateBlockAttributes } =
+		useDispatch("core/block-editor");
+	const { isSelected, attributes, setAttributes } = props;
 
 	const {
 		blockID,
 		list,
 		selectedIcon,
+		iconSource,
+		customIconSVG,
 		iconColor,
 		iconSize,
 		itemSpacing,
@@ -137,27 +195,52 @@ function EditorComponent(props) {
 		backgroundColor,
 		fontSize,
 		columns,
+		tabletColumns,
 		maxMobileColumns,
 		alignment,
+		listAlignment,
+		padding,
+		margin,
+		listFontFamily,
+		listFontSize,
+		listFontAppearance,
+		listLineHeight,
+		listLetterSpacing,
+		listTextDecoration,
+		listTextTransform,
 	} = attributes;
 
+	// Determine which column value to use based on device preview
+	const getActiveColumns = () => {
+		const device = deviceType;
+
+		if (device === "Mobile") {
+			// Mobile: use maxMobileColumns, fallback to tabletColumns, then columns
+			return maxMobileColumns ?? tabletColumns ?? columns ?? 1;
+		} else if (device === "Tablet") {
+			// Tablet: use tabletColumns, fallback to columns
+			return tabletColumns ?? columns ?? 1;
+		}
+		// Desktop: use columns
+		return columns ?? 1;
+	};
+
+	const activeColumns = getActiveColumns();
+	const blockProps = useBlockProps({
+		className: classnames({
+			[`ub-list-alignment-${listAlignment}`]: !isEmpty(listAlignment),
+		}),
+	});
 	useEffect(() => {
 		setAvailableIcons(
 			Object.keys(allIcons)
 				.sort()
-				.map((name) => allIcons[name])
+				.map((name) => allIcons[name]),
 		);
 
 		loadIconList();
 
-		if (
-			blockID === "" ||
-			getClientIdsWithDescendants().some(
-				(ID) =>
-					"blockID" in getBlock(ID).attributes &&
-					getBlock(ID).attributes.blockID === blockID
-			)
-		) {
+		if (blockID === "") {
 			setAttributes({ blockID: block.clientId });
 		}
 
@@ -175,8 +258,8 @@ function EditorComponent(props) {
 							{ itemText: item },
 							childBlocks.length > 0
 								? [createBlock("ub/styled-list", {}, childBlocks)]
-								: []
-						)
+								: [],
+						),
 					);
 				}
 			});
@@ -198,6 +281,35 @@ function EditorComponent(props) {
 			setAttributes({ list: "" });
 		}
 	}, []);
+	useEffect(() => {
+		const rootBlock = getParentBlock(rootBlockClientId, "core/block");
+		if (!rootBlock) {
+			setAttributes({ blockID: block.clientId });
+		}
+	}, [block?.clientId]);
+
+	const styleClipboard = createStyleClipboard("ub_styled_list_copied_style", [
+		"selectedIcon",
+		"iconColor",
+		"iconSize",
+		"itemSpacing",
+		"textColor",
+		"backgroundColor",
+		"fontSize",
+		"columns",
+		"maxMobileColumns",
+		"alignment",
+		"listAlignment",
+		"padding",
+		"margin",
+		"listFontFamily",
+		"listFontSize",
+		"listFontAppearance",
+		"listLineHeight",
+		"listLetterSpacing",
+		"listTextDecoration",
+		"listTextTransform",
+	]);
 
 	function loadIconList() {
 		const iconList = Object.keys(allIcons).sort();
@@ -217,7 +329,7 @@ function EditorComponent(props) {
 						.map((f) => ({
 							name: f.name,
 							selectionTime: f.selectionTime.filter(
-								(t) => t >= currentTime - 1209600
+								(t) => t >= currentTime - 1209600,
 							),
 						}))
 						.filter((f) => f.selectionTime.length); //then remove entries with empty selectionTime arrays
@@ -238,7 +350,7 @@ function EditorComponent(props) {
 
 					[icons, otherIcons] = splitArray(
 						iconList.map((name) => allIcons[name]),
-						(icon) => frequentIcons.map((i) => i.name).includes(icon.iconName)
+						(icon) => frequentIcons.map((i) => i.name).includes(icon.iconName),
 					);
 
 					const frequentIconNames = frequentIcons.map((i) => i.name);
@@ -246,7 +358,7 @@ function EditorComponent(props) {
 					icons.sort(
 						(a, b) =>
 							frequentIconNames.indexOf(a.iconName) -
-							frequentIconNames.indexOf(b.iconName)
+							frequentIconNames.indexOf(b.iconName),
 					);
 
 					setAvailableIcons([...icons, ...otherIcons]);
@@ -288,14 +400,14 @@ function EditorComponent(props) {
 		let icons = []; //most recent selection should always be first element of array
 		let otherIcons = [];
 		[icons, otherIcons] = splitArray(availableIcons, (icon) =>
-			iconPrefs.map((i) => i.name).includes(icon.iconName)
+			iconPrefs.map((i) => i.name).includes(icon.iconName),
 		);
 
 		const iconPrefsName = iconPrefs.map((i) => i.name);
 
 		icons.sort(
 			(a, b) =>
-				iconPrefsName.indexOf(a.iconName) - iconPrefsName.indexOf(b.iconName)
+				iconPrefsName.indexOf(a.iconName) - iconPrefsName.indexOf(b.iconName),
 		);
 
 		setRecentSelection("");
@@ -321,7 +433,9 @@ function EditorComponent(props) {
 	}, [isSelected]);
 
 	const listItemBlocks = getClientIdsOfDescendants([block.clientId]).filter(
-		(ID) => getBlock(ID).name === "ub/styled-list-item"
+		(ID) =>
+			getBlock(ID).name === "ub/styled-list-item" ||
+			getBlock(ID).name === "ub/styled-list",
 	);
 
 	function setAttributesToAllItems(newAttributes) {
@@ -330,7 +444,7 @@ function EditorComponent(props) {
 
 	const iconListPage = splitArrayIntoChunks(
 		availableIcons.filter((i) => i.iconName.includes(iconSearchTerm)),
-		24
+		24,
 	);
 
 	const isRootOfList =
@@ -342,193 +456,262 @@ function EditorComponent(props) {
 	if (isRootList !== isRootOfList) {
 		setAttributes({ isRootList: isRootOfList });
 	}
+	const paddingObj = getSpacingCss(padding);
+	const marginObj = getSpacingCss(margin);
 
+	const listFontStyle = listFontAppearance?.fontStyle || "";
+	const listFontWeight = listFontAppearance?.fontWeight || "";
+
+	const styles = {
+		backgroundColor: backgroundColor,
+		paddingTop: paddingObj?.top,
+		paddingRight: paddingObj?.right,
+		paddingBottom: paddingObj?.bottom,
+		paddingLeft: paddingObj?.left,
+		marginTop: marginObj?.top,
+		marginRight: marginObj?.right,
+		marginBottom: marginObj?.bottom,
+		marginLeft: marginObj?.left,
+		fontFamily: listFontFamily || undefined,
+		fontSize: listFontSize || undefined,
+		fontStyle: listFontStyle || undefined,
+		fontWeight: listFontWeight || undefined,
+		lineHeight: listLineHeight || undefined,
+		letterSpacing: listLetterSpacing || undefined,
+		textDecoration: listTextDecoration || undefined,
+		textTransform: listTextTransform || undefined,
+	};
+	if (!padding?.left) {
+		styles.paddingLeft = iconSize ? `${(6 + iconSize) / 10}em` : "";
+	}
 	return (
-		<>
+		<div {...blockProps}>
 			{isSelected && isRootOfList && (
-				<InspectorControls>
-					<PanelBody title={__("List Color Settings")}>
-						{/* PANELCONTROLSETTINGS HAS NO WAY FOR RESETTING COLOR TO BLANK */}
-						<p>{__("List Text Color")}</p>
-						<ColorPalette
-							value={textColor}
-							onChange={(textColor) => setAttributes({ textColor })}
-						/>
-						<p>{__("List Background Color")}</p>
-						<ColorPalette
-							value={backgroundColor}
-							onChange={(backgroundColor) => setAttributes({ backgroundColor })}
-						/>
-					</PanelBody>
-					<PanelBody title={__("Icon Options")}>
-						<div
-							style={{
-								display: "grid",
-								gridTemplateColumns: "5fr 1fr",
-							}}
-						>
-							<p>{__("Selected icon")}</p>
-
-							<Dropdown
-								position="bottom right"
-								renderToggle={({ isOpen, onToggle }) => (
-									<Button
-										label={__("Select icon for list")}
-										onClick={onToggle}
-										aria-expanded={isOpen}
-									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											height="30"
-											width="30"
-											viewBox={`0, 0, ${
-												allIcons[`fa${dashesToCamelcase(selectedIcon)}`].icon[0]
-											},  ${
-												allIcons[`fa${dashesToCamelcase(selectedIcon)}`].icon[1]
-											}`}
-										>
-											<path
-												fill={iconColor}
-												d={
-													allIcons[`fa${dashesToCamelcase(selectedIcon)}`]
-														.icon[4]
-												}
-											/>
-										</svg>
-									</Button>
-								)}
-								renderContent={() => (
-									<div>
-										<input
-											type="text"
-											value={iconSearchTerm}
-											onChange={(e) => {
-												setIconSearchTerm(e.target.value);
-												setIconSearchResultsPage(0);
-											}}
-										/>
-										<br />
-										{iconListPage.length > 0 && (
-											<div>
-												<button
-													onClick={() => {
-														if (iconSearchResultsPage > 0) {
-															setIconSearchResultsPage(
-																iconSearchResultsPage - 1
-															);
-														}
-													}}
-												>
-													&lt;
-												</button>
-												<span>
-													{iconSearchResultsPage + 1}/{iconListPage.length}
-												</span>
-												<button
-													onClick={() => {
-														if (
-															iconSearchResultsPage <
-															iconListPage.length - 1
-														) {
-															setIconSearchResultsPage(
-																iconSearchResultsPage + 1
-															);
-														}
-													}}
-												>
-													&gt;
-												</button>
-											</div>
-										)}
-
-										{iconListPage.length > 0 &&
-											iconListPage[iconSearchResultsPage].map((i) => (
-												<Button
-													className="ub-styled-list-available-icon"
-													icon={<FontAwesomeIcon icon={i} size="lg" />}
-													label={i.iconName}
-													onClick={() => {
-														if (selectedIcon !== i.iconName) {
-															setRecentSelection(i.iconName);
-															setSelectionTime(~~(Date.now() / 1000));
-
-															setAttributes({
-																selectedIcon: i.iconName,
-															});
-
-															setAttributesToAllItems({
-																selectedIcon: i.iconName,
-															});
-														}
-													}}
-												/>
-											))}
-									</div>
-								)}
-								onToggle={(isOpen) => {
-									if (!isOpen && recentSelection && hasApiAccess) {
-										updateIconList();
-									}
+				<>
+					<InspectorControls group="settings">
+						<PanelBody title={__("Icon")} initialOpen={true}>
+							<RadioControl
+								label={__("Icon Source", "ultimate-blocks")}
+								selected={iconSource || "fontawesome"}
+								options={[
+									{
+										label: __("Icon Library", "ultimate-blocks"),
+										value: "fontawesome",
+									},
+									{
+										label: __("Custom SVG", "ultimate-blocks"),
+										value: "custom",
+									},
+								]}
+								onChange={(value) => {
+									setAttributes({ iconSource: value });
+									setAttributesToAllItems({ iconSource: value });
 								}}
 							/>
-						</div>
-						<p>
-							{__("Icon color")}
-							<span
-								id="ub-styled-list-selected-color"
-								class="component-color-indicator"
-								aria-label={`(Color: ${iconColor})`}
-								style={{ background: iconColor }}
-							/>
-						</p>
-						<ColorPalette
-							value={iconColor}
-							onChange={(iconColor) => {
-								if (iconColor.match(/#[0-9a-f]{6}/gi)) {
-									setAttributes({ iconColor });
-									setAttributesToAllItems({ iconColor });
-								} else {
-									const newIconColor =
-										iconColor.toLowerCase() in colorList
-											? colorList[iconColor.toLowerCase()]
-											: getComputedStyle(
-													document.documentElement
-											  ).getPropertyValue(
-													iconColor.substring(4, iconColor.length - 1)
-											  );
 
-									setAttributes({ iconColor: newIconColor });
-									setAttributesToAllItems({ iconColor: newIconColor });
-								}
-							}}
-						/>
-						<p>{__("Icon size")}</p>
-						<RangeControl
-							value={iconSize}
-							onChange={(iconSize) => {
-								setAttributes({ iconSize });
-								setAttributesToAllItems({ iconSize });
-							}}
-							min={1}
-							max={10}
-						/>
-					</PanelBody>
-					<PanelBody title={__("Other Options")}>
-						<p>{__("Number of columns")}</p>
-						<RangeControl
-							value={columns}
-							onChange={(columns) => {
-								setAttributes({ columns });
-								if (columns <= maxMobileColumns) {
-									setAttributes({ maxMobileColumns: columns });
-								}
-							}}
-							min={1}
-							max={4}
-						/>
-						{columns > 1 && (
-							<>
-								<p>{__("Number of columns in mobile")}</p>
+							{iconSource === "custom" ? (
+								<>
+									<TextareaControl
+										label={__("Custom SVG Code", "ultimate-blocks")}
+										value={customIconSVG || ""}
+										onChange={(value) => {
+											setAttributes({ customIconSVG: value });
+											setAttributesToAllItems({ customIconSVG: value });
+										}}
+										placeholder={__(
+											"Paste your SVG code here...",
+											"ultimate-blocks",
+										)}
+										rows={8}
+										help={__(
+											"Paste the complete SVG markup for your custom icon. This will apply to all list items.",
+											"ultimate-blocks",
+										)}
+									/>
+									{customIconSVG && isValidSVG(customIconSVG) && (
+										<div
+											style={{
+												marginTop: "10px",
+												padding: "10px",
+												border: "1px solid #ddd",
+												borderRadius: "4px",
+												textAlign: "center",
+											}}
+										>
+											<p style={{ marginBottom: "5px", fontSize: "12px" }}>
+												{__("Preview:", "ultimate-blocks")}
+											</p>
+											<div
+												style={{
+													width: `${iconSize * 10}px`,
+													height: `${iconSize * 10}px`,
+													margin: "0 auto",
+													display: "inline-flex",
+													alignItems: "center",
+													justifyContent: "center",
+												}}
+												dangerouslySetInnerHTML={{ __html: customIconSVG }}
+											/>
+										</div>
+									)}
+									{customIconSVG && !isValidSVG(customIconSVG) && (
+										<Notice status="error" isDismissible={false}>
+											{__(
+												"The SVG code is not valid. Please check your markup.",
+												"ultimate-blocks",
+											)}
+										</Notice>
+									)}
+								</>
+							) : (
+								<div
+									style={{
+										display: "grid",
+										gridTemplateColumns: "5fr 1fr",
+									}}
+								>
+									<p>{__("Selected icon")}</p>
+
+									<Dropdown
+										position="bottom right"
+										renderToggle={({ isOpen, onToggle }) => (
+											<Button
+												label={__("Select icon for list")}
+												onClick={onToggle}
+												aria-expanded={isOpen}
+											>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													height="30"
+													width="30"
+													viewBox={`0, 0, ${
+														allIcons[`fa${dashesToCamelcase(selectedIcon)}`]
+															.icon[0]
+													},  ${
+														allIcons[`fa${dashesToCamelcase(selectedIcon)}`]
+															.icon[1]
+													}`}
+												>
+													<path
+														fill={iconColor}
+														d={
+															allIcons[`fa${dashesToCamelcase(selectedIcon)}`]
+																.icon[4]
+														}
+													/>
+												</svg>
+											</Button>
+										)}
+										renderContent={() => (
+											<div>
+												<input
+													type="text"
+													value={iconSearchTerm}
+													onChange={(e) => {
+														setIconSearchTerm(e.target.value);
+														setIconSearchResultsPage(0);
+													}}
+												/>
+												<br />
+												{iconListPage.length > 0 && (
+													<div>
+														<button
+															onClick={() => {
+																if (iconSearchResultsPage > 0) {
+																	setIconSearchResultsPage(
+																		iconSearchResultsPage - 1,
+																	);
+																}
+															}}
+														>
+															&lt;
+														</button>
+														<span>
+															{iconSearchResultsPage + 1}/{iconListPage.length}
+														</span>
+														<button
+															onClick={() => {
+																if (
+																	iconSearchResultsPage <
+																	iconListPage.length - 1
+																) {
+																	setIconSearchResultsPage(
+																		iconSearchResultsPage + 1,
+																	);
+																}
+															}}
+														>
+															&gt;
+														</button>
+													</div>
+												)}
+
+												{iconListPage.length > 0 &&
+													iconListPage[iconSearchResultsPage].map((i) => (
+														<Button
+															className="ub-styled-list-available-icon"
+															icon={<FontAwesomeIcon icon={i} size="lg" />}
+															label={i.iconName}
+															onClick={() => {
+																if (selectedIcon !== i.iconName) {
+																	setRecentSelection(i.iconName);
+																	setSelectionTime(~~(Date.now() / 1000));
+
+																	setAttributes({
+																		selectedIcon: i.iconName,
+																	});
+
+																	setAttributesToAllItems({
+																		selectedIcon: i.iconName,
+																	});
+																}
+															}}
+														/>
+													))}
+											</div>
+										)}
+										onToggle={(isOpen) => {
+											if (!isOpen && recentSelection && hasApiAccess) {
+												updateIconList();
+											}
+										}}
+									/>
+								</div>
+							)}
+
+							<p>{__("Icon size")}</p>
+							<RangeControl
+								value={iconSize}
+								onChange={(iconSize) => {
+									setAttributes({ iconSize });
+									setAttributesToAllItems({ iconSize });
+								}}
+								min={1}
+								max={10}
+							/>
+						</PanelBody>
+
+						<PanelBody title={__("Additional")} initialOpen={true}>
+							<DeviceControlSwitcher label={__("Columns")} />
+							{deviceType === "Desktop" && (
+								<RangeControl
+									value={columns}
+									onChange={(columns) => setAttributes({ columns })}
+									min={1}
+									max={4}
+									help={__("Columns for desktop screens (>1024px)")}
+								/>
+							)}
+							{deviceType === "Tablet" && (
+								<RangeControl
+									value={tabletColumns || columns}
+									onChange={(tabletColumns) => setAttributes({ tabletColumns })}
+									min={1}
+									max={4}
+									help={__("Columns for tablet screens (600px - 1024px)")}
+								/>
+							)}
+							{deviceType === "Mobile" && (
 								<RangeControl
 									value={maxMobileColumns}
 									onChange={(maxMobileColumns) =>
@@ -536,53 +719,119 @@ function EditorComponent(props) {
 									}
 									min={1}
 									max={columns}
+									help={__("Columns for mobile screens (<600px)")}
 								/>
-							</>
-						)}
-						<p>{__("Item spacing (pixels)")}</p>
-						<RangeControl
-							value={itemSpacing}
-							onChange={(itemSpacing) => setAttributes({ itemSpacing })}
-							min={0}
-							max={50}
-						/>
-						<ToggleControl
-							label={__("Customize font size")}
-							checked={setFontSize}
-							onChange={() => {
-								if (setFontSize) {
-									setAttributes({ fontSize: 0 });
+							)}
+							<p>{__("Item spacing (pixels)")}</p>
+							<RangeControl
+								value={itemSpacing}
+								onChange={(itemSpacing) => setAttributes({ itemSpacing })}
+								min={0}
+								max={50}
+							/>
+							<ToggleControl
+								label={__("Customize font size")}
+								checked={setFontSize}
+								onChange={() => {
+									if (setFontSize) {
+										setAttributes({ fontSize: 0 });
 
-									//change font sizevalue of all list items to zero
-									updateBlockAttributes(listItemBlocks, {
-										fontSize: 0,
-									});
-								} else {
-									setAttributes({ fontSize: 10 });
-									//send signal to first child block to begin measuring
-									updateBlockAttributes(block.innerBlocks[0].clientId, {
-										fontSize: -1,
-									});
-								}
-								toggleSetFontSize(!setFontSize);
-							}}
+										//change font sizevalue of all list items to zero
+										updateBlockAttributes(listItemBlocks, {
+											fontSize: 0,
+										});
+									} else {
+										setAttributes({ fontSize: 10 });
+										//send signal to first child block to begin measuring
+										updateBlockAttributes(block.innerBlocks[0].clientId, {
+											fontSize: -1,
+										});
+									}
+									toggleSetFontSize(!setFontSize);
+								}}
+							/>
+							{setFontSize && (
+								<>
+									<p>{__("Font size (pixels)")}</p>
+									<RangeControl
+										value={fontSize}
+										onChange={(fontSize) => {
+											setAttributes({ fontSize });
+											updateBlockAttributes(listItemBlocks, { fontSize });
+										}}
+										min={10}
+										max={50}
+									/>
+								</>
+							)}
+						</PanelBody>
+					</InspectorControls>
+					<InspectorControls group="color">
+						<ColorSettings
+							label={__("Icon color", "ultimate-blocks")}
+							attrKey="iconColor"
+							onAttributesUpdate={(updatedAttributes) =>
+								setAttributesToAllItems(updatedAttributes)
+							}
 						/>
-						{setFontSize && (
-							<>
-								<p>{__("Font size (pixels)")}</p>
-								<RangeControl
-									value={fontSize}
-									onChange={(fontSize) => {
-										setAttributes({ fontSize });
-										updateBlockAttributes(listItemBlocks, { fontSize });
-									}}
-									min={10}
-									max={50}
-								/>
-							</>
-						)}
-					</PanelBody>
-				</InspectorControls>
+						<ColorSettings
+							label={__("List Text Color", "ultimate-blocks")}
+							attrKey="textColor"
+						/>
+						<ColorSettings
+							label={__("List Background Color", "ultimate-blocks")}
+							attrKey="backgroundColor"
+						/>
+					</InspectorControls>
+					<InspectorControls group="styles">
+						<PanelBody
+							title={__("Dimension Settings", "ultimate-blocks")}
+							initialOpen={false}
+						>
+							<SpacingControl
+								showByDefault
+								attrKey="padding"
+								label={__("Padding", "ultimate-blocks")}
+							/>
+							<SpacingControl
+								minimumCustomValue={-Infinity}
+								showByDefault
+								attrKey="margin"
+								label={__("Margin", "ultimate-blocks")}
+							/>
+						</PanelBody>
+					</InspectorControls>
+					<InspectorControls group="typography">
+						<FontFamilyControl
+							attrKey="listFontFamily"
+							label={__("Font Family", "ultimate-blocks")}
+						/>
+						<CustomFontSizePicker
+							attrKey="listFontSize"
+							label={__("Font Size", "ultimate-blocks")}
+						/>
+						<FontAppearanceControl
+							attrKey="listFontAppearance"
+							label={__("Appearance", "ultimate-blocks")}
+						/>
+						<LineHeightControl
+							attrKey="listLineHeight"
+							label={__("Line Height", "ultimate-blocks")}
+						/>
+						<LetterSpacingControl
+							attrKey="listLetterSpacing"
+							label={__("Letter Spacing", "ultimate-blocks")}
+						/>
+						<TextDecorationControl
+							attrKey="listTextDecoration"
+							label={__("Decoration", "ultimate-blocks")}
+						/>
+						<TextTransformControl
+							attrKey="listTextTransform"
+							label={__("Letter Case", "ultimate-blocks")}
+						/>
+					</InspectorControls>
+				</>
 			)}
 			{isSelected && isRootList && (
 				<BlockControls>
@@ -590,12 +839,31 @@ function EditorComponent(props) {
 						value={alignment}
 						onChange={(value) => setAttributes({ alignment: value })}
 					/>
+					<ToolbarGroup>
+						<JustifyContentControl
+							value={attributes.listAlignment}
+							allowedControls={["left", "center", "right"]}
+							onChange={(next) => {
+								setAttributes({ listAlignment: next });
+							}}
+						/>
+					</ToolbarGroup>
+				</BlockControls>
+			)}
+			{isSelected && isRootList && (
+				<BlockControls>
+					<GenericStyleControl
+						attributes={attributes}
+						setAttributes={setAttributes}
+						clipboard={styleClipboard}
+						blockName="Styled List"
+					/>
 				</BlockControls>
 			)}
 			<ul
-				className="ub_styled_list"
+				className={isRootList ? "ub_styled_list" : "ub_styled_list_sublist"}
 				id={`ub-styled-list-${blockID}`}
-				style={isRootList ? { backgroundColor: backgroundColor } : {}}
+				style={isRootList ? generateStyles(styles) : {}}
 			>
 				<InnerBlocks
 					template={isRootOfList ? [["ub/styled-list-item"]] : []} //initial content
@@ -607,47 +875,76 @@ function EditorComponent(props) {
 			{isRootOfList && (
 				<style
 					dangerouslySetInnerHTML={{
-						__html: `#ub-styled-list-${blockID} li::before{
-                    top: ${iconSize >= 5 ? 3 : iconSize < 3 ? 2 : 0}px;
-                    height:${(4 + iconSize) / 10}em; 
-                    width:${(4 + iconSize) / 10}em; 
-                    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${
-											allIcons[`fa${dashesToCamelcase(selectedIcon)}`].icon[0]
-										} ${
-							allIcons[`fa${dashesToCamelcase(selectedIcon)}`].icon[1]
-						}' color='${
-							iconColor ? `%23${iconColor.slice(1)}` : "inherit"
-						}'><path fill='currentColor' d='${
-							allIcons[`fa${dashesToCamelcase(selectedIcon)}`].icon[4]
-						}'></path></svg>");
-					}
+						__html: `
 					#ub-styled-list-${blockID} li{
 						color: ${textColor};
 					}
 					#ub-styled-list-${blockID} [data-type="ub/styled-list-item"]:not(:first-child){
 						margin-top: ${itemSpacing}px;
 					}
-					#ub-styled-list-${blockID} .block-editor-inner-blocks > .block-editor-block-list__layout > [data-type="ub/styled-list-item"]:first-child{
+					#ub-styled-list-${blockID} .block-editor-inner-blocks > .block-editor-block-list__layout .ub_styled_list_sublist > .block-editor-inner-blocks > .block-editor-block-list__layout > [data-type="ub/styled-list-item"]:first-child{
 						margin-top: ${itemSpacing}px;
 					}
 					#ub-styled-list-${blockID}  > .block-editor-inner-blocks > .block-editor-block-list__layout{
-						column-count: ${columns};
+						column-count: ${activeColumns};
 					}
 					#ub-styled-list-${blockID} {
 						text-align: ${alignment};
-					}`,
+					}
+					.ub-list-alignment-left #ub-styled-list-${blockID} .block-editor-inner-blocks > .block-editor-block-list__layout{
+						width: fit-content;
+						margin-right: auto;
+						margin-left: 0;
+					}
+					.ub-list-alignment-center #ub-styled-list-${blockID} .block-editor-inner-blocks > .block-editor-block-list__layout{
+						width: fit-content;
+						margin-right: auto;
+						margin-left: auto;
+					}
+					.ub-list-alignment-right #ub-styled-list-${blockID} .block-editor-inner-blocks > .block-editor-block-list__layout{
+						width: fit-content;
+						margin-right: 0;
+						margin-left: auto;
+					}
+					`,
 					}}
 				/>
 			)}
-		</>
+		</div>
 	);
 }
 
 export function StyledListItem(props) {
+	const { isSelected, attributes, setAttributes } = props;
 	const {
-		isSelected,
-		attributes,
-		setAttributes,
+		blockID,
+		itemText,
+		iconSize,
+		iconColor,
+		selectedIcon,
+		iconSource,
+		customIconSVG,
+		fontSize,
+		padding,
+		margin,
+		itemTextColor,
+		itemBackgroundColor,
+		itemFontFamily,
+		itemFontSize,
+		itemFontAppearance,
+		itemLineHeight,
+		itemLetterSpacing,
+		itemTextDecoration,
+		itemTextTransform,
+	} = attributes;
+	const {
+		insertBlock,
+		moveBlocksToPosition,
+		removeBlock,
+		replaceBlocks,
+		updateBlockAttributes,
+	} = useDispatch("core/block-editor");
+	const {
 		block,
 		getBlock,
 		getBlockIndex,
@@ -659,41 +956,121 @@ export function StyledListItem(props) {
 		getClientIdsWithDescendants,
 		getNextBlockClientId,
 		getPreviousBlockClientId,
-		moveBlocksToPosition,
-		insertBlock,
-		removeBlock,
-		replaceBlocks,
-		updateBlockAttributes,
-	} = props;
-	const { blockID, itemText, iconSize, iconColor, selectedIcon, fontSize } =
-		attributes;
+		rootBlockClientId,
+	} = useSelect((select) => {
+		const {
+			getBlock,
+			getBlockIndex,
+			getBlockParents,
+			getBlockParentsByBlockName,
+			getClientIdsOfDescendants,
+			getClientIdsWithDescendants,
+			getNextBlockClientId,
+			getPreviousBlockClientId,
+			getBlockRootClientId,
+		} = select("core/block-editor");
+		const block = getBlock(props.clientId);
+		const rootBlockClientId = getBlockRootClientId(block.clientId);
 
+		return {
+			block,
+			getBlock,
+			getBlockIndex,
+			currentBlockIndex: getBlockIndex(props.clientId),
+			getBlockParents,
+			listRootClientId: getBlockParents(props.clientId, true)[0],
+			getBlockParentsByBlockName,
+			getClientIdsOfDescendants,
+			getClientIdsWithDescendants,
+			getNextBlockClientId,
+			getPreviousBlockClientId,
+			rootBlockClientId,
+		};
+	});
 	const [useFontSize, toggleUseFontSize] = useState(false);
+	const paddingObj = getSpacingCss(padding);
+	const marginObj = getSpacingCss(margin);
+
+	const styles = {
+		paddingTop: paddingObj?.top,
+		paddingRight: paddingObj?.right,
+		paddingBottom: paddingObj?.bottom,
+		paddingLeft: paddingObj?.left,
+		marginTop: marginObj?.top,
+		marginRight: marginObj?.right,
+		marginBottom: marginObj?.bottom,
+		marginLeft: marginObj?.left,
+	};
+	const listRoot = getBlock(listRootClientId);
+	const rootSelectedIcon = listRoot?.attributes?.selectedIcon ?? "check";
+	const rootIconSource = listRoot?.attributes?.iconSource ?? "fontawesome";
+	const rootCustomIconSVG = listRoot?.attributes?.customIconSVG ?? "";
+	const rootIconColor = listRoot?.attributes?.iconColor ?? "#000000";
+	const rootIconSize = listRoot?.attributes?.iconSize ?? 5;
+	const rootFontSize = listRoot?.attributes?.fontSize ?? 0;
+	const blockProps = useBlockProps({ style: generateStyles(styles) });
 
 	useEffect(() => {
-		if (
-			blockID === "" ||
-			getClientIdsWithDescendants().some(
-				(ID) =>
-					"blockID" in getBlock(ID).attributes &&
-					getBlock(ID).attributes.blockID === blockID
-			)
-		) {
-			setAttributes({ blockID: block.clientId });
+		const rootBlock = getParentBlock(rootBlockClientId, "core/block");
+		if (!rootBlock && blockID === "") {
+			setAttributes({
+				blockID: block.clientId,
+				...(rootSelectedIcon !== "check"
+					? { selectedIcon: rootSelectedIcon }
+					: {}),
+				...(rootIconSource !== "fontawesome"
+					? { iconSource: rootIconSource }
+					: {}),
+				...(rootCustomIconSVG ? { customIconSVG: rootCustomIconSVG } : {}),
+				...(rootIconColor !== "#000000" ? { iconColor: rootIconColor } : {}),
+				...(rootIconSize !== 5 ? { iconSize: rootIconSize } : {}),
+				...(rootFontSize > 0 ? { fontSize: rootFontSize } : {}),
+			});
 		}
-	}, []);
+	}, [
+		block?.clientId,
+		blockID,
+		rootBlockClientId,
+		rootSelectedIcon,
+		rootIconSource,
+		rootCustomIconSVG,
+		rootIconColor,
+		rootIconSize,
+		rootFontSize,
+	]);
 
+	const styleClipboard = createStyleClipboard(
+		"ub_styled_list_item_copied_style",
+		[
+			"iconSize",
+			"iconColor",
+			"selectedIcon",
+			"fontSize",
+			"padding",
+			"margin",
+			"itemTextColor",
+			"itemBackgroundColor",
+			"itemFontFamily",
+			"itemFontSize",
+			"itemFontAppearance",
+			"itemLineHeight",
+			"itemLetterSpacing",
+			"itemTextDecoration",
+			"itemTextTransform",
+		],
+	);
+
+	const itemFontStyle = itemFontAppearance?.fontStyle || "";
+	const itemFontWeight = itemFontAppearance?.fontWeight || "";
 	function outdentItem() {
 		//outdents current item by default, but should also allow outdenting other list item blocks
 
 		const ancestorItemsAndLists = getBlockParents(
 			listRootClientId,
-			true
+			true,
 		).filter((b) =>
-			["ub/styled-list", "ub/styled-list-item"].includes(getBlock(b).name)
+			["ub/styled-list", "ub/styled-list-item"].includes(getBlock(b).name),
 		);
-
-		const listRoot = getBlock(listRootClientId);
 
 		if (ancestorItemsAndLists.length > 1) {
 			moveBlocksToPosition(
@@ -703,7 +1080,7 @@ export function StyledListItem(props) {
 
 				ancestorItemsAndLists[1], //get block id of parent list of current parent list block
 
-				getBlockIndex(ancestorItemsAndLists[0]) + 1 //ensure indented item moves to just after the parent item of the parent list
+				getBlockIndex(ancestorItemsAndLists[0]) + 1, //ensure indented item moves to just after the parent item of the parent list
 			);
 
 			if (currentBlockIndex < listRoot.innerBlocks.length - 1) {
@@ -719,7 +1096,7 @@ export function StyledListItem(props) {
 
 						blockTarget.innerBlocks[0].clientId,
 
-						blockTarget.innerBlocks[0].clientId.length
+						blockTarget.innerBlocks[0].clientId.length,
 					);
 				} else {
 					if (itemBlocksToTransfer.length === listRoot.innerBlocks.length - 1) {
@@ -729,7 +1106,7 @@ export function StyledListItem(props) {
 							[listRootClientId],
 							ancestorItemsAndLists[0],
 							block.clientId,
-							0
+							0,
 						);
 					} else {
 						///middle item of list gets outdented
@@ -737,7 +1114,7 @@ export function StyledListItem(props) {
 						insertBlock(
 							createBlock("ub/styled-list", {}, []),
 							0,
-							block.clientId
+							block.clientId,
 						);
 
 						setTimeout(() => {
@@ -748,7 +1125,7 @@ export function StyledListItem(props) {
 
 								getBlock(block.clientId).innerBlocks[0].clientId,
 
-								0
+								0,
 							);
 						}, 20);
 					}
@@ -775,21 +1152,188 @@ export function StyledListItem(props) {
 	useEffect(() => {
 		if (fontSize === -1) {
 			const listItemBlocks = getClientIdsOfDescendants([parents[0]]).filter(
-				(ID) => getBlock(ID).name === "ub/styled-list-item"
+				(ID) => getBlock(ID).name === "ub/styled-list-item",
 			);
 
 			updateBlockAttributes([parents[0], ...listItemBlocks], {
 				fontSize: parseInt(
-					getComputedStyle(listItemRef.current).fontSize.slice(0, -2)
+					getComputedStyle(listItemRef.current).fontSize.slice(0, -2),
 				),
 			});
 		} else {
 			toggleUseFontSize(fontSize > 0);
 		}
 	}, [fontSize]);
-
+	const rootIcon = listRoot?.attributes?.selectedIcon;
 	return (
-		<>
+		<div {...blockProps}>
+			<InspectorControls>
+				<PanelBody title={__("Icon", "ultimate-blocks")} initialOpen={true}>
+					<RadioControl
+						label={__("Icon Source", "ultimate-blocks")}
+						selected={iconSource || "fontawesome"}
+						options={[
+							{
+								label: __("Icon Library", "ultimate-blocks"),
+								value: "fontawesome",
+							},
+							{
+								label: __("Custom SVG", "ultimate-blocks"),
+								value: "custom",
+							},
+						]}
+						onChange={(value) => {
+							setAttributes({ iconSource: value });
+						}}
+					/>
+
+					{iconSource === "custom" ? (
+						<>
+							<TextareaControl
+								label={__("Custom SVG Code", "ultimate-blocks")}
+								value={customIconSVG || ""}
+								onChange={(value) => {
+									setAttributes({ customIconSVG: value });
+								}}
+								placeholder={__(
+									"Paste your SVG code here...",
+									"ultimate-blocks",
+								)}
+								rows={8}
+								help={__(
+									"Paste the complete SVG markup for your custom icon.",
+									"ultimate-blocks",
+								)}
+							/>
+							{customIconSVG && isValidSVG(customIconSVG) && (
+								<div
+									style={{
+										marginTop: "10px",
+										padding: "10px",
+										border: "1px solid #ddd",
+										borderRadius: "4px",
+										textAlign: "center",
+									}}
+								>
+									<p style={{ marginBottom: "5px", fontSize: "12px" }}>
+										{__("Preview:", "ultimate-blocks")}
+									</p>
+									<div
+										style={{
+											width: `${iconSize * 10}px`,
+											height: `${iconSize * 10}px`,
+											margin: "0 auto",
+											display: "inline-flex",
+											alignItems: "center",
+											justifyContent: "center",
+										}}
+										dangerouslySetInnerHTML={{ __html: customIconSVG }}
+									/>
+								</div>
+							)}
+							{customIconSVG && !isValidSVG(customIconSVG) && (
+								<Notice status="error" isDismissible={false}>
+									{__(
+										"The SVG code is not valid. Please check your markup.",
+										"ultimate-blocks",
+									)}
+								</Notice>
+							)}
+						</>
+					) : (
+						<IconControl
+							selectedIcon={selectedIcon}
+							label={__("Icon", "ultimate-blocks")}
+							onIconSelect={(newIcon) => {
+								if (newIcon) {
+									setAttributes({ selectedIcon: newIcon });
+								} else {
+									setAttributes({ selectedIcon: "" });
+								}
+							}}
+						/>
+					)}
+
+					<RangeControl
+						value={iconSize}
+						onChange={(iconSize) => {
+							setAttributes({ iconSize });
+						}}
+						min={1}
+						max={10}
+					/>
+				</PanelBody>
+			</InspectorControls>
+			<InspectorControls group="styles">
+				<PanelBody
+					title={__("Dimension Settings", "ultimate-blocks")}
+					initialOpen={false}
+				>
+					<SpacingControl
+						showByDefault
+						attrKey="padding"
+						label={__("Padding", "ultimate-blocks")}
+					/>
+					<SpacingControl
+						minimumCustomValue={-Infinity}
+						showByDefault
+						attrKey="margin"
+						label={__("Margin", "ultimate-blocks")}
+					/>
+				</PanelBody>
+			</InspectorControls>
+			<InspectorControls group="color">
+				<ColorSettings
+					label={__("Icon Color", "ultimate-blocks")}
+					attrKey="iconColor"
+				/>
+				<ColorSettings
+					label={__("Item Text Color", "ultimate-blocks")}
+					attrKey="itemTextColor"
+				/>
+				<ColorSettings
+					label={__("Item Background Color", "ultimate-blocks")}
+					attrKey="itemBackgroundColor"
+				/>
+			</InspectorControls>
+			<InspectorControls group="typography">
+				<FontFamilyControl
+					attrKey="itemFontFamily"
+					label={__("Font Family", "ultimate-blocks")}
+				/>
+				<CustomFontSizePicker
+					attrKey="itemFontSize"
+					label={__("Font Size", "ultimate-blocks")}
+				/>
+				<FontAppearanceControl
+					attrKey="itemFontAppearance"
+					label={__("Appearance", "ultimate-blocks")}
+				/>
+				<LineHeightControl
+					attrKey="itemLineHeight"
+					label={__("Line Height", "ultimate-blocks")}
+				/>
+				<LetterSpacingControl
+					attrKey="itemLetterSpacing"
+					label={__("Letter Spacing", "ultimate-blocks")}
+				/>
+				<TextDecorationControl
+					attrKey="itemTextDecoration"
+					label={__("Decoration", "ultimate-blocks")}
+				/>
+				<TextTransformControl
+					attrKey="itemTextTransform"
+					label={__("Text Transform", "ultimate-blocks")}
+				/>
+			</InspectorControls>
+			<BlockControls>
+				<GenericStyleControl
+					attributes={attributes}
+					setAttributes={setAttributes}
+					clipboard={styleClipboard}
+					blockName="Styled List Item"
+				/>
+			</BlockControls>
 			<BlockControls>
 				<Button
 					icon="editor-outdent"
@@ -810,7 +1354,7 @@ export function StyledListItem(props) {
 							insertBlock(
 								createBlock("ub/styled-list", {}, []),
 								0,
-								getPreviousBlockClientId(block.clientId)
+								getPreviousBlockClientId(block.clientId),
 							);
 						}
 
@@ -824,192 +1368,270 @@ export function StyledListItem(props) {
 									.innerBlocks[0].clientId, //get block id of newly-created list subblock
 
 								getBlock(getPreviousBlockClientId(block.clientId))
-									.innerBlocks[0].innerBlocks.length //ensure indented item moves to bottom of destination list
+									.innerBlocks[0].innerBlocks.length, //ensure indented item moves to bottom of destination list
 							);
 						}, 20);
 					}}
 				/>
 			</BlockControls>
-
-			<RichText
-				tagName="li"
-				id={`ub-styled-list-item-${blockID}`}
-				value={itemText}
-				placeholder={"List item"}
-				keepPlaceholderOnFocus={true}
-				onChange={(itemText) => setAttributes({ itemText })}
-				onSplit={(itemFragment) => {
-					const { blockID, itemText, ...filteredAttributes } = attributes;
-
-					return createBlock("ub/styled-list-item", {
-						filteredAttributes,
-						blockID: "",
-						itemText: itemFragment,
-					});
-				}}
-				onReplace={(replacements) => {
-					let replacementBlocks = [...replacements];
-					replacementBlocks[replacementBlocks.length - 1].innerBlocks =
-						block.innerBlocks;
-
-					replaceBlocks(block.clientId, replacementBlocks);
-				}}
-				onMerge={(mergeWithNext) => {
-					if (mergeWithNext) {
-						let targetBlock = "";
-
-						if (block.innerBlocks.length > 0) {
-							targetBlock = block.innerBlocks[0].innerBlocks[0].clientId;
-
-							//move is being performed correctly, but a clone of moved block remains for some reasons
-							moveBlocksToPosition(
-								[targetBlock], //present
-								block.innerBlocks[0].clientId, //present
-								listRootClientId, //
-								currentBlockIndex + 1 //get target position
-							);
-
-							if (
-								getBlock(block.clientId).innerBlocks[0].innerBlocks.length > 0
-							) {
-								moveBlocksToPosition(
-									[block.innerBlocks[0].clientId], //present
-									block.clientId, //present
-									targetBlock, //
-									0 //get target position
-								);
-							} else {
-								removeBlock(getBlock(block.clientId).innerBlocks[0].clientId);
-							}
-						} else {
-							const findNextItem = (id, ancestors) => {
-								if (
-									getBlockIndex(id) + 1 <
-									getBlock(ancestors[0]).innerBlocks.length
-								) {
-									return getBlock(ancestors[0]).innerBlocks[
-										getBlockIndex(id) + 1
-									].clientId;
-								} else {
-									if (ancestors.length === 1) {
-										return "";
-									} else {
-										return findNextItem(ancestors[1], ancestors.slice(2));
-									}
-								}
-							};
-
-							targetBlock = findNextItem(
-								block.clientId,
-								getBlockParents(block.clientId, true).filter((b) =>
-									["ub/styled-list", "ub/styled-list-item"].includes(
-										getBlock(b).name
-									)
-								)
-							);
-
-							if (![null, ""].includes(targetBlock)) {
-								const parentLists = getBlockParents(
-									block.clientId,
-									true
-								).filter((b) => getBlock(b).name === "ub/styled-list");
-
-								if (
-									getBlock(parentLists[0]).innerBlocks.filter(
-										(i) => i.clientId === targetBlock
-									).length > 0 ||
-									getBlock(
-										parentLists[parentLists.length - 1]
-									).innerBlocks.filter((i) => i.clientId === targetBlock)
-										.length > 0
-								) {
-									updateBlockAttributes(block.clientId, {
-										itemText:
-											itemText + getBlock(targetBlock).attributes.itemText,
-									});
-
-									//outdent child blocks, merge only with blocks on the same level
-
-									if (getBlock(targetBlock).innerBlocks.length > 0) {
-										if (targetBlock === getNextBlockClientId()) {
-											moveBlocksToPosition(
-												[getBlock(targetBlock).innerBlocks[0].clientId], //present
-												targetBlock, //source
-												block.clientId, //destination
-												0 //get target position
-											);
-										} else {
-											const targetListItem = getBlock(
-												getPreviousBlockClientId(targetBlock)
-											);
-
-											moveBlocksToPosition(
-												getBlock(targetBlock).innerBlocks[0].innerBlocks.map(
-													(ib) => ib.clientId
-												),
-												getBlock(targetBlock).innerBlocks[0].clientId,
-												targetListItem.innerBlocks[0].clientId,
-												targetListItem.innerBlocks[0].innerBlocks.length
-											);
-										}
-									}
-
-									removeBlock(targetBlock);
-								}
-							}
-						}
-					} else {
-						if (currentBlockIndex > 0) {
-							const findLastDescendant = (id) => {
-								const ib = getBlock(id).innerBlocks;
-
-								if (getBlock(id).innerBlocks.length === 0) {
-									return id;
-								} else {
-									return findLastDescendant(ib[ib.length - 1].clientId);
-								}
-							};
-
-							const targetBlock = findLastDescendant(
-								getPreviousBlockClientId()
-							);
-
-							updateBlockAttributes(targetBlock, {
-								itemText: getBlock(targetBlock).attributes.itemText + itemText,
-							});
-
-							//also move subitems of soon-to-be-deleted block
-
-							if (block.innerBlocks.length > 0) {
-								moveBlocksToPosition(
-									block.innerBlocks.map((ib) => ib.clientId),
-									block.clientId,
-									targetBlock,
-									getBlock(targetBlock).innerBlocks.length
-								);
-							}
-
-							removeBlock(block.clientId);
-						} else {
-							outdentItem();
-						}
-					}
-
-					return mergeWithNext;
+			<li
+				className="ub_styled_list_item"
+				style={{
+					...(useFontSize ? { fontSize: `${fontSize}px` } : {}),
+					...(itemTextColor ? { color: itemTextColor } : {}),
+					...(itemBackgroundColor
+						? { backgroundColor: itemBackgroundColor }
+						: {}),
+					...(itemFontFamily ? { fontFamily: itemFontFamily } : {}),
+					...(itemFontSize ? { fontSize: itemFontSize } : {}),
+					...(itemFontStyle ? { fontStyle: itemFontStyle } : {}),
+					...(itemFontWeight ? { fontWeight: itemFontWeight } : {}),
+					...(itemLineHeight ? { lineHeight: itemLineHeight } : {}),
+					...(itemLetterSpacing ? { letterSpacing: itemLetterSpacing } : {}),
+					...(itemTextDecoration ? { textDecoration: itemTextDecoration } : {}),
+					...(itemTextTransform ? { textTransform: itemTextTransform } : {}),
 				}}
 				ref={
 					currentBlockIndex === 0 && parents.length === 1 ? listItemRef : null
 				}
-				style={useFontSize ? { fontSize: `${fontSize}px` } : null}
-			/>
-			{/* INSERT INNERBLOCKS HERE* */}
+				id={`ub-styled-list-item-${blockID}`}
+			>
+				<div className="ub_list_item_content">
+					<span className="ub_list_item_icon">
+						{iconSource === "custom" &&
+						customIconSVG &&
+						isValidSVG(customIconSVG) ? (
+							<div
+								style={{
+									width: `${(4 + iconSize) / 10}em`,
+									height: `${(4 + iconSize) / 10}em`,
+									display: "inline-flex",
+									alignItems: "center",
+									justifyContent: "center",
+								}}
+								dangerouslySetInnerHTML={{ __html: customIconSVG }}
+							/>
+						) : (
+							selectedIcon && (
+								<svg
+									width={`${(4 + iconSize) / 10}em`}
+									height={`${(4 + iconSize) / 10}em`}
+									xmlns="http://www.w3.org/2000/svg"
+									viewBox={`0 0 ${
+										allIcons[`fa${dashesToCamelcase(selectedIcon)}`].icon[0]
+									} ${allIcons[`fa${dashesToCamelcase(selectedIcon)}`].icon[1]}`}
+								>
+									<path
+										fill={iconColor}
+										d={allIcons[`fa${dashesToCamelcase(selectedIcon)}`].icon[4]}
+									></path>
+								</svg>
+							)
+						)}
+					</span>
+					<RichText
+						tagName="span"
+						value={itemText}
+						className="ub_list_item_text"
+						placeholder={"List item"}
+						keepPlaceholderOnFocus={true}
+						onChange={(itemText) => setAttributes({ itemText })}
+						identifier="itemText"
+						onSplit={(itemFragment) => {
+							const { blockID, itemText, ...filteredAttributes } = attributes;
+
+							return createBlock("ub/styled-list-item", {
+								...filteredAttributes,
+								blockID: "",
+								itemText: itemFragment,
+							});
+						}}
+						onReplace={(replacements) => {
+							let replacementBlocks = [...replacements];
+							replacementBlocks[replacementBlocks.length - 1].innerBlocks =
+								block.innerBlocks;
+
+							replaceBlocks(block.clientId, replacementBlocks);
+						}}
+						onMerge={(mergeWithNext) => {
+							if (mergeWithNext) {
+								let targetBlock = "";
+
+								if (block.innerBlocks.length > 0) {
+									targetBlock = block.innerBlocks[0].innerBlocks[0].clientId;
+
+									//move is being performed correctly, but a clone of moved block remains for some reasons
+									moveBlocksToPosition(
+										[targetBlock], //present
+										block.innerBlocks[0].clientId, //present
+										listRootClientId, //
+										currentBlockIndex + 1, //get target position
+									);
+
+									if (
+										getBlock(block.clientId).innerBlocks[0].innerBlocks.length >
+										0
+									) {
+										moveBlocksToPosition(
+											[block.innerBlocks[0].clientId], //present
+											block.clientId, //present
+											targetBlock, //
+											0, //get target position
+										);
+									} else {
+										removeBlock(
+											getBlock(block.clientId).innerBlocks[0].clientId,
+										);
+									}
+								} else {
+									const findNextItem = (id, ancestors) => {
+										if (
+											getBlockIndex(id) + 1 <
+											getBlock(ancestors[0]).innerBlocks.length
+										) {
+											return getBlock(ancestors[0]).innerBlocks[
+												getBlockIndex(id) + 1
+											].clientId;
+										} else {
+											if (ancestors.length === 1) {
+												return "";
+											} else {
+												return findNextItem(ancestors[1], ancestors.slice(2));
+											}
+										}
+									};
+
+									targetBlock = findNextItem(
+										block.clientId,
+										getBlockParents(block.clientId, true).filter((b) =>
+											["ub/styled-list", "ub/styled-list-item"].includes(
+												getBlock(b).name,
+											),
+										),
+									);
+
+									if (![null, ""].includes(targetBlock)) {
+										const parentLists = getBlockParents(
+											block.clientId,
+											true,
+										).filter((b) => getBlock(b).name === "ub/styled-list");
+
+										if (
+											getBlock(parentLists[0]).innerBlocks.filter(
+												(i) => i.clientId === targetBlock,
+											).length > 0 ||
+											getBlock(
+												parentLists[parentLists.length - 1],
+											).innerBlocks.filter((i) => i.clientId === targetBlock)
+												.length > 0
+										) {
+											updateBlockAttributes(block.clientId, {
+												itemText:
+													itemText + getBlock(targetBlock).attributes.itemText,
+											});
+
+											//outdent child blocks, merge only with blocks on the same level
+
+											if (getBlock(targetBlock).innerBlocks.length > 0) {
+												if (targetBlock === getNextBlockClientId()) {
+													moveBlocksToPosition(
+														[getBlock(targetBlock).innerBlocks[0].clientId], //present
+														targetBlock, //source
+														block.clientId, //destination
+														0, //get target position
+													);
+												} else {
+													const targetListItem = getBlock(
+														getPreviousBlockClientId(targetBlock),
+													);
+
+													moveBlocksToPosition(
+														getBlock(
+															targetBlock,
+														).innerBlocks[0].innerBlocks.map(
+															(ib) => ib.clientId,
+														),
+														getBlock(targetBlock).innerBlocks[0].clientId,
+														targetListItem.innerBlocks[0].clientId,
+														targetListItem.innerBlocks[0].innerBlocks.length,
+													);
+												}
+											}
+
+											removeBlock(targetBlock);
+										}
+									}
+								}
+							} else {
+								if (currentBlockIndex > 0) {
+									const findLastDescendant = (id) => {
+										const ib = getBlock(id).innerBlocks;
+
+										if (getBlock(id).innerBlocks.length === 0) {
+											return id;
+										} else {
+											return findLastDescendant(ib[ib.length - 1].clientId);
+										}
+									};
+
+									const targetBlock = findLastDescendant(
+										getPreviousBlockClientId(),
+									);
+
+									updateBlockAttributes(targetBlock, {
+										itemText:
+											getBlock(targetBlock).attributes.itemText + itemText,
+									});
+
+									if (block.innerBlocks.length > 0) {
+										moveBlocksToPosition(
+											block.innerBlocks.map((ib) => ib.clientId),
+											block.clientId,
+											targetBlock,
+											getBlock(targetBlock).innerBlocks.length,
+										);
+									}
+
+									removeBlock(block.clientId);
+								} else {
+									outdentItem();
+								}
+							}
+
+							return mergeWithNext;
+						}}
+					/>
+				</div>
+			</li>
+
 			<InnerBlocks
 				template={[]} //initial content
 				templateLock={false}
 				allowedBlocks={["ub/styled-list"]}
 				renderAppender={false}
 			/>
-		</>
+			{/* {rootIcon !== selectedIcon && selectedIcon !== "" && (
+				<style
+					dangerouslySetInnerHTML={{
+						__html: `#ub-styled-list-item-${blockID}::before{
+					top: ${iconSize >= 5 ? 3 : iconSize < 3 ? 2 : 0}px !important;
+					height:${(4 + iconSize) / 10}em !important;
+					width:${(4 + iconSize) / 10}em !important;
+					background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${
+						allIcons[`fa${dashesToCamelcase(selectedIcon)}`].icon[0]
+					} ${
+						allIcons[`fa${dashesToCamelcase(selectedIcon)}`].icon[1]
+					}' color='${
+						iconColor ? `%23${iconColor.slice(1)}` : "inherit"
+					}'><path fill='currentColor' d='${
+						allIcons[`fa${dashesToCamelcase(selectedIcon)}`].icon[4]
+					}'></path></svg>") !important;
+						}
+					`,
+					}}
+				/>
+			)} */}
+		</div>
 	);
 }
 

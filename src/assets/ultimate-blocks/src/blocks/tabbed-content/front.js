@@ -134,6 +134,14 @@ function ub_handleTabEvent(tab) {
 						embeddedContent.style.removeProperty("width");
 						embeddedContent.style.removeProperty("height");
 					});
+
+				if (tabContent.dataset.tabAnchor) {
+					history.replaceState(
+						{ page: history.length },
+						document.getElementsByTagName("title")[0].innerHTML,
+						`#${tabContent.dataset.tabAnchor}`
+					); //doesn't trigger window.onhashchange
+				}
 			} else {
 				tabContent.classList.remove("active");
 				tabContent.classList.add("ub-hide");
@@ -599,12 +607,22 @@ function ub_hashTabSwitch() {
 					const tabBar =
 						targetElement.parentElement.previousElementSibling.children[0];
 
+					// Capture styles before modifying classes to avoid mismatch that causes
+					// all tabs to appear active when ub_handleTabEvent reads inverted styles
+					const tabBarChildren = Array.prototype.slice.call(tabBar.children);
+					const activeTabEl = tabBarChildren.find((t) => t.classList.contains("active"));
+					const inactiveTabEl = tabBarChildren.find((t) => !t.classList.contains("active"));
+					const activeStyle = activeTabEl ? activeTabEl.getAttribute("style") : null;
+					const defaultStyle = inactiveTabEl ? inactiveTabEl.getAttribute("style") : null;
+
 					Array.prototype.slice.call(tabBar.children).forEach((tab, j) => {
 						const probableAccordionToggle =
 							tabContents[ancestorTabIndexes[i]].previousElementSibling;
 						tab.setAttribute("aria-selected", j === ancestorTabIndexes[i]);
 						if (j === ancestorTabIndexes[i]) {
 							tab.classList.add("active");
+							tab.setAttribute("tabindex", 0);
+							if (activeStyle) tab.setAttribute("style", activeStyle);
 							tabContents[j].classList.add("active");
 							tabContents[j].classList.remove("ub-hide");
 
@@ -625,6 +643,8 @@ function ub_hashTabSwitch() {
 								});
 						} else {
 							tab.classList.remove("active");
+							tab.setAttribute("tabindex", -1);
+							if (defaultStyle) tab.setAttribute("style", defaultStyle);
 							tabContents[j].classList.remove("active");
 							tabContents[j].classList.add("ub-hide");
 							if (

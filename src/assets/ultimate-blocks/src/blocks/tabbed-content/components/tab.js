@@ -1,10 +1,12 @@
 import icon from "../icons/icon";
-
+import { useEffect } from "react";
+import metadata from "./block.json";
+import { getParentBlock } from "../../../common";
 const { __ } = wp.i18n;
 const { registerBlockType } = wp.blocks;
 
-const { InnerBlocks } = wp.blockEditor || wp.editor;
-const { withSelect } = wp.data;
+const { InnerBlocks, useBlockProps } = wp.blockEditor || wp.editor;
+const { useSelect } = wp.data;
 
 registerBlockType("ub/tab", {
 	title: __("Tab"),
@@ -47,55 +49,44 @@ registerBlockType("ub/tab", {
 	},
 });
 
-registerBlockType("ub/tab-block", {
-	title: __("Tab"),
-	parent: __("ub/tabbed-content-block"),
-	description: __("content of tab"),
+registerBlockType(metadata.name, {
+	...metadata,
 	icon: icon,
-	category: "ultimateblocks",
-	attributes: {
-		index: {
-			type: "number",
-			default: 0,
-		},
-		isActive: {
-			type: "boolean",
-			default: true,
-		},
-		parentID: {
-			type: "string",
-			default: "",
-		},
-	},
-	supports: {
-		inserter: false,
-		reusable: false,
-	},
-	edit: withSelect((select, ownProps) => ({
-		blockParentId: (
-			select("core/block-editor") || select("core/editor")
-		).getBlockRootClientId(ownProps.clientId),
-	}))(function (props) {
-		const { blockParentId, setAttributes } = props;
+	edit: function TabEdit(props) {
+		const { blockParentId, block } = useSelect(
+			(select) => {
+				const { getBlockRootClientId, getBlock } = select("core/block-editor");
+				return {
+					blockParentId: getBlockRootClientId(props.clientId),
+					block: getBlock(props.clientId),
+				};
+			},
+			[props.clientId],
+		);
+		const { setAttributes } = props;
 		const { parentID, isActive } = props.attributes;
+		const blockProps = useBlockProps({
+			style: { display: isActive ? "block" : "none" },
+		});
+		const rootBlock = getParentBlock(props.clientId, "core/block");
 
-		if (parentID === "" || parentID !== blockParentId) {
-			setAttributes({ parentID: blockParentId });
-		}
+		useEffect(() => {
+			if (!rootBlock && (parentID === "" || parentID !== blockParentId)) {
+				setAttributes({ parentID: blockParentId });
+			}
+		}, [parentID, blockParentId]);
+		const hasInnerBlocks = block?.innerBlocks?.length > 0;
 		return (
-			<div style={{ display: isActive ? "block" : "none" }}>
+			<div {...blockProps}>
 				<InnerBlocks
 					templateLock={false}
-					template={[
-						[
-							"core/paragraph",
-							{ placeholder: " " }, //blank string still results into Wordpress displaying default placeholder
-						],
-					]}
-					renderAppender={() => <InnerBlocks.ButtonBlockAppender />}
+					template={[["core/paragraph"]]}
+					renderAppender={() =>
+						hasInnerBlocks ? false : <InnerBlocks.ButtonBlockAppender />
+					}
 				/>
 			</div>
 		);
-	}),
+	},
 	save: () => <InnerBlocks.Content />,
 });

@@ -9,12 +9,17 @@ import icon from "./icons/icon";
 import { version_1_1_2 } from "./oldVersions";
 import { richTextToHTML } from "../../common";
 import { OldTabHolder, TabHolder } from "./components/editorDisplay";
-
-const { __ } = wp.i18n;
-const { registerBlockType, createBlock } = wp.blocks;
-const { compose } = wp.compose;
-const { withSelect, withDispatch } = wp.data;
-const { RichText, InnerBlocks } = wp.blockEditor || wp.editor;
+import metadata from "./block.json";
+import { __ } from "@wordpress/i18n";
+import { registerBlockType, createBlock } from "@wordpress/blocks";
+import { compose } from "@wordpress/compose";
+import {
+	withSelect,
+	withDispatch,
+	useSelect,
+	useDispatch,
+} from "@wordpress/data";
+import { RichText, InnerBlocks } from "@wordpress/block-editor";
 
 const oldAttributes = {
 	id: {
@@ -60,76 +65,6 @@ const oldAttributes = {
 	},
 };
 
-const attributes = {
-	blockID: {
-		type: "string",
-		default: "",
-	},
-	activeControl: {
-		type: "string",
-	},
-	activeTab: {
-		type: "number",
-		default: 0,
-	},
-	theme: {
-		type: "string",
-		default: "#eeeeee",
-	},
-	normalColor: {
-		type: "string",
-		default: "",
-	},
-	titleColor: {
-		type: "string",
-		default: "#000000",
-	},
-	normalTitleColor: {
-		type: "string",
-		default: "#000000",
-	},
-	borderColor: {
-		type: "string",
-		default: "#d3d3d3",
-	},
-	tabsTitle: {
-		type: "array",
-		default: [],
-	},
-	tabsAlignment: {
-		type: "string",
-		default: "left",
-	},
-	tabsTitleAlignment: {
-		type: "array",
-		default: [],
-	},
-	tabsAnchor: {
-		type: "array",
-		default: [],
-	},
-	useAnchors: {
-		type: "boolean",
-		default: false,
-	},
-	tabVertical: {
-		type: "boolean",
-		default: false,
-	},
-	tabletTabDisplay: {
-		type: "string",
-		default: "horizontaltab",
-	},
-	mobileTabDisplay: {
-		type: "string",
-		default: "horizontaltab",
-	},
-	tabStyle: {
-		type: "string",
-		default: "tabs",
-	},
-};
-
 /**
  * Register: aa Gutenberg Block.
  *
@@ -158,9 +93,10 @@ registerBlockType("ub/tabbed-content", {
 		withSelect((select, ownProps) => {
 			const { getBlock, getSelectedBlock } =
 				select("core/block-editor") || select("core/editor");
+			const block = getBlock(ownProps.clientId);
 
 			return {
-				block: getBlock(ownProps.clientId),
+				block,
 				selectedBlock: getSelectedBlock(),
 			};
 		}),
@@ -237,7 +173,7 @@ registerBlockType("ub/tabbed-content", {
 								tabContent.push(
 									createBlock("core/paragraph", {
 										content: paragraph,
-									})
+									}),
 								);
 							} else if (paragraph.type === "br") {
 								if (t.content[i - 1].type === "br") {
@@ -247,7 +183,7 @@ registerBlockType("ub/tabbed-content", {
 								tabContent.push(
 									createBlock("core/paragraph", {
 										content: richTextToHTML(paragraph),
-									})
+									}),
 								);
 							}
 						});
@@ -261,46 +197,67 @@ registerBlockType("ub/tabbed-content", {
 	],
 });
 
-registerBlockType("ub/tabbed-content-block", {
-	title: __("Tabbed Content"),
+registerBlockType(metadata.name, {
+	...metadata,
+	attributes: metadata.attributes,
 	icon: icon,
-	category: "ultimateblocks",
-	keywords: [__("Tabbed Content"), __("Tabs"), __("Ultimate Blocks")],
-	attributes,
-	supports: {
-		align: ["wide", "full"],
+	example: {},
+	edit: (props) => {
+		const {
+			block,
+			selectedBlock,
+			rootBlockClientId,
+			getBlock,
+			getClientIdsWithDescendants,
+		} = useSelect(
+			(select) => {
+				const {
+					getBlock,
+					getSelectedBlock,
+					getClientIdsWithDescendants,
+					getBlockRootClientId,
+				} = select("core/block-editor");
+				// `block` is null when this instance was never actually inserted
+				// into the real block-editor store (e.g. a <BlockPreview> preview
+				// render), so it can't be looked up by clientId, guard against
+				// that instead of throwing here and blanking the whole render.
+				const block = getBlock(props.clientId);
+				return {
+					block,
+					selectedBlock: getSelectedBlock(),
+					rootBlockClientId: block
+						? getBlockRootClientId(block.clientId)
+						: null,
+					getBlock,
+					getClientIdsWithDescendants,
+				};
+			},
+			[props.clientId],
+		);
+		const {
+			updateBlockAttributes,
+			insertBlock,
+			removeBlock,
+			moveBlockToPosition,
+			selectBlock,
+		} = useDispatch("core/block-editor");
+
+		return (
+			<TabHolder
+				{...props}
+				block={block}
+				selectedBlock={selectedBlock}
+				rootBlockClientId={rootBlockClientId}
+				getBlock={getBlock}
+				getClientIdsWithDescendants={getClientIdsWithDescendants}
+				updateBlockAttributes={updateBlockAttributes}
+				insertBlock={insertBlock}
+				removeBlock={removeBlock}
+				moveBlockToPosition={moveBlockToPosition}
+				selectBlock={selectBlock}
+			/>
+		);
 	},
-
-	edit: compose([
-		withSelect((select, ownProps) => {
-			const { getBlock, getSelectedBlock, getClientIdsWithDescendants } =
-				select("core/block-editor") || select("core/editor");
-
-			return {
-				block: getBlock(ownProps.clientId),
-				selectedBlock: getSelectedBlock(),
-				getBlock,
-				getClientIdsWithDescendants,
-			};
-		}),
-		withDispatch((dispatch) => {
-			const {
-				updateBlockAttributes,
-				insertBlock,
-				removeBlock,
-				moveBlockToPosition,
-				selectBlock,
-			} = dispatch("core/block-editor") || dispatch("core/editor");
-
-			return {
-				updateBlockAttributes,
-				insertBlock,
-				removeBlock,
-				moveBlockToPosition,
-				selectBlock,
-			};
-		}),
-	])(TabHolder),
 
 	save: () => <InnerBlocks.Content />,
 });

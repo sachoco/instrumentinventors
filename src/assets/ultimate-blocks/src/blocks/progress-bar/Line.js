@@ -6,7 +6,7 @@ Copyright (c) 2014-present yiminghe
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to use, 
+the Software without restriction, including without limitation the rights to use,
 copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
 Software, and to permit persons to whom the Software is furnished to do so,
 subject to the following conditions:
@@ -21,14 +21,35 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.*/
 
+import { __ } from "@wordpress/i18n";
+import { RichText } from "@wordpress/block-editor";
 import { useState, useEffect } from "react";
+import { generateStyles } from "../utils/styling-helpers";
 
 export default function Line(props) {
 	const [indicator, setIndicator] = useState(0);
 	const [isActive, setIsActive] = useState(false);
 
-	const { barColor, barBackgroundColor, barThickness, percent, labelColor } =
-		props;
+	const {
+		barColor,
+		barBackgroundColor,
+		barThickness,
+		percent,
+		labelColor,
+		percentagePosition,
+		textPosition,
+		isStripe,
+		detailAlign,
+		detail,
+		setAttributes,
+		alignment,
+		descriptionColor,
+		showNumber,
+		numberPrefix,
+		numberSuffix,
+		labelStyles,
+		lineStyles,
+	} = props;
 
 	useEffect(() => {
 		setTimeout(() => {
@@ -47,12 +68,54 @@ export default function Line(props) {
 		100 - barThickness / 2
 	},${barThickness / 2}`;
 
+	const insideLabelClass =
+		percentagePosition === "inside" ? " ub_progress-bar-label-inside" : "";
+	const stripeStyleClass = isStripe ? " ub_progress-bar-stripe" : "";
+
+	const descriptionEl = (
+		<div
+			className="ub_progress-detail-wrapper"
+			style={{ justifyContent: alignment }}
+		>
+			<div className="ub_progress-bar-text">
+				<RichText
+					tagName="p"
+					style={generateStyles({
+						textAlign: detailAlign,
+						color: descriptionColor,
+					})}
+					placeholder={__("Progress bar description")}
+					value={detail}
+					onChange={(text) => setAttributes({ detail: text })}
+					keepPlaceholderOnFocus={true}
+				/>
+			</div>
+			{showNumber && percentagePosition === "top" && (
+				<div
+					className="ub_progress-bar-label ub_progress-bar-label-top"
+					style={{
+						visibility: isActive ? "visible" : "hidden",
+						...labelStyles,
+					}}
+				>
+					<span className="ub-progress-number-prefix">{numberPrefix}</span>
+					<span className="ub-progress-number-value">{percent}</span>
+					<span className="ub-progress-number-suffix">{numberSuffix}</span>
+				</div>
+			)}
+		</div>
+	);
+
 	return (
-		<div className="ub_progress-bar-container">
+		<div
+			className={`ub_progress-bar-container${insideLabelClass}${stripeStyleClass}`}
+		>
+			{textPosition !== "bottom" && descriptionEl}
 			<svg
 				className="ub_progress-bar-line"
 				viewBox={`0 0 100 ${barThickness}`}
 				preserveAspectRatio="none"
+				style={lineStyles}
 			>
 				<path
 					className="ub_progress-bar-line-trail"
@@ -67,17 +130,53 @@ export default function Line(props) {
 					strokeWidth={barThickness}
 					style={{ strokeDashoffset: `${100 - indicator}px` }}
 				/>
+				{isStripe && (
+					<foreignObject width="100%" height="100%">
+						<div className="ub_progress-bar-line-stripe" />
+					</foreignObject>
+				)}
+				{showNumber && percentagePosition === "inside" && (
+					<foreignObject
+						width="100%"
+						height="100%"
+						viewBox="0 0 120 10"
+						x="0"
+						y="0"
+					>
+						<div
+							className="ub_progress-bar-label"
+							style={{
+								visibility: isActive ? "visible" : "hidden",
+								...labelStyles,
+							}}
+						>
+							<p>
+								<span className="ub-progress-number-prefix">
+									{numberPrefix}
+								</span>
+								<span className="ub-progress-number-value">{percent}</span>
+								<span className="ub-progress-number-suffix">
+									{numberSuffix}
+								</span>
+							</p>
+						</div>
+					</foreignObject>
+				)}
 			</svg>
-			<div
-				className="ub_progress-bar-label"
-				style={{
-					width: `${percent}%`,
-					visibility: isActive ? "visible" : "hidden",
-					color: labelColor || "inherit",
-				}}
-			>
-				{percent}%
-			</div>
+			{showNumber && percentagePosition === "bottom" && (
+				<div
+					className="ub_progress-bar-label"
+					style={{
+						visibility: isActive ? "visible" : "hidden",
+						...labelStyles,
+					}}
+				>
+					<span className="ub-progress-number-prefix">{numberPrefix}</span>
+					<span className="ub-progress-number-value">{percent}</span>
+					<span className="ub-progress-number-suffix">{numberSuffix}</span>
+				</div>
+			)}
+			{textPosition === "bottom" && descriptionEl}
 		</div>
 	);
 }

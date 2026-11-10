@@ -33,12 +33,13 @@ import {
 	EditorComponent,
 } from "./components";
 import { useState } from "react";
+import metadata from "./block.json";
 
-const { withDispatch, withSelect } = wp.data;
+import { withDispatch, withSelect, select } from "@wordpress/data";
 
-const { compose } = wp.compose;
-const { __ } = wp.i18n;
-const { registerBlockType, createBlock } = wp.blocks;
+import { compose } from "@wordpress/compose";
+import { __ } from "@wordpress/i18n";
+import { registerBlockType, createBlock } from "@wordpress/blocks";
 
 /**
  * Register: aa Gutenberg Block.
@@ -53,77 +54,6 @@ const { registerBlockType, createBlock } = wp.blocks;
  * @return {?WPBlock}          The block, if it has been successfully
  *                             registered; otherwise `undefined`.
  */
-
-const attributes = {
-	blockID: {
-		type: "string",
-		default: "",
-	},
-	buttonText: {
-		type: "string",
-		default: "Button Text",
-	},
-	align: {
-		type: "string",
-		default: "",
-	},
-	url: {
-		type: "string",
-		default: "",
-	},
-	size: {
-		type: "string",
-		default: "medium",
-	},
-	buttonColor: {
-		type: "string",
-		default: "#313131",
-	},
-	buttonHoverColor: {
-		type: "string",
-		default: "#313131",
-	},
-	buttonTextColor: {
-		type: "string",
-		default: "#ffffff",
-	},
-	buttonTextHoverColor: {
-		type: "string",
-		default: "#ffffff",
-	},
-	buttonRounded: {
-		type: "boolean",
-		default: true,
-	},
-	chosenIcon: {
-		type: "string",
-		default: "",
-	},
-	iconPosition: {
-		type: "string",
-		default: "left",
-	},
-	buttonIsTransparent: {
-		type: "boolean",
-		default: false,
-	},
-	addNofollow: {
-		type: "boolean",
-		default: false,
-	},
-	openInNewTab: {
-		type: "boolean",
-		default: true,
-	},
-	buttonWidth: {
-		type: "string",
-		default: "flex",
-	},
-	buttons: {
-		type: "array",
-		default: [],
-	},
-};
 
 registerBlockType("ub/button-block", {
 	title: __("Button (Improved)", "ultimate-blocks"),
@@ -149,7 +79,7 @@ registerBlockType("ub/button-block", {
 	edit: compose([
 		withSelect((select, ownProps) => ({
 			block: (select("core/block-editor") || select("core/editor")).getBlock(
-				ownProps.clientId
+				ownProps.clientId,
 			),
 		})),
 		withDispatch((dispatch) => ({
@@ -240,8 +170,8 @@ registerBlockType("ub/button-block", {
 								"ub/button",
 								Object.assign(otherAttributes, {
 									buttonText: mergeRichTextArray(attributes.buttonText),
-								})
-							)
+								}),
+							),
 						);
 					}}
 				>
@@ -310,7 +240,7 @@ registerBlockType("ub/button-block", {
 								<span className="ub-button-icon-holder">
 									{generateIcon(
 										allIcons[`fa${dashesToCamelcase(chosenIcon)}`],
-										presetIconSize[size]
+										presetIconSize[size],
 									)}
 								</span>
 							)}
@@ -328,33 +258,66 @@ registerBlockType("ub/button-block", {
 	],
 });
 
-registerBlockType("ub/button", {
-	title: __("Button (Improved)", "ultimate-blocks"),
-	icon: icon,
-	category: "ultimateblocks",
-	attributes,
-	keywords: [
-		__("Button", "ultimate-blocks"),
-		__("Buttons", "ultimate-blocks"),
-		__("Ultimate Blocks", "ultimate-blocks"),
-	],
-	edit: withSelect((select, ownProps) => {
-		const {
-			getBlock,
-			getBlockRootClientId,
-			getClientIdsWithDescendants,
-			getBlocks,
-		} = select("core/block-editor") || select("core/editor");
+/**
+ * Read the rendered styles of a core button so the transform can carry its
+ * colors over. The editor canvas is an iframe in current WordPress versions,
+ * so the button markup is not in the admin document, and it is missing
+ * altogether when the block was never rendered. Both cases returned null and
+ * made `getComputedStyle` throw, which broke the whole transform.
+ *
+ * @param {string} clientId client id of the core button
+ * @return {?CSSStyleDeclaration} computed styles, or null when not rendered
+ */
+const getRenderedButtonStyle = (clientId) => {
+	const selector = `#block-${clientId}>div`;
+	const canvas = document.querySelector('iframe[name="editor-canvas"]');
+	const buttonElement =
+		canvas?.contentDocument?.querySelector(selector) ||
+		document.querySelector(selector);
 
-		return {
-			getBlock,
-			block: getBlock(ownProps.clientId),
-			parentID: getBlockRootClientId(ownProps.clientId),
-			getClientIdsWithDescendants,
-			getBlocks,
-		};
-	})(EditorComponent),
+	return buttonElement
+		? buttonElement.ownerDocument.defaultView.getComputedStyle(buttonElement)
+		: null;
+};
+
+/**
+ * Fall back to the attributes when the button markup can't be read. Custom
+ * colors are kept on the block itself, palette colors only as a slug that has
+ * to be looked up in the editor's color settings.
+ *
+ * @param {Object} attributes attributes of the core button
+ * @return {Object} color and backgroundColor, either of which can be undefined
+ */
+const getButtonColorsFromAttributes = (attributes) => {
+	const settings = select("core/block-editor").getSettings();
+	//themes using theme.json keep their palettes grouped by origin instead
+	const groupedPalettes = Object.values(
+		settings.__experimentalFeatures?.color?.palette || {},
+	);
+	const palette = [settings.colors || [], ...groupedPalettes].flat();
+	const fromPalette = (slug) =>
+		palette.find((paletteColor) => paletteColor.slug === slug)?.color;
+
+	return {
+		color: attributes.style?.color?.text || fromPalette(attributes.textColor),
+		backgroundColor:
+			attributes.style?.color?.background ||
+			fromPalette(attributes.backgroundColor),
+	};
+};
+
+registerBlockType(metadata.name, {
+	...metadata,
+	edit: EditorComponent,
+	attributes: metadata.attributes,
 	save: () => null,
+	icon: icon,
+	example: {
+		attributes: {
+			buttonColor: "#f01313",
+			size: "medium",
+		},
+	},
 	transforms: {
 		from: [
 			{
@@ -439,30 +402,33 @@ registerBlockType("ub/button", {
 							}
 						}
 
-						const oldButtonStyle = window.getComputedStyle(
-							document.querySelector(`#block-${ib.clientId}>div`)
-						);
+						const oldButtonStyle =
+							getRenderedButtonStyle(ib.clientId) ||
+							getButtonColorsFromAttributes(ib.attributes);
 
 						const isUsingOutline =
 							"className" in ib.attributes &&
 							ib.attributes.className === "is-style-outline";
 
-						const buttonAttributes = Object.assign(
+						const oldTextColor =
+							oldButtonStyle.color || revisedDefaultProps.buttonTextColor;
+						const oldBackgroundColor =
+							oldButtonStyle.backgroundColor || revisedDefaultProps.buttonColor;
+
+						//start from a copy so one button's values can't leak into the next one
+						return Object.assign(
+							{},
 							revisedDefaultProps,
 							{
 								buttonRounded: Object.keys(radiusSettings).length > 0,
 								buttonText: ib.attributes.text || "",
-								buttonColor: isUsingOutline
-									? oldButtonStyle.color
-									: oldButtonStyle.backgroundColor,
-								buttonTextColor: oldButtonStyle.color,
+								buttonColor: isUsingOutline ? oldTextColor : oldBackgroundColor,
+								buttonTextColor: oldTextColor,
 								buttonIsTransparent: isUsingOutline,
 								url: ib.attributes.url,
 							},
-							radiusSettings
+							radiusSettings,
 						);
-
-						return JSON.parse(JSON.stringify(buttonAttributes)); //prevent old buttonAttributes values from overwriting new ones
 					});
 
 					return createBlock("ub/button", { buttons: newButtons });

@@ -1,19 +1,30 @@
 import { useEffect, useState } from "react";
-import { convertFromSeconds } from "../../common";
+import { convertFromSeconds, getParentBlock } from "../../common";
+import { SpacingControl } from "../components";
+import { getStyles } from "./get-styles";
+import { useSelect } from "@wordpress/data";
 
-const { __ } = wp.i18n; // Import __() from wp.i18n
+import { __ } from "@wordpress/i18n"; // Import __() from wp.i18n
 
-const { RichText, MediaUpload, InspectorControls } =
-	wp.blockEditor || wp.editor;
+import {
+	RichText,
+	MediaUpload,
+	InspectorControls,
+	BlockControls,
+	useBlockProps,
+} from "@wordpress/block-editor";
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
 
-const {
+import {
 	Button,
 	ToggleControl,
 	PanelBody,
 	RadioControl,
 	RangeControl,
 	SelectControl,
-} = wp.components;
+} from "@wordpress/components";
 
 function InspectorPanel(props) {
 	const {
@@ -83,196 +94,219 @@ function InspectorPanel(props) {
 	}
 
 	return (
-		<InspectorControls>
-			<PanelBody title={__("How To Settings")}>
-				<ToggleControl
-					label={__("Use sections")}
-					checked={useSections}
-					onChange={(useSections) => {
-						setAttributes({ useSections });
-						if (useSections) {
-							let newSection = JSON.parse(JSON.stringify(section));
-							newSection.forEach((ns, i) =>
-								ns.steps.forEach((s, j) => {
-									s.anchor = `section${i}step${j}`;
-								})
-							);
-							if (currentStep !== "") {
-								updateState({ currentStep: `section-0-${currentStep}` });
-							}
-						} else {
-							updateState({
-								currentStep: currentStep.slice(currentStep.indexOf("step")),
-							});
-							if (section.length < 1) {
-								setAttributes({
-									section: [{ sectionName: "", steps: [] }],
-								});
-							} else {
+		<>
+			<InspectorControls group="settings">
+				<PanelBody title={__("General")}>
+					<ToggleControl
+						label={__("Use sections")}
+						checked={useSections}
+						onChange={(useSections) => {
+							setAttributes({ useSections });
+							if (useSections) {
 								let newSection = JSON.parse(JSON.stringify(section));
-								newSection[0].steps.forEach((s, i) => {
-									s.anchor = `step${i}`;
-								});
-								setAttributes({ section: newSection });
-							}
-						}
-					}}
-				/>
-				<ToggleControl
-					label={__("Use additional recommended attributes")}
-					checked={advancedMode}
-					onChange={(advancedMode) => setAttributes({ advancedMode })}
-				/>
-				{advancedMode && (
-					<>
-						<ToggleControl
-							label={__("Include list of supplies")}
-							checked={includeSuppliesList}
-							onChange={(includeSuppliesList) =>
-								setAttributes({ includeSuppliesList })
-							}
-						/>
-						<ToggleControl
-							label={__("Include list of tools")}
-							checked={includeToolsList}
-							onChange={(includeToolsList) =>
-								setAttributes({ includeToolsList })
-							}
-						/>
-						<ToggleControl
-							label={__("Display the unit first in cost")}
-							checked={showUnitFirst}
-							onChange={(showUnitFirst) => setAttributes({ showUnitFirst })}
-						/>
-					</>
-				)}
-				{useSections && (
-					<RadioControl
-						label={__("Section list style")}
-						selected={sectionListStyle}
-						options={["none", "ordered", "unordered"].map((a) => ({
-							label: __(a),
-							value: a,
-						}))}
-						onChange={(sectionListStyle) => setAttributes({ sectionListStyle })}
-					/>
-				)}
-			</PanelBody>
-			{activeImage.width > 0 && (
-				<PanelBody title={__("Desktop image display settings")}>
-					<RangeControl
-						label={__("Image width")}
-						value={activeImage.width}
-						onChange={(imageWidth) => {
-							if (currentStep === "final") {
-								setAttributes({ finalImageWidth: imageWidth });
-							} else {
-								const parsed = currentStep.split("-");
-								let sectionClone = JSON.parse(JSON.stringify(section));
-								if (useSections) {
-									sectionNum = parseInt(parsed[1]);
-									stepNum = parseInt(parsed[3]);
-								} else {
-									stepNum = parseInt(parsed[1]);
+								newSection.forEach((ns, i) =>
+									ns.steps.forEach((s, j) => {
+										s.anchor = `section${i}step${j}`;
+									}),
+								);
+								if (currentStep !== "") {
+									updateState({ currentStep: `section-0-${currentStep}` });
 								}
-								sectionClone[Math.max(sectionNum, 0)].steps[
-									stepNum
-								].stepPic.width = imageWidth;
-
-								setAttributes({ section: sectionClone });
+							} else {
+								updateState({
+									currentStep: currentStep.slice(currentStep.indexOf("step")),
+								});
+								if (section.length < 1) {
+									setAttributes({
+										section: [{ sectionName: "", steps: [] }],
+									});
+								} else {
+									let newSection = JSON.parse(JSON.stringify(section));
+									newSection[0].steps.forEach((s, i) => {
+										s.anchor = `step${i}`;
+									});
+									setAttributes({ section: newSection });
+								}
 							}
 						}}
-						min={200}
-						max={800}
+					/>
+					<ToggleControl
+						label={__("Use additional recommended attributes")}
+						checked={advancedMode}
+						onChange={(advancedMode) => setAttributes({ advancedMode })}
+					/>
+					{advancedMode && (
+						<>
+							<ToggleControl
+								label={__("Include list of supplies")}
+								checked={includeSuppliesList}
+								onChange={(includeSuppliesList) =>
+									setAttributes({ includeSuppliesList })
+								}
+							/>
+							<ToggleControl
+								label={__("Include list of tools")}
+								checked={includeToolsList}
+								onChange={(includeToolsList) =>
+									setAttributes({ includeToolsList })
+								}
+							/>
+							<ToggleControl
+								label={__("Display the unit first in cost")}
+								checked={showUnitFirst}
+								onChange={(showUnitFirst) => setAttributes({ showUnitFirst })}
+							/>
+						</>
+					)}
+					{useSections && (
+						<RadioControl
+							label={__("Section list style")}
+							selected={sectionListStyle}
+							options={["none", "ordered", "unordered"].map((a) => ({
+								label: __(a),
+								value: a,
+							}))}
+							onChange={(sectionListStyle) =>
+								setAttributes({ sectionListStyle })
+							}
+						/>
+					)}
+				</PanelBody>
+
+				{advancedMode && includeSuppliesList && (
+					<PanelBody title={__("Supplies List")}>
+						<ToggleControl
+							label={__("Enable adding image for each supply")}
+							checked={addSupplyImages}
+							onChange={(addSupplyImages) => setAttributes({ addSupplyImages })}
+						/>
+						<RadioControl
+							label={__("Supplies list style")}
+							selected={suppliesListStyle}
+							options={["none", "ordered", "unordered"].map((a) => ({
+								label: __(a),
+								value: a,
+							}))}
+							onChange={(suppliesListStyle) =>
+								setAttributes({ suppliesListStyle })
+							}
+						/>
+					</PanelBody>
+				)}
+				{advancedMode && includeToolsList && (
+					<PanelBody title={__("Tools List")}>
+						<ToggleControl
+							label={__("Enable adding image for each tool")}
+							checked={addToolImages}
+							onChange={(addToolImages) => setAttributes({ addToolImages })}
+						/>
+						<RadioControl
+							label={__("Tools list style")}
+							selected={toolsListStyle}
+							options={["none", "ordered", "unordered"].map((a) => ({
+								label: __(a),
+								value: a,
+							}))}
+							onChange={(toolsListStyle) => setAttributes({ toolsListStyle })}
+						/>
+					</PanelBody>
+				)}
+				<PanelBody title={__("Title Tags")}>
+					<SelectControl
+						label={__("HowTo title tag")}
+						value={firstLevelTag}
+						options={tagList.map((tag) => ({ label: __(tag), value: tag }))}
+						onChange={(firstLevelTag) => setAttributes({ firstLevelTag })}
 					/>
 					<SelectControl
-						label={__("Image float")}
-						value={activeImage.float}
-						onChange={(newFloatValue) => {
-							if (currentStep === "final") {
-								setAttributes({ finalImageFloat: newFloatValue });
-							} else {
-								const parsed = currentStep.split("-");
-								let sectionClone = JSON.parse(JSON.stringify(section));
-								if (useSections) {
-									sectionNum = parseInt(parsed[1]);
-									stepNum = parseInt(parsed[3]);
+						label={__("Section title tag")}
+						value={secondLevelTag}
+						options={tagList.map((tag) => ({ label: __(tag), value: tag }))}
+						onChange={(secondLevelTag) => setAttributes({ secondLevelTag })}
+					/>
+					<SelectControl
+						label={__("Step title tag")}
+						value={thirdLevelTag}
+						options={tagList.map((tag) => ({ label: __(tag), value: tag }))}
+						onChange={(thirdLevelTag) => setAttributes({ thirdLevelTag })}
+					/>
+				</PanelBody>
+			</InspectorControls>
+			<InspectorControls group="styles">
+				{activeImage.width > 0 && (
+					<PanelBody title={__("Desktop image display settings")}>
+						<RangeControl
+							label={__("Image width")}
+							value={activeImage.width}
+							onChange={(imageWidth) => {
+								if (currentStep === "final") {
+									setAttributes({ finalImageWidth: imageWidth });
 								} else {
-									stepNum = parseInt(parsed[1]);
-								}
-								sectionClone[Math.max(sectionNum, 0)].steps[
-									stepNum
-								].stepPic.float = newFloatValue;
+									const parsed = currentStep.split("-");
+									let sectionClone = JSON.parse(JSON.stringify(section));
+									if (useSections) {
+										sectionNum = parseInt(parsed[1]);
+										stepNum = parseInt(parsed[3]);
+									} else {
+										stepNum = parseInt(parsed[1]);
+									}
+									sectionClone[Math.max(sectionNum, 0)].steps[
+										stepNum
+									].stepPic.width = imageWidth;
 
-								setAttributes({ section: sectionClone });
-							}
-						}}
-						options={["none", "left", "right"].map((a) => ({
-							label: a,
-							value: a,
-						}))}
+									setAttributes({ section: sectionClone });
+								}
+							}}
+							min={200}
+							max={800}
+						/>
+						<SelectControl
+							label={__("Image float")}
+							value={activeImage.float}
+							onChange={(newFloatValue) => {
+								if (currentStep === "final") {
+									setAttributes({ finalImageFloat: newFloatValue });
+								} else {
+									const parsed = currentStep.split("-");
+									let sectionClone = JSON.parse(JSON.stringify(section));
+									if (useSections) {
+										sectionNum = parseInt(parsed[1]);
+										stepNum = parseInt(parsed[3]);
+									} else {
+										stepNum = parseInt(parsed[1]);
+									}
+									sectionClone[Math.max(sectionNum, 0)].steps[
+										stepNum
+									].stepPic.float = newFloatValue;
+
+									setAttributes({ section: sectionClone });
+								}
+							}}
+							options={["none", "left", "right"].map((a) => ({
+								label: a,
+								value: a,
+							}))}
+						/>
+					</PanelBody>
+				)}
+				<PanelBody
+					title={__("Dimension Settings", "ultimate-blocks")}
+					initialOpen={false}
+				>
+					<SpacingControl
+						showByDefault
+						attrKey="padding"
+						label={__("Padding", "ultimate-blocks")}
+					/>
+					<SpacingControl
+						minimumCustomValue={-Infinity}
+						showByDefault
+						attrKey="margin"
+						label={__("Margin", "ultimate-blocks")}
 					/>
 				</PanelBody>
-			)}
-			{advancedMode && includeSuppliesList && (
-				<PanelBody title={__("Supplies list settings")}>
-					<ToggleControl
-						label={__("Enable adding image for each supply")}
-						checked={addSupplyImages}
-						onChange={(addSupplyImages) => setAttributes({ addSupplyImages })}
-					/>
-					<RadioControl
-						label={__("Supplies list style")}
-						selected={suppliesListStyle}
-						options={["none", "ordered", "unordered"].map((a) => ({
-							label: __(a),
-							value: a,
-						}))}
-						onChange={(suppliesListStyle) =>
-							setAttributes({ suppliesListStyle })
-						}
-					/>
-				</PanelBody>
-			)}
-			{advancedMode && includeToolsList && (
-				<PanelBody title={__("Tools list settings")}>
-					<ToggleControl
-						label={__("Enable adding image for each tool")}
-						checked={addToolImages}
-						onChange={(addToolImages) => setAttributes({ addToolImages })}
-					/>
-					<RadioControl
-						label={__("Tools list style")}
-						selected={toolsListStyle}
-						options={["none", "ordered", "unordered"].map((a) => ({
-							label: __(a),
-							value: a,
-						}))}
-						onChange={(toolsListStyle) => setAttributes({ toolsListStyle })}
-					/>
-				</PanelBody>
-			)}
-			<PanelBody title={__("Tag Settings")}>
-				<SelectControl
-					label={__("Howto title tag")}
-					value={firstLevelTag}
-					options={tagList.map((tag) => ({ label: __(tag), value: tag }))}
-					onChange={(firstLevelTag) => setAttributes({ firstLevelTag })}
-				/>
-				<SelectControl
-					label={__("Section title tag")}
-					value={secondLevelTag}
-					options={tagList.map((tag) => ({ label: __(tag), value: tag }))}
-					onChange={(secondLevelTag) => setAttributes({ secondLevelTag })}
-				/>
-				<SelectControl
-					label={__("Step title tag")}
-					value={thirdLevelTag}
-					options={tagList.map((tag) => ({ label: __(tag), value: tag }))}
-					onChange={(thirdLevelTag) => setAttributes({ thirdLevelTag })}
-				/>
-			</PanelBody>
-		</InspectorControls>
+			</InspectorControls>
+		</>
 	);
 }
 
@@ -300,7 +334,7 @@ const ListWrapper = (props) => {
 
 function HowToStep(props) {
 	const [startTime, setStartTime] = useState(
-		Object.assign({}, defaultTimeDisplay)
+		Object.assign({}, defaultTimeDisplay),
 	);
 	const [endTime, setEndTime] = useState(Object.assign({}, defaultTimeDisplay));
 	const [validTimeInput, setTimeValidationStatus] = useState(true);
@@ -344,8 +378,8 @@ function HowToStep(props) {
 					(c) =>
 						c.anchor !== clipId &&
 						((videoClipStart > c.clipStart && videoClipStart < c.clipEnd) ||
-							(videoClipEnd > c.clipStart && videoClipEnd < c.clipEnd))
-				).length === 0
+							(videoClipEnd > c.clipStart && videoClipEnd < c.clipEnd)),
+				).length === 0,
 			);
 		}
 	}, []);
@@ -360,8 +394,8 @@ function HowToStep(props) {
 					(c) =>
 						c.anchor !== clipId &&
 						((videoClipStart > c.clipStart && videoClipStart < c.clipEnd) ||
-							(videoClipEnd > c.clipStart && videoClipEnd < c.clipEnd))
-				).length === 0
+							(videoClipEnd > c.clipStart && videoClipEnd < c.clipEnd)),
+				).length === 0,
 		);
 	}, [videoClipStart, videoClipEnd]);
 
@@ -716,6 +750,7 @@ function HowToSection(props) {
 		blockIsSelected,
 		updateState,
 		currentStep,
+		addSection,
 	} = props;
 
 	return (
@@ -760,7 +795,7 @@ function HowToSection(props) {
 						deleteStep={() => {
 							let newSteps = [...steps.slice(0, i), ...steps.slice(i + 1)];
 							newSteps.forEach(
-								(step, j) => (step.anchor = `section${sectionNum}step${j}`)
+								(step, j) => (step.anchor = `section${sectionNum}step${j}`),
 							);
 							editSection({
 								sectionName,
@@ -779,7 +814,7 @@ function HowToSection(props) {
 									...steps.slice(i + 1),
 								];
 								newSteps.forEach(
-									(step, j) => (step.anchor = `section${sectionNum}step${j}`)
+									(step, j) => (step.anchor = `section${sectionNum}step${j}`),
 								);
 								editSection({ sectionName, steps: newSteps });
 								//set value of currentStep to recently-moved step
@@ -797,7 +832,7 @@ function HowToSection(props) {
 									...steps.slice(i + 2),
 								];
 								newSteps.forEach(
-									(step, j) => (step.anchor = `section${sectionNum}step${j}`)
+									(step, j) => (step.anchor = `section${sectionNum}step${j}`),
 								);
 								editSection({ sectionName, steps: newSteps });
 								updateState({
@@ -814,7 +849,7 @@ function HowToSection(props) {
 			<Button
 				className="ub_howto-button-default"
 				onClick={() => {
-					editSection({
+					addSection({
 						sectionName,
 						steps: [
 							...steps,
@@ -847,7 +882,17 @@ function HowToSection(props) {
 export function EditorComponent(props) {
 	const [videoURLInput, setVideoURLInput] = useState("");
 	const [currentStep, setCurrentStep] = useState("");
+	const { block, rootBlockClientId } = useSelect((select) => {
+		const { getBlock, getBlockRootClientId } =
+			select("core/block-editor") || select("core/editor");
+		const block = getBlock(props.clientId);
+		const rootBlockClientId = getBlockRootClientId(block.clientId);
 
+		return {
+			block,
+			rootBlockClientId,
+		};
+	});
 	useEffect(() => {
 		const {
 			attributes: { videoURL, section },
@@ -917,9 +962,6 @@ export function EditorComponent(props) {
 			thirdLevelTag,
 		},
 		setAttributes,
-		block,
-		getBlock,
-		getClientIdsWithDescendants,
 		isSelected,
 	} = props;
 
@@ -941,8 +983,8 @@ export function EditorComponent(props) {
 					hasVideoClip: false,
 					videoClipStart: 0,
 					videoClipEnd: 0,
-				})
-			)
+				}),
+			),
 		);
 
 		setAttributes({
@@ -952,7 +994,7 @@ export function EditorComponent(props) {
 			videoUploadDate: 0,
 			videoThumbnailURL: "",
 			videoEmbedCode: `<p>${__(
-				"When insertion is successful, video should appear here"
+				"When insertion is successful, video should appear here",
 			)}</p>`,
 			videoDuration: 0,
 		});
@@ -967,44 +1009,56 @@ export function EditorComponent(props) {
 			clipEnd: s.videoClipEnd,
 		}));
 
-	if (
-		blockID === "" ||
-		getClientIdsWithDescendants().some(
-			(ID) =>
-				"blockID" in getBlock(ID).attributes &&
-				getBlock(ID).attributes.blockID === blockID
-		)
-	) {
+	const styleClipboard = createStyleClipboard("ub_how_to_copied_style", [
+		"firstLevelTag",
+		"secondLevelTag",
+		"thirdLevelTag",
+		"sectionListStyle",
+		"toolsListStyle",
+		"suppliesListStyle",
+		"finalImageFloat",
+		"finalImageWidth",
+		"padding",
+		"margin",
+	]);
+
+	if (blockID === "") {
 		setAttributes({ blockID: block.clientId });
 	}
+	useEffect(() => {
+		const rootBlock = getParentBlock(rootBlockClientId, "core/block");
+		if (!rootBlock) {
+			setAttributes({ blockID: block.clientId });
+		}
+	}, [block?.clientId]);
 
 	const checkVideoURLInput = () => {
 		if (/^http(s)?:\/\//g.test(videoURLInput)) {
 			const youtubeMatch =
 				/^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/g.exec(
-					videoURLInput
+					videoURLInput,
 				);
 			const vimeoMatch =
 				/^(?:https?\:\/\/)?(?:www\.|player\.)?(?:vimeo\.com\/)([0-9]+)/g.exec(
-					videoURLInput
+					videoURLInput,
 				);
 			const dailyMotionMatch =
 				/^(?:https?\:\/\/)?(?:www\.)?(?:dailymotion\.com\/video|dai\.ly)\/([0-9a-z]+)(?:[\-_0-9a-zA-Z]+#video=([a-z0-9]+))?/g.exec(
-					videoURLInput
+					videoURLInput,
 				);
 			const videoPressMatch =
 				/^https?:\/\/(?:www\.)?videopress\.com\/(?:embed|v)\/([a-zA-Z0-9]{8,})/g.exec(
-					videoURLInput
+					videoURLInput,
 				);
 			if (youtubeMatch) {
 				fetch(
-					`https://www.googleapis.com/youtube/v3/videos?id=${youtubeMatch[1]}&part=snippet,contentDetails,player&key=AIzaSyDgItjYofyXkIZ4OxF6gN92PIQkuvU319c`
+					`https://www.googleapis.com/youtube/v3/videos?id=${youtubeMatch[1]}&part=snippet,contentDetails,player&key=AIzaSyDgItjYofyXkIZ4OxF6gN92PIQkuvU319c`,
 				)
 					.then((response) => {
 						response.json().then((data) => {
 							if (data.items.length) {
 								let timePeriods = data.items[0].contentDetails.duration.match(
-									/(\d{1,2}(?:W|D|H|M|S))/g
+									/(\d{1,2}(?:W|D|H|M|S))/g,
 								);
 								setAttributes({
 									videoURL: `https://www.youtube.com/watch?v=${youtubeMatch[1]}`,
@@ -1014,7 +1068,7 @@ export function EditorComponent(props) {
 										Date.parse(data.items[0].snippet.publishedAt) / 1000,
 									videoThumbnailURL: `https://i.ytimg.com/vi/${youtubeMatch[1]}/default.jpg`,
 									videoEmbedCode: decodeURIComponent(
-										data.items[0].player.embedHtml
+										data.items[0].player.embedHtml,
 									),
 									videoDuration: timePeriods.reduce((sum, part) => {
 										let multiplier = {
@@ -1059,8 +1113,8 @@ export function EditorComponent(props) {
 									});
 									fetch(
 										`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(
-											data[0].url
-										)}`
+											data[0].url,
+										)}`,
 									)
 										.then((response) => {
 											response.json().then((data) => {
@@ -1090,7 +1144,7 @@ export function EditorComponent(props) {
 					});
 			} else if (dailyMotionMatch) {
 				fetch(
-					`https://api.dailymotion.com/video/${dailyMotionMatch[1]}?fields=created_time%2Cthumbnail_1080_url%2Ctitle%2Cdescription%2Curl%2Cembed_html%2Cduration`
+					`https://api.dailymotion.com/video/${dailyMotionMatch[1]}?fields=created_time%2Cthumbnail_1080_url%2Ctitle%2Cdescription%2Curl%2Cembed_html%2Cduration`,
 				)
 					.then((response) => {
 						if (response.ok) {
@@ -1118,7 +1172,7 @@ export function EditorComponent(props) {
 					});
 			} else if (videoPressMatch) {
 				fetch(
-					`https://public-api.wordpress.com/rest/v1.1/videos/${videoPressMatch[1]}`
+					`https://public-api.wordpress.com/rest/v1.1/videos/${videoPressMatch[1]}`,
 				)
 					.then((response) => {
 						if (response.ok) {
@@ -1154,9 +1208,30 @@ export function EditorComponent(props) {
 			console.log("input is not a url");
 		}
 	};
+	const styles = getStyles(props.attributes);
+	const updateStep = (sectionIndex, stepIndex, newStep) => {
+		const newSections = section.map((sec, idx) => {
+			if (idx === sectionIndex) {
+				const newSteps = sec.steps.map((step, i) => {
+					return i === stepIndex ? { ...step, ...newStep } : step;
+				});
+				return { ...sec, steps: newSteps };
+			}
+			return sec;
+		});
 
+		setAttributes({ section: newSections });
+	};
 	return (
-		<>
+		<div {...useBlockProps()}>
+			<BlockControls>
+				<GenericStyleControl
+					attributes={props.attributes}
+					setAttributes={setAttributes}
+					clipboard={styleClipboard}
+					blockName="How To"
+				/>
+			</BlockControls>
 			<InspectorPanel
 				{...props}
 				videoURLInput={videoURLInput}
@@ -1168,7 +1243,7 @@ export function EditorComponent(props) {
 					//videoURLInput isn't being updated via updateState for now
 				}}
 			/>
-			<div className="ub_howto" id={`ub_howto-${blockID}`}>
+			<div className="ub_howto" id={`ub_howto-${blockID}`} style={styles}>
 				<RichText
 					tagName={firstLevelTag}
 					placeholder={__("How to title")}
@@ -1579,19 +1654,7 @@ export function EditorComponent(props) {
 									videoURL={videoURL}
 									videoDuration={videoDuration}
 									selectStep={() => setCurrentStep(`step-${i}`)}
-									editStep={(newStep) => {
-										setAttributes({
-											section: [
-												Object.assign(section[0], {
-													steps: [
-														...section[0].steps.slice(0, i),
-														Object.assign(section[0].steps[i], newStep),
-														...section[0].steps.slice(i + 1),
-													],
-												}),
-											],
-										});
-									}}
+									editStep={(newStep) => updateStep(0, i, newStep)}
 									deleteStep={() => {
 										let newSection = [
 											Object.assign(section[0], {
@@ -1813,34 +1876,34 @@ export function EditorComponent(props) {
 									.map((s, i) =>
 										s.steps
 											.map((st) =>
-												(({ width, float }) => ({ width, float }))(st.stepPic)
+												(({ width, float }) => ({ width, float }))(st.stepPic),
 											)
 											.map((img, j) =>
 												img.width > 0
 													? `#ub_howto-${blockID} .ub_howto-section:nth-child(${
 															i + 1
-													  }) .ub_howto-step:nth-child(${
+														}) .ub_howto-step:nth-child(${
 															j + 1
-													  }) figure { width: ${img.width}px; float: ${
+														}) figure { width: ${img.width}px; float: ${
 															img.float
-													  };}`
-													: ""
+														};}`
+													: "",
 											)
-											.join("")
+											.join(""),
 									)
 									.join("")
 							: section[0].steps
 									.map((s) =>
-										(({ width, float }) => ({ width, float }))(s.stepPic)
+										(({ width, float }) => ({ width, float }))(s.stepPic),
 									)
 									.map((img, i) =>
 										img.width > 0
 											? `#ub_howto-${blockID} .ub_howto-step:nth-child(${
 													i + 1
-											  }) figure { width: ${img.width}px; float: ${
+												}) figure { width: ${img.width}px; float: ${
 													img.float
-											  };}`
-											: ""
+												};}`
+											: "",
 									)
 									.join("")
 					}
@@ -1855,6 +1918,6 @@ export function EditorComponent(props) {
 					}`,
 				}}
 			/>
-		</>
+		</div>
 	);
 }

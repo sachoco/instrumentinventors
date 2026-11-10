@@ -1,30 +1,40 @@
-const { __ } = wp.i18n;
+import { __ } from "@wordpress/i18n";
 
-const { registerBlockType, createBlock } = wp.blocks;
-
-const {
+import { registerBlockType, createBlock } from "@wordpress/blocks";
+import { SpacingControl } from "../components";
+import { getParentBlock } from "../../common";
+import {
 	RichText,
 	BlockControls,
 	MediaUpload,
 	InspectorControls,
 	PanelColorSettings,
 	InnerBlocks,
-} = wp.blockEditor || wp.editor;
+	useBlockProps,
+} from "@wordpress/block-editor";
 
-const {
+import {
 	ToolbarGroup,
 	ToolbarButton,
 	Button,
 	SelectControl,
 	PanelBody,
 	RangeControl,
-} = wp.components;
+} from "@wordpress/components";
 
 const { compose } = wp.compose;
 
-const { withSelect, withDispatch } = wp.data;
+import {
+	withSelect,
+	withDispatch,
+	useSelect,
+	useDispatch,
+} from "@wordpress/data";
 
 import { useState, useEffect } from "react";
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
 import icon, {
 	info,
 	success,
@@ -39,9 +49,50 @@ import icon, {
 	borderedBoxIcon,
 	error,
 } from "./icon";
+import metadata from "./block.json";
+import borderBoxMetaData from "./styled-box-border/block.json";
+import notificationBoxMetaData from "./styled-box-notification/block.json";
+import numberBoxMetaData from "./styled-box-number/block.json";
+import numberBoxColumnMetaData from "./styled-box-numbered-box-column/block.json";
+import { generateStyles, getSpacingCss } from "../utils/styling-helpers";
 
 function StyledBox(props) {
 	const [editable, setEditable] = useState("");
+	const { block, rootBlockClientId } = useSelect((select) => {
+		const { getBlock, getBlockRootClientId } =
+			select("core/block-editor") || select("core/editor");
+		const block = getBlock(props.clientId);
+		const rootBlockClientId = getBlockRootClientId(block.clientId);
+
+		return {
+			block,
+			rootBlockClientId,
+		};
+	});
+	const {
+		insertBlock,
+		insertBlocks,
+		removeBlocks,
+		replaceInnerBlocks,
+		updateBlockAttributes,
+	} = useDispatch("core/block-editor");
+	const blockProps = useBlockProps();
+
+	const styleClipboard = createStyleClipboard("ub_styled_box_copied_style", [
+		"mode",
+		"foreColor",
+		"backColor",
+		"boxColor",
+		"outlineColor",
+		"outlineThickness",
+		"outlineStyle",
+		"outlineRoundingRadius",
+		"outlineRadiusUnit",
+		"titleAlign",
+		"textAlign",
+		"padding",
+		"margin",
+	]);
 
 	const {
 		attributes: {
@@ -61,17 +112,11 @@ function StyledBox(props) {
 			titleAlign,
 			textAlign,
 			blockID,
+			padding,
+			margin,
 		},
-		block,
-		getBlock,
-		getClientIdsWithDescendants,
 		setAttributes,
 		isSelected,
-		insertBlock,
-		insertBlocks,
-		replaceInnerBlocks,
-		removeBlocks,
-		updateBlockAttributes,
 	} = props;
 
 	let renderedBlock;
@@ -81,14 +126,7 @@ function StyledBox(props) {
 	let blockToolbarExtras;
 
 	useEffect(() => {
-		if (
-			blockID === "" ||
-			getClientIdsWithDescendants().some(
-				(ID) =>
-					"blockID" in getBlock(ID).attributes &&
-					getBlock(ID).attributes.blockID === props.attributes.blockID
-			)
-		) {
+		if (blockID === "") {
 			setAttributes({
 				blockID: block.clientId,
 				outlineThickness: blockID === "" ? 3 : outlineThickness,
@@ -97,7 +135,12 @@ function StyledBox(props) {
 			setAttributes({ outlineThickness: 1 });
 		}
 	}, []);
-
+	useEffect(() => {
+		const rootBlock = getParentBlock(rootBlockClientId, "core/block");
+		if (!rootBlock) {
+			setAttributes({ blockID: block.clientId });
+		}
+	}, [block?.clientId]);
 	const newValue = (arr, newLength, val = "") =>
 		newLength > arr.length
 			? [...arr, ...Array(newLength - arr.length).fill(val)]
@@ -126,14 +169,14 @@ function StyledBox(props) {
 										createBlock("ub/styled-box-numbered-box-column"),
 									].slice(0, i + 1 - block.innerBlocks.length),
 									block.innerBlocks.length,
-									block.clientId
+									block.clientId,
 								);
 							}
 							if (i + 1 < block.innerBlocks.length) {
 								removeBlocks(
 									block.innerBlocks
 										.map((i) => i.clientId)
-										.slice(i + 1 - block.innerBlocks.length)
+										.slice(i + 1 - block.innerBlocks.length),
 								);
 							}
 						} else {
@@ -161,10 +204,15 @@ function StyledBox(props) {
 			block.innerBlocks.length > 0 &&
 			block.innerBlocks[0].name !== "ub/styled-box-notification-content"
 		) {
-			replaceInnerBlocks(block.innerBlocks[0].clientId, [
-				createBlock("ub/styled-box-notification-content"),
+			replaceInnerBlocks(block.clientId, [
+				createBlock(
+					"ub/styled-box-notification-content",
+					{},
+					block.innerBlocks[0].innerBlocks,
+				),
 			]);
 		}
+
 		renderedBlock = (
 			<InnerBlocks
 				templateLock={"all"}
@@ -252,7 +300,7 @@ function StyledBox(props) {
 	} else if (mode === "feature") {
 		renderedBlock = Array(text.length)
 			.fill("")
-			.map((_, i) => (
+			?.map((_, i) => (
 				<div className="ub-feature">
 					{image[i] && image[i].id ? (
 						<>
@@ -301,10 +349,7 @@ function StyledBox(props) {
 								allowedTypes={["image"]}
 								value={image[i].id}
 								render={({ open }) => (
-									<Button
-										className="components-button button button-medium"
-										onClick={open}
-									>
+									<Button variant="primary" onClick={open}>
 										{__("Upload Image")}
 									</Button>
 								)}
@@ -367,8 +412,8 @@ function StyledBox(props) {
 							number: String(n),
 							title: title[i],
 						},
-						[createBlock("core/paragraph", { content: text[i] })]
-					)
+						[createBlock("core/paragraph", { content: text[i] })],
+					),
 				);
 
 				replaceInnerBlocks(block.clientId, convertedBlocks);
@@ -379,7 +424,7 @@ function StyledBox(props) {
 						title: "",
 					}),
 					0,
-					block.clientId
+					block.clientId,
 				);
 			}
 		}
@@ -425,7 +470,7 @@ function StyledBox(props) {
 							) {
 								updateBlockAttributes(
 									block.innerBlocks.map((i) => i.clientId),
-									{ backColor: colorValue }
+									{ backColor: colorValue },
 								);
 							}
 						},
@@ -443,7 +488,7 @@ function StyledBox(props) {
 							) {
 								updateBlockAttributes(
 									block.innerBlocks.map((i) => i.clientId),
-									{ numberColor: colorValue }
+									{ numberColor: colorValue },
 								);
 							}
 						},
@@ -460,7 +505,7 @@ function StyledBox(props) {
 							) {
 								updateBlockAttributes(
 									block.innerBlocks.map((i) => i.clientId),
-									{ borderColor: colorValue }
+									{ borderColor: colorValue },
 								);
 							}
 						},
@@ -474,8 +519,12 @@ function StyledBox(props) {
 			block.innerBlocks.length > 0 &&
 			block.innerBlocks[0].name !== "ub/styled-box-bordered-content"
 		) {
-			replaceInnerBlocks(block.innerBlocks[0].clientId, [
-				createBlock("ub/styled-box-bordered-content"),
+			replaceInnerBlocks(block.clientId, [
+				createBlock(
+					"ub/styled-box-bordered-content",
+					{},
+					block.innerBlocks[0].innerBlocks,
+				),
 			]);
 		}
 		renderedBlock = (
@@ -648,11 +697,30 @@ function StyledBox(props) {
 			setAttributes({ text: [""], textAlign: ["left"] });
 		}
 	}
+	const paddingObj = getSpacingCss(padding);
+	const marginObj = getSpacingCss(margin);
+
+	let styles = {
+		paddingTop: paddingObj?.top,
+		paddingRight: paddingObj?.right,
+		paddingBottom: paddingObj?.bottom,
+		paddingLeft: paddingObj?.left,
+		marginTop: marginObj?.top,
+		marginRight: marginObj?.right,
+		marginBottom: marginObj?.bottom,
+		marginLeft: marginObj?.left,
+	};
 
 	return (
-		<>
+		<div {...blockProps}>
 			{isSelected && (
 				<BlockControls>
+					<GenericStyleControl
+						attributes={props.attributes}
+						setAttributes={setAttributes}
+						clipboard={styleClipboard}
+						blockName="Styled Box"
+					/>
 					{blockToolbarExtras}
 					{mode !== "" && (
 						<ToolbarGroup>
@@ -662,11 +730,11 @@ function StyledBox(props) {
 									label={__(
 										(a !== "justify" ? "Align " : "") +
 											a[0].toUpperCase() +
-											a.slice(1)
+											a.slice(1),
 									)}
 									onClick={() => {
 										const columnNum = parseInt(
-											editable.slice(editable.length - 1)
+											editable.slice(editable.length - 1),
 										);
 										if (editable.includes("title")) {
 											setAttributes({
@@ -693,131 +761,64 @@ function StyledBox(props) {
 				</BlockControls>
 			)}
 			{isSelected && (
-				<InspectorControls>
-					{mode !== "" && (
-						<PanelBody>
-							<SelectControl
-								label="Select mode"
-								value={mode}
-								options={["number", "notification", "feature", "bordered"].map(
-									(a) => ({
+				<>
+					<InspectorControls group="settings">
+						{mode !== "" && (
+							<PanelBody>
+								<SelectControl
+									label="Select mode"
+									value={mode}
+									options={[
+										"number",
+										"notification",
+										"feature",
+										"bordered",
+									].map((a) => ({
 										label: `${a[0].toUpperCase() + a.slice(1)} box`,
 										value: a,
-									})
-								)}
-								onChange={(selection) => setAttributes({ mode: selection })}
+									}))}
+									onChange={(selection) => setAttributes({ mode: selection })}
+								/>
+							</PanelBody>
+						)}
+					</InspectorControls>
+					<InspectorControls group="styles">
+						{inspectorExtras}
+						<PanelBody
+							title={__("Dimension Settings", "ultimate-blocks")}
+							initialOpen={false}
+						>
+							<SpacingControl
+								showByDefault
+								attrKey="padding"
+								label={__("Padding", "ultimate-blocks")}
+							/>
+							<SpacingControl
+								minimumCustomValue={-Infinity}
+								showByDefault
+								attrKey="margin"
+								label={__("Margin", "ultimate-blocks")}
 							/>
 						</PanelBody>
-					)}
-					{inspectorExtras}
-				</InspectorControls>
+					</InspectorControls>
+				</>
 			)}
-			<div className={`ub-styled-box ub-${mode}-box`} style={extraStyles}>
+			<div
+				className={`ub-styled-box ub-${mode}-box`}
+				style={generateStyles({ ...extraStyles, ...styles })}
+			>
 				{renderedBlock}
 			</div>
-		</>
+		</div>
 	);
 }
 
-registerBlockType("ub/styled-box", {
-	title: __("Styled Box"),
+registerBlockType(metadata.name, {
+	...metadata,
 	icon: icon,
-	category: "ultimateblocks",
-	attributes: {
-		blockID: {
-			type: "string",
-			default: "",
-		},
-		text: {
-			type: "array",
-			default: [""],
-		},
-		textAlign: {
-			type: "array",
-			default: ["left"],
-		},
-		title: {
-			type: "array",
-			default: [""],
-		},
-		titleAlign: {
-			type: "array",
-			default: ["center"],
-		},
-		number: {
-			type: "array",
-			default: ["1", "2", "3"],
-		},
-		image: {
-			type: "array",
-			default: [{ id: null, alt: null, url: null }],
-		},
-		foreColor: {
-			type: "string",
-			default: "#000000",
-		},
-		backColor: {
-			type: "string",
-			default: "#CCCCCC",
-		},
-		boxColor: {
-			type: "string",
-			default: "",
-		},
-		outlineColor: {
-			type: "string",
-			default: "#000000",
-		},
-		outlineThickness: {
-			type: "number",
-			default: 0, //set to 3 for new inserts, but leave previously-inserted ones at 1
-		},
-		outlineStyle: {
-			type: "string",
-			default: "solid",
-		},
-		outlineRoundingRadius: {
-			type: "number",
-			default: 0,
-		},
-		outlineRadiusUnit: {
-			type: "string",
-			default: "percent", //other options: em, px
-		},
-		mode: {
-			type: "string",
-			default: "",
-		},
-	},
-
-	edit: compose([
-		withSelect((select, ownProps) => {
-			const { getBlock, getClientIdsWithDescendants } =
-				select("core/block-editor") || select("core/editor");
-
-			return {
-				block: getBlock(ownProps.clientId),
-				getBlock,
-				getClientIdsWithDescendants,
-			};
-		}),
-		withDispatch((dispatch) => {
-			const {
-				insertBlock,
-				insertBlocks,
-				removeBlocks,
-				replaceInnerBlocks,
-				updateBlockAttributes,
-			} = dispatch("core/block-editor") || dispatch("core/editor");
-			return {
-				insertBlock,
-				insertBlocks,
-				removeBlocks,
-				replaceInnerBlocks,
-				updateBlockAttributes,
-			};
-		}),
-	])(StyledBox),
+	attributes: metadata.attributes,
+	example: {},
+	edit: StyledBox,
 
 	save: (props) =>
 		["bordered", "notification", "number"].includes(props.attributes.mode) ? (
@@ -825,38 +826,27 @@ registerBlockType("ub/styled-box", {
 		) : null,
 });
 
-registerBlockType("ub/styled-box-bordered-content", {
-	title: __("Bordered Box Content"),
-	parent: ["ub/styled-box"],
+registerBlockType(borderBoxMetaData.name, {
+	...borderBoxMetaData,
 	icon: icon,
-	category: "ultimateblocks",
-	supports: {
-		inserter: false,
-		reusable: false,
-	},
-
-	edit: () => (
+	attributes: borderBoxMetaData.attributes,
+	edit: (props) => (
 		<InnerBlocks
 			templateLock={false}
 			template={[
 				["core/paragraph", { placeholder: "Enter content for bordered box" }],
 			]}
+			{...useBlockProps()}
 		/>
 	),
 
-	save: () => <InnerBlocks.Content />,
+	save: () => <InnerBlocks.Content {...useBlockProps.save()} />,
 });
 
-registerBlockType("ub/styled-box-notification-content", {
-	title: __("Notification Box Content"),
-	parent: ["ub/styled-box"],
+registerBlockType(notificationBoxMetaData.name, {
+	...notificationBoxMetaData,
 	icon: icon,
-	category: "ultimateblocks",
-	supports: {
-		inserter: false,
-		reusable: false,
-	},
-
+	attributes: notificationBoxMetaData.attributes,
 	edit: () => (
 		<InnerBlocks
 			templateLock={false}
@@ -866,100 +856,36 @@ registerBlockType("ub/styled-box-notification-content", {
 					{ placeholder: __("Enter content for notification box") },
 				],
 			]}
+			{...useBlockProps()}
 		/>
 	),
 
-	save: () => <InnerBlocks.Content />,
+	save: () => <InnerBlocks.Content {...useBlockProps.save()} />,
 });
 
-registerBlockType("ub/styled-box-numbered-content", {
-	title: __("Numbered Box Content"),
-	parent: ["ub/styled-box"],
+registerBlockType(numberBoxMetaData.name, {
+	...numberBoxMetaData,
 	icon: icon,
-	category: "ultimateblocks",
-	supports: {
-		inserter: false,
-		reusable: false,
-	},
-
+	attributes: numberBoxMetaData.attributes,
 	edit: () => (
 		<InnerBlocks
 			templateLock={false}
 			template={[
 				["core/paragraph", { placeholder: "Enter content for numbered box" }],
 			]}
+			{...useBlockProps()}
 		/>
 	),
 
-	save: () => <InnerBlocks.Content />,
+	save: () => <InnerBlocks.Content {...useBlockProps.save()} />,
 });
 
-registerBlockType("ub/styled-box-numbered-box-column", {
-	title: __("Numbered Box Column"),
-	parent: ["ub/styled-box"],
+registerBlockType(numberBoxColumnMetaData.name, {
+	...numberBoxColumnMetaData,
 	icon: icon,
-	category: "ultimateblocks",
-	supports: {
-		//parent is alredy set, do not set inserter to false
-		reusable: false,
-	},
-
-	attributes: {
-		blockID: {
-			type: "string",
-			default: "",
-		},
-		number: {
-			type: "string",
-			default: "",
-		},
-		title: {
-			type: "string",
-			default: "",
-		},
-		titleAlign: {
-			type: "string",
-			default: "center",
-		},
-		numberColor: {
-			type: "string",
-			default: "",
-		},
-		backColor: {
-			type: "string",
-			default: "",
-		},
-		borderColor: {
-			type: "string",
-			default: "",
-		},
-	},
-
-	edit: withSelect((select, ownProps) => {
-		const {
-			getBlock,
-			getBlockIndex,
-			getBlockRootClientId,
-			getClientIdsWithDescendants,
-		} = select("core/block-editor") || select("core/editor");
-
-		return {
-			block: getBlock(ownProps.clientId),
-			getBlock,
-			getBlockIndex,
-			getBlockRootClientId,
-			getClientIdsWithDescendants,
-		};
-	})(function (props) {
-		const {
-			attributes,
-			setAttributes,
-			block,
-			getBlock,
-			getBlockIndex,
-			getBlockRootClientId,
-			getClientIdsWithDescendants,
-		} = props;
+	attributes: numberBoxColumnMetaData.attributes,
+	edit: function (props) {
+		const { attributes, setAttributes } = props;
 		const {
 			blockID,
 			borderColor,
@@ -969,7 +895,28 @@ registerBlockType("ub/styled-box-numbered-box-column", {
 			title,
 			titleAlign,
 		} = attributes;
+		const {
+			block,
+			getBlock,
+			getBlockIndex,
+			getBlockRootClientId,
+			getClientIdsWithDescendants,
+		} = useSelect((select) => {
+			const {
+				getBlock,
+				getBlockIndex,
+				getBlockRootClientId,
+				getClientIdsWithDescendants,
+			} = select("core/block-editor") || select("core/editor");
 
+			return {
+				block: getBlock(props.clientId),
+				getBlock,
+				getBlockIndex,
+				getBlockRootClientId,
+				getClientIdsWithDescendants,
+			};
+		});
 		const {
 			outlineColor: parentOutlineColor,
 			foreColor: parentForeColor,
@@ -988,11 +935,7 @@ registerBlockType("ub/styled-box-numbered-box-column", {
 			}
 			if (
 				blockID === "" &&
-				getClientIdsWithDescendants().some(
-					(ID) =>
-						"blockID" in getBlock(ID).attributes &&
-						getBlock(ID).attributes.blockID === props.attributes.blockID
-				) /* PREVENT AUTOMATIC SETTING OF NUMBER SINCE NUMBER BLOCK STARTED WITHOUT BLOCKID ATTRIBUTE */ &&
+				/* PREVENT AUTOMATIC SETTING OF NUMBER SINCE NUMBER BLOCK STARTED WITHOUT BLOCKID ATTRIBUTE */
 				borderColor === "" &&
 				numberColor === "" &&
 				backColor === ""
@@ -1002,15 +945,20 @@ registerBlockType("ub/styled-box-numbered-box-column", {
 					number: String(
 						getBlockIndex(
 							block.clientId,
-							getBlockRootClientId(block.clientId)
-						) + 1
+							getBlockRootClientId(block.clientId),
+						) + 1,
 					),
 				});
 			}
 		}, []);
 
 		return (
-			<div className="ub-number-panel" style={{ borderColor: borderColor }}>
+			<div
+				{...useBlockProps({
+					className: "ub-number-panel",
+					style: { borderColor: borderColor },
+				})}
+			>
 				<div
 					className="ub-number-container"
 					style={{ backgroundColor: backColor }}
@@ -1020,8 +968,8 @@ registerBlockType("ub/styled-box-numbered-box-column", {
 						placeholder={__(
 							getBlockIndex(
 								block.clientId,
-								getBlockRootClientId(block.clientId)
-							) + 1
+								getBlockRootClientId(block.clientId),
+							) + 1,
 						)}
 						className="ub-number-display"
 						style={{ color: numberColor }}
@@ -1050,7 +998,7 @@ registerBlockType("ub/styled-box-numbered-box-column", {
 				/>
 			</div>
 		);
-	}),
+	},
 
 	save: () => <InnerBlocks.Content />,
 });

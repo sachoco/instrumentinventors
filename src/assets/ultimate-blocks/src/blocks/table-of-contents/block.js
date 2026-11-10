@@ -4,6 +4,7 @@ import TableOfContents, {
 	blockControls,
 	editorDisplay,
 } from "./components";
+
 import {
 	version_1_0_8,
 	version_1_0_9,
@@ -17,121 +18,32 @@ import {
 } from "./oldVersions";
 import { useState } from "react";
 
-const { __ } = wp.i18n; // Import __() from wp.i18n
-const { registerBlockType, createBlock } = wp.blocks;
-const { ToggleControl, PanelRow, PanelBody } = wp.components;
+import { __ } from "@wordpress/i18n";
+import { registerBlockType, createBlock } from "@wordpress/blocks";
+import { ToggleControl, PanelRow, PanelBody } from "@wordpress/components";
 
-const { InspectorControls, RichText } = wp.blockEditor || wp.editor;
+import {
+	InspectorControls,
+	RichText,
+	useBlockProps,
+} from "@wordpress/block-editor";
 
-const { withDispatch, withSelect } = wp.data;
+import { withDispatch, withSelect, useSelect } from "@wordpress/data";
+import { useEffect } from "@wordpress/element";
 
-const { compose } = wp.compose;
-
-import { upgradeButtonLabel, mergeRichTextArray } from "../../common";
-
-const attributes = {
-	blockID: {
-		type: "string",
-		default: "",
-	},
-	title: {
-		type: "string",
-		default: "",
-	},
-	allowedHeaders: {
-		type: "array",
-		default: Array(6).fill(true),
-	},
-	links: {
-		type: "string",
-		default: "",
-	},
-	gaps: {
-		type: "array",
-		default: [],
-	},
-	allowToCHiding: {
-		type: "boolean",
-		default: false,
-	},
-	hideOnMobile: {
-		type: "boolean",
-		default: false,
-	},
-	showList: {
-		type: "boolean",
-		default: true,
-	},
-	numColumns: {
-		type: "number",
-		default: 1,
-	},
-	listStyle: {
-		type: "string",
-		default: "bulleted", //other options: numbered, plain
-	},
-	enableSmoothScroll: {
-		type: "boolean",
-		default: false,
-	},
-	titleAlignment: {
-		type: "string",
-		default: "left",
-	},
-	allowToLatin: {
-		type: "boolean",
-		default: false,
-	},
-	removeDiacritics: {
-		type: "boolean",
-		default: false,
-	},
-	scrollOption: {
-		type: "string",
-		default: "auto", //other options: namedelement, fixedamount, off
-	},
-	scrollOffset: {
-		type: "number",
-		default: 0,
-	},
-	scrollTarget: {
-		type: "string",
-		default: "",
-	},
-	scrollTargetType: {
-		type: "string",
-		default: "id", //other types: class, element
-	},
-	titleColor: {
-		type: "string",
-		default: "",
-	},
-	titleBackgroundColor: {
-		type: "string",
-		default: "",
-	},
-	listColor: {
-		//must override link color in both frontend and editor
-		type: "string",
-		default: "",
-	},
-	listBackgroundColor: {
-		type: "string",
-		default: "",
-	},
-	listIconColor: {
-		type: "string",
-		default: "",
-	},
-	showText: {
-		type: "string",
-		default: "show",
-	},
-	hideText: {
-		type: "string",
-		default: "hide",
-	},
-};
+import { compose } from "@wordpress/compose";
+import metadata from "./block.json";
+import {
+	upgradeButtonLabel,
+	mergeRichTextArray,
+	getParentBlock,
+} from "../../common";
+import {
+	generateStyles,
+	getBorderCSS,
+	getSingleSideBorderValue,
+	getSpacingCss,
+} from "../utils/styling-helpers";
 
 registerBlockType("ub/table-of-contents", {
 	title: __("Table of Contents"),
@@ -140,7 +52,6 @@ registerBlockType("ub/table-of-contents", {
 	keywords: [__("Table of Contents"), __("Ultimate Blocks")],
 
 	attributes: oldAttributes,
-
 	supports: {
 		inserter: false,
 	},
@@ -148,7 +59,7 @@ registerBlockType("ub/table-of-contents", {
 	edit: compose([
 		withSelect((select, ownProps) => ({
 			block: (select("core/block-editor") || select("core/editor")).getBlock(
-				ownProps.clientId
+				ownProps.clientId,
 			),
 		})),
 		withDispatch((dispatch) => ({
@@ -186,7 +97,7 @@ registerBlockType("ub/table-of-contents", {
 						<PanelRow>
 							<label htmlFor="ub_toc_toggle_display">
 								{__(
-									"Allow users to toggle the visibility of the table of contents"
+									"Allow users to toggle the visibility of the table of contents",
 								)}
 							</label>
 							<ToggleControl
@@ -226,8 +137,8 @@ registerBlockType("ub/table-of-contents", {
 								"ub/table-of-contents-block",
 								Object.assign(otherAttributes, {
 									title: mergeRichTextArray(title),
-								})
-							)
+								}),
+							),
 						);
 					}}
 				>
@@ -303,64 +214,113 @@ registerBlockType("ub/table-of-contents", {
 	],
 });
 
-registerBlockType("ub/table-of-contents-block", {
-	title: __("Table of Contents"),
+registerBlockType(metadata.name, {
+	...metadata,
 	icon: icon,
-	category: "ultimateblocks",
-	keywords: [__("Table of Contents"), __("Ultimate Blocks")],
-	attributes,
-	supports: {
-		reusable: false,
-	},
-	edit: compose([
-		withSelect((select, ownProps) => {
-			const { getBlock, getClientIdsWithDescendants } =
-				select("core/block-editor") || select("core/editor");
+	attributes: metadata.attributes,
+	example: {},
+	edit: function TableOfContentsEdit(props) {
+		const { block, rootBlockClientId } = useSelect(
+			(select) => {
+				const { getBlock, getBlockRootClientId } = select("core/block-editor");
+				const block = getBlock(props.clientId);
 
-			return {
-				block: getBlock(ownProps.clientId),
-				getBlock,
-				getClientIdsWithDescendants,
-			};
-		}),
-	])(function (props) {
+				return {
+					block,
+					rootBlockClientId: getBlockRootClientId(block.clientId),
+				};
+			},
+			[props.clientId],
+		);
 		const {
 			isSelected,
-			block,
-			attributes: { blockID, showList },
-			getBlock,
-			getClientIdsWithDescendants,
+			attributes: { blockID, showList, padding, margin, border, borderRadius },
 		} = props;
 
 		const [canRemoveItemFocus, toggleCanRemoveItemFocus] = useState(false);
 
-		if (
-			blockID === "" ||
-			getClientIdsWithDescendants().some(
-				(ID) =>
-					"blockID" in getBlock(ID).attributes &&
-					getBlock(ID).attributes.blockID === blockID
-			)
-		) {
+		if (blockID === "") {
 			props.setAttributes({ blockID: block.clientId });
 		}
+		useEffect(() => {
+			const rootBlock = getParentBlock(rootBlockClientId, "core/block");
+			if (!rootBlock) {
+				props.setAttributes({ blockID: block.clientId });
+			}
+		}, [block?.clientId]);
+		// "Show more" works in the editor the same way as on the page: items
+		// past the limit, counted in reading order across all levels like
+		// block.php does, get the same class and stay hidden until the link is
+		// clicked. The list is rendered by its own component, so its items are
+		// marked after every render.
+		const { enableShowMore, showMoreLimit } = props.attributes;
+		const [showAllItems, setShowAllItems] = useState(false);
+		useEffect(() => {
+			const canvas =
+				document.querySelector('iframe[name="editor-canvas"]')
+					?.contentDocument ?? document;
+			const container = canvas.querySelector(
+				`#block-${props.clientId} .ub_table-of-contents-container`,
+			);
+			if (!container) {
+				return;
+			}
+			container.classList.toggle(
+				"ub-toc-show-all",
+				!enableShowMore || showAllItems,
+			);
+			container
+				.querySelectorAll("li")
+				.forEach((item, index) =>
+					item.classList.toggle(
+						"ub_table-of-contents-extra-item",
+						enableShowMore && index >= showMoreLimit,
+					),
+				);
+		});
 
+		const paddingObj = getSpacingCss(padding);
+		const marginObj = getSpacingCss(margin);
+
+		let styles = {
+			paddingTop: paddingObj?.top,
+			paddingRight: paddingObj?.right,
+			paddingBottom: paddingObj?.bottom,
+			paddingLeft: paddingObj?.left,
+			marginTop: marginObj?.top,
+			marginRight: marginObj?.right,
+			marginBottom: marginObj?.bottom,
+			marginLeft: marginObj?.left,
+			borderTop: getSingleSideBorderValue(getBorderCSS(border), "top"),
+			borderLeft: getSingleSideBorderValue(getBorderCSS(border), "left"),
+			borderRight: getSingleSideBorderValue(getBorderCSS(border), "right"),
+			borderBottom: getSingleSideBorderValue(getBorderCSS(border), "top"),
+			borderTopLeftRadius: borderRadius?.topLeft,
+			borderTopRightRadius: borderRadius?.topRight,
+			borderBottomLeftRadius: borderRadius?.bottomLeft,
+			borderBottomRightRadius: borderRadius?.bottomRight,
+		};
+		const blockProps = useBlockProps({
+			className: `ub_table-of-contents${
+				showList ? "" : " ub_table-of-contents-collapsed"
+			}`,
+			style: generateStyles(styles),
+		});
 		return [
 			isSelected && inspectorControls(props),
 			isSelected && blockControls(props),
-			<div
-				className={`ub_table-of-contents${
-					showList ? "" : " ub_table-of-contents-collapsed"
-				}`}
-				id={`ub_table-of-contents-${blockID}`}
-			>
-				{editorDisplay({
-					...props,
-					canRemoveItemFocus,
-					toggleCanRemoveItemFocus,
-				})}
+			<div {...blockProps}>
+				<div id={`ub_table-of-contents-${blockID}`}>
+					{editorDisplay({
+						...props,
+						canRemoveItemFocus,
+						toggleCanRemoveItemFocus,
+						showAllItems,
+						setShowAllItems,
+					})}
+				</div>
 			</div>,
 		];
-	}),
+	},
 	save: () => null,
 });

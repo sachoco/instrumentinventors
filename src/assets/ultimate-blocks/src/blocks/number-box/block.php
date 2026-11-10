@@ -3,28 +3,28 @@
 function ub_render_number_box_block($attributes){
     extract($attributes);
 
-    $column1 = '<div class="ub_number_1"'.($blockID===''?' style="border-color: '.$borderColor.';"':'').'>
-        <div class="ub_number_box_number"'.($blockID===''?' style="background-color: '.$numberBackground.';"':'').'>
-            <p class="ub_number_one_number"'.($blockID===''?' style="color: '.$numberColor.';"':'').'>'.$columnOneNumber.'</p>
+    $column1 = '<div class="ub_number_1" style="border-color: '. esc_attr($borderColor) .';">
+        <div class="ub_number_box_number" style="background-color: '. esc_attr($numberBackground) .';">
+            <p class="ub_number_one_number" style="color: '. esc_attr($numberColor) .';">'. wp_kses_post($columnOneNumber) .'</p>
         </div>
-        <p class="ub_number_one_title"'.($blockID===''?' style="text-align: '.$title1Align.';"':'').'>'.$columnOneTitle.'</p>
-        <p class="ub_number_one_body"'.($blockID===''?' style="text-align: '.$body1Align.';"':'').'>'.$columnOneBody.'</p>
+        <p class="ub_number_one_title" style="text-align: '. esc_attr($title1Align) .';">'. wp_kses_post($columnOneTitle) .'</p>
+        <p class="ub_number_one_body" style="text-align: '. esc_attr($body1Align) .';">'. wp_kses_post($columnOneBody) .'</p>
     </div>';
 
-    $column2 = '<div class="ub_number_2"'.($blockID===''?' style="border-color: '.$borderColor.';"':'').'>
-        <div class="ub_number_box_number"'.($blockID===''?' style="background-color: '.$numberBackground.';"':'').'>
-            <p class="ub_number_two_number"'.($blockID===''?' style="color: '.$numberColor.';"':'').'>'.$columnTwoNumber.'</p>
+    $column2 = '<div class="ub_number_2" style="border-color: '. esc_attr($borderColor) .';">
+        <div class="ub_number_box_number" style="background-color: '. esc_attr($numberBackground) .';">
+            <p class="ub_number_two_number" style="color: '. esc_attr($numberColor) .';">'. wp_kses_post($columnTwoNumber) .'</p>
         </div>
-        <p class="ub_number_two_title"'.($blockID===''?' style="text-align: '.$title2Align.';"':'').'>'.$columnTwoTitle.'</p>
-        <p class="ub_number_two_body"'.($blockID===''?' style="text-align: '.$body2Align.';"':'').'>'.$columnTwoBody.'</p>
+        <p class="ub_number_two_title" style="text-align: '. esc_attr($title2Align) .';">'. wp_kses_post($columnTwoTitle) .'</p>
+        <p class="ub_number_two_body" style="text-align: '. esc_attr($body2Align) .';">'. wp_kses_post($columnTwoBody) .'</p>
     </div>';
 
-    $column3 = '<div class="ub_number_3"'.($blockID===''?' style="border-color: '.$borderColor.';"':'').'>
-        <div class="ub_number_box_number"'.($blockID===''?' style="background-color: '.$numberBackground.';"':'').'>
-            <p class="ub_number_three_number"'.($blockID===''?' style="color: '.$numberColor.';"':'').'>'.$columnThreeNumber.'</p>
+    $column3 = '<div class="ub_number_3" style="border-color: '. esc_attr($borderColor) .';">
+        <div class="ub_number_box_number" style="background-color: '. esc_attr($numberBackground) .';">
+            <p class="ub_number_three_number" style="color: '. esc_attr($numberColor) .';">'. wp_kses_post($columnThreeNumber) .'</p>
         </div>
-        <p class="ub_number_three_title"'.($blockID===''?' style="text-align: '.$title3Align.';"':'').'>'.$columnThreeTitle.'</p>
-        <p class="ub_number_three_body"'.($blockID===''?' style="text-align: '.$body3Align.';"':'').'>'.$columnThreeBody.'</p>
+        <p class="ub_number_three_title" style="text-align: '. esc_attr($title3Align) .';">'. wp_kses_post($columnThreeTitle) .'</p>
+        <p class="ub_number_three_body" style="text-align: '. esc_attr($body3Align) .';">'. wp_kses_post($columnThreeBody) .'</p>
     </div>';
 
     $columns = $column1;
@@ -36,14 +36,14 @@ function ub_render_number_box_block($attributes){
         $columns .= $column3;
     }
 
-    return '<div class="ub_number_box column_'.$column.(isset($className) ? ' ' . esc_attr($className) : '').
-            '"'.($blockID===''?'':' id="ub-number-box-'.$blockID.'"').'>'.$columns.'</div>';
+    return '<div class="ub_number_box column_'. esc_attr($column) .(isset($className) ? ' ' . esc_attr($className) : '').
+            '"'.($blockID===''?'':' id="ub-number-box-'. esc_attr($blockID) .'"').'>'. $columns .'</div>';
 }
 
 function ub_register_number_box_block() {
-	if ( function_exists( 'register_block_type' ) ) {
+	if ( function_exists( 'register_block_type_from_metadata' ) ) {
         require dirname(dirname(__DIR__)) . '/defaults.php';
-        register_block_type( 'ub/number-box-block', array(
+        register_block_type_from_metadata( dirname(dirname(dirname(__DIR__))) . '/dist/blocks/number-box', array(
             'attributes' => $defaultValues['ub/number-box-block']['attributes'],
 			'render_callback' => 'ub_render_number_box_block'));
 	}

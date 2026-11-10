@@ -1,5 +1,51 @@
 /*Block styles*/
 .ub_image_slider {
+	.swiper-pagination {
+		.swiper-pagination-bullet:not(.swiper-pagination-bullet-active) {
+			background: var(--swiper-inactive-pagination-color, #000000);
+		}
+	}
+
+	// Ensure swiper container always hides overflow to prevent adjacent slides showing
+	.swiper-container,
+	.swiper {
+		overflow: hidden;
+	}
+
+	.swiper-button-prev,
+	.ub-swiper-button-prev {
+		padding: 30px;
+		background: var(--swiper-navigation-background-color);
+	}
+	.swiper-button-next,
+	.ub-swiper-button-next {
+		background: var(--swiper-navigation-background-color);
+		padding: 30px;
+	}
+
+	// Wrapper for outside navigation positioning
+	.ub-slider-wrapper {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 30px;
+
+		.swiper-container,
+		.swiper {
+			flex: 1;
+			overflow: hidden;
+		}
+
+		.ub-swiper-button-prev,
+		.ub-swiper-button-next {
+			position: relative;
+			flex-shrink: 0;
+		}
+		.swiper-pagination-bullets {
+			bottom: 0;
+		}
+	}
+
 	.ub_image_slider_image_caption {
 		display: block;
 		text-align: center;
@@ -16,14 +62,17 @@
 		figure > picture > img {
 			display: block;
 			margin: auto;
+			max-width: 100%;
+			width: 100%;
+			object-fit: cover;
 		}
 	}
 }
 
-@import "../../../node_modules/swiper/swiper";
-@import "../../../node_modules/swiper/components/navigation/navigation";
-@import "../../../node_modules/swiper/components/pagination/pagination";
-@import "../../../node_modules/swiper/components/effect-coverflow/effect-coverflow";
-@import "../../../node_modules/swiper/components/effect-cube/effect-cube";
-@import "../../../node_modules/swiper/components/effect-fade/effect-fade";
-@import "../../../node_modules/swiper/components/effect-flip/effect-flip";
+@import "../../../../../node_modules/swiper/swiper";
+@import "../../../../../node_modules/swiper/components/navigation/navigation";
+@import "../../../../../node_modules/swiper/components/pagination/pagination";
+@import "../../../../../node_modules/swiper/components/effect-coverflow/effect-coverflow";
+@import "../../../../../node_modules/swiper/components/effect-cube/effect-cube";
+@import "../../../../../node_modules/swiper/components/effect-fade/effect-fade";
+@import "../../../../../node_modules/swiper/components/effect-flip/effect-flip";

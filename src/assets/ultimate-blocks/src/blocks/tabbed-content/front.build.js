@@ -1,34 +1,29 @@
 "use strict";
 
 /* eslint-disable */
+
 if (!Element.prototype.matches) {
   Element.prototype.matches = Element.prototype.msMatchesSelector || Element.prototype.webkitMatchesSelector;
 }
-
 if (!Element.prototype.closest) {
   Element.prototype.closest = function (s) {
     var el = this;
-
     do {
       if (el.matches(s)) return el;
       el = el.parentElement || el.parentNode;
     } while (el !== null && el.nodeType === 1);
-
     return null;
   };
 }
-
 function ub_getSiblings(element, criteria) {
   var children = Array.prototype.slice.call(element.parentNode.children).filter(function (child) {
     return child !== element;
   });
   return criteria ? children.filter(criteria) : children;
 }
-
 function ub_getNodeindex(elem) {
   return Array.prototype.slice.call(elem.parentNode.children).indexOf(elem);
 }
-
 function ub_handleTabEvent(tab) {
   var parent = tab.closest(".wp-block-ub-tabbed-content-holder");
   var isVertical = parent.classList.contains("vertical-holder");
@@ -40,10 +35,8 @@ function ub_handleTabEvent(tab) {
     if (sibling.tabIndex === 0) {
       sibling.setAttribute("tabindex", -1);
     }
-
     sibling.classList.remove("active");
     sibling.setAttribute("aria-selected", false);
-
     if (defaultStyle) {
       sibling.setAttribute("style", defaultStyle);
     }
@@ -52,31 +45,22 @@ function ub_handleTabEvent(tab) {
   tab.classList.add("active");
   parent.dataset.activeTabs = JSON.stringify([parseInt(tab.id.match(/-\d+$/g)[0].slice(1))]);
   tab.setAttribute("tabindex", 0);
-
   var _tab$parentElement$ge = tab.parentElement.getBoundingClientRect(),
-      tabContainerWidth = _tab$parentElement$ge.width;
-
+    tabContainerWidth = _tab$parentElement$ge.width;
   var tabContainerLocation = tab.parentElement.getBoundingClientRect().x || tab.parentElement.getBoundingClientRect().left;
-
   var _tab$getBoundingClien = tab.getBoundingClientRect(),
-      tabWidth = _tab$getBoundingClien.width;
-
+    tabWidth = _tab$getBoundingClien.width;
   var tabLocation = tab.getBoundingClientRect().x || tab.getBoundingClientRect().left;
-
   if (tabContainerLocation > tabLocation) {
     tab.parentElement.scrollLeft -= tabContainerLocation - tabLocation;
   }
-
   if (tabLocation + tabWidth > tabContainerLocation + tabContainerWidth) {
     var scrollLeftChange = tabLocation - tabContainerLocation;
-
     if (tabWidth <= tabContainerWidth) {
       scrollLeftChange += tabWidth - tabContainerWidth;
     }
-
     tab.parentElement.scrollLeft += scrollLeftChange;
   }
-
   if (activeStyle) tab.setAttribute("style", activeStyle);
   var tabContentContainer = Array.prototype.slice.call(parent.children).filter(function (elem) {
     return elem.classList.contains("wp-block-ub-tabbed-content-tabs-content");
@@ -97,6 +81,11 @@ function ub_handleTabEvent(tab) {
         embeddedContent.style.removeProperty("width");
         embeddedContent.style.removeProperty("height");
       });
+      if (tabContent.dataset.tabAnchor) {
+        history.replaceState({
+          page: history.length
+        }, document.getElementsByTagName("title")[0].innerHTML, "#".concat(tabContent.dataset.tabAnchor)); //doesn't trigger window.onhashchange
+      }
     } else {
       tabContent.classList.remove("active");
       tabContent.classList.add("ub-hide");
@@ -112,10 +101,8 @@ function ub_handleTabEvent(tab) {
     }
   });
 }
-
 function ub_checkPrevTab(event) {
   event.preventDefault();
-
   if (event.target.previousElementSibling) {
     event.target.setAttribute("tabindex", -1);
     event.target.previousElementSibling.focus();
@@ -123,10 +110,8 @@ function ub_checkPrevTab(event) {
     ub_focusOnLastTab(event);
   }
 }
-
 function ub_checkNextTab(event) {
   event.preventDefault();
-
   if (event.target.nextElementSibling) {
     event.target.setAttribute("tabindex", -1);
     event.target.nextElementSibling.focus();
@@ -134,20 +119,17 @@ function ub_checkNextTab(event) {
     ub_focusOnFirstTab(event);
   }
 }
-
 function ub_focusOnFirstTab(event) {
   event.preventDefault();
   event.target.setAttribute("tabindex", -1);
   event.target.parentElement.children[0].focus();
 }
-
 function ub_focusOnLastTab(event) {
   event.preventDefault();
   event.target.setAttribute("tabindex", -1);
   var tabs = event.target.parentElement.children;
   tabs[tabs.length - 1].focus();
 }
-
 function ub_commonKeyPress(event) {
   if (event.key === "Home") {
     ub_focusOnFirstTab(event);
@@ -155,7 +137,6 @@ function ub_commonKeyPress(event) {
     ub_focusOnLastTab(event);
   }
 }
-
 function ub_upDownPress(event) {
   if (event.key === "ArrowUp") {
     ub_checkPrevTab(event);
@@ -165,7 +146,6 @@ function ub_upDownPress(event) {
     ub_commonKeyPress(event);
   }
 }
-
 function ub_leftRightPress(event) {
   if (event.key === "ArrowLeft") {
     ub_checkPrevTab(event);
@@ -175,7 +155,6 @@ function ub_leftRightPress(event) {
     ub_commonKeyPress(event);
   }
 }
-
 Array.prototype.slice.call(document.getElementsByClassName("wp-block-ub-tabbed-content-tab-title-wrap")).forEach(function (instance) {
   instance.addEventListener("focus", function () {
     ub_handleTabEvent(instance);
@@ -210,37 +189,27 @@ Array.prototype.slice.call(document.getElementsByClassName("wp-block-ub-tabbed-c
     ub_handleTabEvent(instance);
   });
 });
-
 function ub_switchFocusToTab(index, tabBar) {
   var _tabBar$getBoundingCl = tabBar.getBoundingClientRect(),
-      tabContainerWidth = _tabBar$getBoundingCl.width;
-
+    tabContainerWidth = _tabBar$getBoundingCl.width;
   var tabContainerLocation = tabBar.getBoundingClientRect().x || tabBar.getBoundingClientRect().left;
-
   var _tabBar$children$inde = tabBar.children[index].getBoundingClientRect(),
-      tabWidth = _tabBar$children$inde.width;
-
+    tabWidth = _tabBar$children$inde.width;
   var tabLocation = tabBar.children[index].getBoundingClientRect().x || tabBar.children[index].getBoundingClientRect().left;
-
   if (tabContainerLocation > tabLocation) {
     tabBar.scrollLeft -= tabContainerLocation - tabLocation;
   }
-
   if (tabLocation + tabWidth > tabContainerLocation + tabContainerWidth) {
     var scrollLeftChange = tabLocation - tabContainerLocation;
-
     if (tabWidth <= tabContainerWidth) {
       scrollLeftChange += tabWidth - tabContainerWidth;
     }
-
     tabBar.scrollLeft += scrollLeftChange;
   }
 }
-
 function ub_getTabbedContentDisplayModes(block) {
   var dm = [];
   var classNamePrefix = "wp-block-ub-tabbed-content";
-
   if (block.classList.contains("".concat(classNamePrefix, "-vertical-holder-mobile"))) {
     dm.push("verticaltab");
   } else if (block.classList.contains("".concat(classNamePrefix, "-horizontal-holder-mobile"))) {
@@ -248,7 +217,6 @@ function ub_getTabbedContentDisplayModes(block) {
   } else {
     dm.push("accordion");
   }
-
   if (block.classList.contains("".concat(classNamePrefix, "-vertical-holder-tablet"))) {
     dm.push("verticaltab");
   } else if (block.classList.contains("".concat(classNamePrefix, "-horizontal-holder-tablet"))) {
@@ -256,28 +224,23 @@ function ub_getTabbedContentDisplayModes(block) {
   } else {
     dm.push("accordion");
   }
-
   dm.push(block.classList.contains("vertical-holder") ? "verticaltab" : "horizontaltab");
   return dm;
 }
-
 (function () {
   var displayModes = Array.prototype.slice.call(document.getElementsByClassName("wp-block-ub-tabbed-content")).map(function (block) {
     return ub_getTabbedContentDisplayModes(block);
   });
   var transitionTo = 0;
   var transitionFrom = 0;
-
   function processTransition() {
     if (transitionTo && transitionFrom) {
       Array.prototype.slice.call(document.getElementsByClassName("wp-block-ub-tabbed-content")).forEach(function (instance, i) {
         if (displayModes[i][transitionFrom - 1] !== displayModes[i][transitionTo - 1]) {
           var tabBar = instance.children[0].children[0];
-
           switch (displayModes[i][transitionFrom - 1]) {
             case "accordion":
               var activeTabs = JSON.parse(instance.dataset.activeTabs);
-
               if (activeTabs) {
                 Array.prototype.slice.call(tabBar.children).forEach(function (child, j) {
                   if (j === activeTabs[activeTabs.length - 1]) {
@@ -292,14 +255,12 @@ function ub_getTabbedContentDisplayModes(block) {
                     child.classList.remove("ub-hide");
                   } else {
                     child.classList.remove("active");
-
                     if (j % 2 === 1) {
                       child.classList.add("ub-hide");
                     }
                   }
                 });
               }
-
               delete instance.dataset.activeTabs;
               Array.prototype.slice.call(instance.children[1]).forEach(function (child, j) {
                 if (j % 2 === 1) {
@@ -308,13 +269,11 @@ function ub_getTabbedContentDisplayModes(block) {
                 }
               });
               break;
-
             case "verticaltab":
               Array.prototype.slice.call(tabBar.children).forEach(function (tab) {
                 tab.removeEventListener("keydown", ub_upDownPress);
               });
               break;
-
             case "horizontaltab":
             default:
               Array.prototype.slice.call(tabBar.children).forEach(function (tab) {
@@ -322,7 +281,6 @@ function ub_getTabbedContentDisplayModes(block) {
               });
               break;
           }
-
           switch (displayModes[i][transitionTo - 1]) {
             case "accordion":
               Array.prototype.slice.call(tabBar.children).forEach(function (child, j) {
@@ -336,7 +294,6 @@ function ub_getTabbedContentDisplayModes(block) {
                   child.removeAttribute("aria-labelledby");
                 } else {
                   child.setAttribute("aria-expanded", !child.nextElementSibling.classList.contains("ub-hide"));
-
                   if (!child.hasAttribute("aria-controls")) {
                     child.setAttribute("aria-controls", child.nextElementSibling.id);
                   }
@@ -344,14 +301,12 @@ function ub_getTabbedContentDisplayModes(block) {
               });
               tabBar.removeAttribute("aria-orientation");
               break;
-
             case "verticaltab":
               Array.prototype.slice.call(tabBar.children).forEach(function (tab) {
                 tab.addEventListener("keydown", ub_upDownPress);
               });
               tabBar.setAttribute("aria-orientation", "vertical");
               break;
-
             case "horizontaltab":
             default:
               var newActiveTab = Array.prototype.slice.call(tabBar.children).findIndex(function (tab) {
@@ -369,8 +324,9 @@ function ub_getTabbedContentDisplayModes(block) {
       transitionTo = 0;
       transitionFrom = 0;
     }
-  } //Keep addListener for these three. addEventListener won't work with safari versions older than 14.
+  }
 
+  //Keep addListener for these three. addEventListener won't work with safari versions older than 14.
 
   window.matchMedia("(max-width: 699px)").addEventListener("change", function (mql) {
     if (mql.matches) {
@@ -378,7 +334,6 @@ function ub_getTabbedContentDisplayModes(block) {
     } else {
       transitionFrom = 1;
     }
-
     processTransition();
   });
   window.matchMedia("(min-width: 700px) and (max-width: 899px)").addEventListener("change", function (mql) {
@@ -387,7 +342,6 @@ function ub_getTabbedContentDisplayModes(block) {
     } else {
       transitionFrom = 2;
     }
-
     processTransition();
   });
   window.matchMedia("(min-width: 900px)").addEventListener("change", function (mql) {
@@ -396,25 +350,20 @@ function ub_getTabbedContentDisplayModes(block) {
     } else {
       transitionFrom = 3;
     }
-
     processTransition();
   });
 })();
-
 function ub_hashTabSwitch() {
   var targetElement = document.querySelector("[data-tab-anchor='".concat(window.location.hash.slice(1), "']"));
   var classNamePrefix = "wp-block-ub-tabbed-content";
-
   if (targetElement) {
     if (targetElement.classList.contains("".concat(classNamePrefix, "-tab-content-wrap"))) {
       var probableHeaders;
-
       try {
         probableHeaders = document.elementsFromPoint(window.innerWidth / 2, 0);
       } catch (e) {
         probableHeaders = document.msElementsFromPoint(window.innerWidth / 2, 0);
       }
-
       var stickyHeaders = Array.prototype.slice.call(probableHeaders).filter(function (e) {
         return ["fixed", "sticky"].includes(window.getComputedStyle(e).position);
       });
@@ -429,29 +378,25 @@ function ub_hashTabSwitch() {
       var tabContentRoot = targetElement.parentElement.parentElement;
       var ancestorTabBlocks = [];
       var ancestorTabIndexes = [];
-
-      var findTabContentRoot = function findTabContentRoot(currentBlock) {
+      var _findTabContentRoot = function findTabContentRoot(currentBlock) {
         var parentTabbedContent = currentBlock.closest(".wp-block-ub-tabbed-content-tabs-content");
-
         if (parentTabbedContent) {
           ancestorTabIndexes.push(Array.prototype.slice.call(parentTabbedContent.children).filter(function (t) {
             return t.classList.contains("wp-block-ub-tabbed-content-tab-content-wrap");
           }).indexOf(currentBlock.closest(".wp-block-ub-tabbed-content-tab-content-wrap")));
           ancestorTabBlocks.push(parentTabbedContent.parentElement);
-          return findTabContentRoot(parentTabbedContent.parentElement);
+          return _findTabContentRoot(parentTabbedContent.parentElement);
         } else {
           return currentBlock;
         }
       };
-
-      findTabContentRoot(targetElement);
+      _findTabContentRoot(targetElement);
       ancestorTabBlocks.unshift(targetElement.parentElement.parentElement);
       ancestorTabIndexes.unshift(tabIndex);
       var displayModes = ancestorTabBlocks.map(function (a) {
         return ub_getTabbedContentDisplayModes(a);
       });
       var displayMode = -1;
-
       if (window.innerWidth < 700) {
         displayMode = 0;
       } else if (window.innerWidth < 900) {
@@ -459,13 +404,11 @@ function ub_hashTabSwitch() {
       } else {
         displayMode = 2;
       }
-
       ancestorTabBlocks.forEach(function (a, i) {
         var targetElement = a.children[1].children[ancestorTabIndexes[i]];
         var tabContents = Array.prototype.slice.call(targetElement.parentElement.children).filter(function (e) {
           return e.classList.contains("".concat(classNamePrefix, "-tab-content-wrap"));
         });
-
         if (displayModes[i][displayMode] === "accordion") {
           tabContents.forEach(function (tabContent, j) {
             if (j === ancestorTabIndexes[i]) {
@@ -481,34 +424,45 @@ function ub_hashTabSwitch() {
           targetElement.parentElement.parentElement.dataset.activeTabs = JSON.stringify([ancestorTabIndexes[i]]);
         } else {
           var tabBar = targetElement.parentElement.previousElementSibling.children[0];
+
+          // Capture styles before modifying classes to avoid mismatch that causes
+          // all tabs to appear active when ub_handleTabEvent reads inverted styles
+          var tabBarChildren = Array.prototype.slice.call(tabBar.children);
+          var activeTabEl = tabBarChildren.find(function (t) {
+            return t.classList.contains("active");
+          });
+          var inactiveTabEl = tabBarChildren.find(function (t) {
+            return !t.classList.contains("active");
+          });
+          var activeStyle = activeTabEl ? activeTabEl.getAttribute("style") : null;
+          var defaultStyle = inactiveTabEl ? inactiveTabEl.getAttribute("style") : null;
           Array.prototype.slice.call(tabBar.children).forEach(function (tab, j) {
             var probableAccordionToggle = tabContents[ancestorTabIndexes[i]].previousElementSibling;
             tab.setAttribute("aria-selected", j === ancestorTabIndexes[i]);
-
             if (j === ancestorTabIndexes[i]) {
               tab.classList.add("active");
+              tab.setAttribute("tabindex", 0);
+              if (activeStyle) tab.setAttribute("style", activeStyle);
               tabContents[j].classList.add("active");
               tabContents[j].classList.remove("ub-hide");
-
               if (probableAccordionToggle && probableAccordionToggle.classList.contains("".concat(classNamePrefix, "-accordion-toggle"))) {
                 probableAccordionToggle.classList.add("active");
               }
-
               Array.prototype.slice.call(tabContents[j].querySelectorAll("iframe")).forEach(function (embed) {
                 embed.style.removeProperty("width");
                 embed.style.removeProperty("height");
               });
             } else {
               tab.classList.remove("active");
+              tab.setAttribute("tabindex", -1);
+              if (defaultStyle) tab.setAttribute("style", defaultStyle);
               tabContents[j].classList.remove("active");
               tabContents[j].classList.add("ub-hide");
-
               if (probableAccordionToggle && probableAccordionToggle.classList.contains("".concat(classNamePrefix, "-accordion-toggle"))) {
                 probableAccordionToggle.classList.remove("active");
               }
             }
           });
-
           if (targetElement.parentElement.previousElementSibling.offsetWidth === targetElement.parentElement.offsetWidth) {
             ub_switchFocusToTab(ancestorTabIndexes[i], tabBar);
           }
@@ -522,7 +476,6 @@ function ub_hashTabSwitch() {
     }
   }
 }
-
 document.addEventListener("DOMContentLoaded", function () {
   Array.prototype.slice.call(document.getElementsByClassName("wp-block-ub-tabbed-content")).forEach(function (instance) {
     return ub_initializeTabBlock(instance);
@@ -535,20 +488,16 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   ub_hashTabSwitch();
 });
-
 function ub_initializeTabBlock(instance) {
   var tabBar = instance.children[0].children[0];
-
   if (window.getComputedStyle(tabBar).display !== "none") {
     var scrollWidth = tabBar.scrollWidth,
-        clientWidth = tabBar.clientWidth;
+      clientWidth = tabBar.clientWidth;
     Array.prototype.slice.call(tabBar.children).forEach(function (tab) {
       if (tab.classList.contains("active")) {
         tab.setAttribute("tabindex", 0);
-
         if (scrollWidth > clientWidth) {
           var tabLocation = (tab.getBoundingClientRect().x || tab.getBoundingClientRect().left) + tab.getBoundingClientRect().width - (instance.getBoundingClientRect().x || instance.getBoundingClientRect().left);
-
           if (tabLocation > clientWidth) {
             tabBar.scrollLeft = tabLocation - clientWidth;
           }
@@ -556,10 +505,8 @@ function ub_initializeTabBlock(instance) {
       }
     });
   }
-
   var displayModes = ub_getTabbedContentDisplayModes(instance);
   var currentDisplay = -1;
-
   if (window.innerWidth < 700) {
     currentDisplay = 0;
   } else if (window.innerWidth < 900) {
@@ -567,7 +514,6 @@ function ub_initializeTabBlock(instance) {
   } else {
     currentDisplay = 2;
   }
-
   if (displayModes[currentDisplay] === "accordion") {
     var tabContents = instance.children[1];
     Array.prototype.slice.call(tabContents.children).forEach(function (child, i) {
@@ -577,7 +523,6 @@ function ub_initializeTabBlock(instance) {
       } else {
         child.setAttribute("aria-expanded", !child.nextElementSibling.classList.contains("ub-hide"));
         child.setAttribute("aria-controls", child.nextElementSibling.id);
-
         if (child.nextElementSibling.classList.contains("active")) {
           child.classList.add("active");
         }
@@ -588,11 +533,9 @@ function ub_initializeTabBlock(instance) {
     Array.prototype.slice.call(_tabBar.children).forEach(function (tab) {
       tab.addEventListener("keydown", displayModes[currentDisplay] === "verticaltab" ? ub_upDownPress : ub_leftRightPress);
     });
-
     _tabBar.setAttribute("aria-orientation", displayModes[currentDisplay].slice(0, -3));
   }
 }
-
 window.onhashchange = ub_hashTabSwitch;
 Array.prototype.slice.call(document.getElementsByClassName("wp-block-ub-tabbed-content-tabs-content")).forEach(function (container) {
   Array.prototype.slice.call(container.children).filter(function (child) {
@@ -600,10 +543,8 @@ Array.prototype.slice.call(document.getElementsByClassName("wp-block-ub-tabbed-c
   }).forEach(function (accordionToggle, i) {
     accordionToggle.addEventListener("click", function () {
       var root = container.parentElement;
-
       if (accordionToggle.classList.contains("active")) {
         var activeTabs = JSON.parse(root.dataset.activeTabs);
-
         if (activeTabs.length > 1) {
           root.dataset.activeTabs = JSON.stringify(activeTabs.filter(function (c) {
             return c !== i;
@@ -618,7 +559,6 @@ Array.prototype.slice.call(document.getElementsByClassName("wp-block-ub-tabbed-c
         setTimeout(function () {
           window.dispatchEvent(new Event("resize"));
         }, 100);
-
         if (root.dataset.noActiveTabs) {
           delete root.dataset.noActiveTabs;
           root.dataset.activeTabs = JSON.stringify([i]);
@@ -626,7 +566,6 @@ Array.prototype.slice.call(document.getElementsByClassName("wp-block-ub-tabbed-c
           root.dataset.activeTabs = JSON.stringify(JSON.parse(root.dataset.activeTabs).concat(i));
         }
       }
-
       accordionToggle.classList.toggle("active");
       accordionToggle.nextElementSibling.classList.toggle("active");
       accordionToggle.nextElementSibling.classList.toggle("ub-hide");

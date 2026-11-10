@@ -1,21 +1,33 @@
-=== Ultimate Blocks - Gutenberg Blocks Plugin ===
-Contributors: dotcamp, ultimateblocks, imtiazrayhan, istiakrayhan, alexius08, erdembircan, wpleaders1, wpcdplugin, wptb
-Tags: block, blocks, gutenberg blocks, gutenberg, block editor
-Requires at least: 5.0
-Tested up to: 6.1
-Stable tag: 2.5.6
-Requires PHP: 5.6
+=== Ultimate Blocks – 25+ Gutenberg Blocks for Block Editor ===
+Contributors: dotcamp, ultimateblocks, imtiazrayhan, istiakrayhan, erdembircan, alexius08, farhanshafi
+Tags: blocks, gutenberg blocks, gutenberg, block editor, free
+Requires at least: 5.8
+Tested up to: 7.1
+Stable tag: 3.6.2
+Requires PHP: 7.2
 License: GPL3+
 License URI: http://www.gnu.org/licenses/gpl-3.0.txt
 
-Custom Gutenberg Blocks for Bloggers and Marketers. Create Better Content With Gutenberg.
+Create Better Content With The Block Editor. Custom Blocks for Bloggers and Content Marketers.
 
 == Description ==
 
-Ultimate Blocks is a Gutenberg blocks Plugin for bloggers and marketers. Our goal is to make it insanely easy for you to create better and engaging content with Gutenberg.
+[Get Pro](https://ultimateblocks.com/pricing/) | [Documentation](https://ultimateblocks.com/docs/)
+
+Ultimate Blocks is a free powerhouse for bloggers and content marketers using WordPress. It's not just a plugin, it's a toolkit to skyrocket user engagement and simplify content creation.
+
+With Ultimate Blocks, you're not just adding functionalities; you're crafting experiences.
+
+From interactive content filters, captivating call-to-actions, to social sharing made effortless, every block is a step towards a more engaging and visually appealing website.
+
+It's about making every visit count, every interaction memorable, and every content piece a breeze to create and manage.
+
+Transform your WordPress journey; let Ultimate Blocks be the catalyst for your website's success.
 
 Ultimate Blocks currently includes the following blocks:
 
+* Coupon (Available in Pro) - [View Demo](https://ultimateblocks.com/coupon-block/)
+* Timeline (Available in Pro) - [View Demo](https://ultimateblocks.com/timeline-block)
 * Content Filter - [View Demo](https://ultimateblocks.com/content-filter-block/)
 * Review (Schema Markup Enabled) - [View Demo](https://ultimateblocks.com/schema-review-block/)
 * HowTo Schema - [View Demo](https://ultimateblocks.com/howto-schema-block/)
@@ -43,7 +55,7 @@ We have more exciting blocks in the making. Have a suggestion? [Let us know](htt
 
 * [Visit Ultimate Blocks Website](https://ultimateblocks.com?utm_medium=wp.org&utm_source=wordpressorg&utm_campaign=readme&utm_content=ultimateblocks)
 * [Follow Us on Twitter](http://twitter.com/Ultimate_Blocks)
-* [Join Our Support Community](https://community.ultimateblocks.com/)
+* [Join Our Support Community](https://ultimateblocks.com/community/)
 * [Join Our Facebook Group](https://www.facebook.com/groups/ultimateblocks/)
 
 ## More Info About the Blocks
@@ -108,6 +120,12 @@ Button block with more customization options and controls.
 **Divider Block**
 Add custom divider between your blocks. Customize the color, size, everything.
 
+## Other tools from us
+
+[Tableberg](https://wordpress.org/plugins/tableberg/): The Best WordPress Block Table Plugin to create beautiful and responsive tables.
+
+[GroundWP](https://wordpress.org/themes/groundwp/): Lightweight and Minimal Block Theme for efficient Full-Site Editing.
+
 == Frequently Asked Questions ==
 
 = Installation Instructions =
@@ -122,7 +140,7 @@ That's it. You're done!
 
 = I Need Help with Gutenberg =
 
-[Join Our Support Community](https://community.ultimateblocks.com/) or [Join Our Facebook Group](https://www.facebook.com/groups/ultimateblocks/) and ask us. We will help you.
+[Join Our Support Community](https://ultimateblocks.com/community/) or [Join Our Facebook Group](https://www.facebook.com/groups/ultimateblocks/) and ask us. We will help you.
 
 == Screenshot ==
 
@@ -132,794 +150,452 @@ That's it. You're done!
 
 == Changelog ==
 
-= 2.5.6 - February 2nd, 2023 =
-
-* Social share - Fix icon shape display when outline is enabled.
-* Styled list - Fix color rendering while in Astra theme.
-* Styled list - Ensure consistent styled list margins and paddings across themes.
-* Styled list - Restore options to set spacing, font size, columns, and alignment.
-* Styled list - Prevent subitems from being deleted when the parent item is being split.
-* Other - Fix deprecated block_categories check.
-
-= 2.5.5 - January 4th, 2023 =
-
-* Content Toggle - Fix issue with rendering panels.
-* Content Toggle - Allow setting transparency values to colors.
-* Post Grid - Fix title rendering.
-* Social Share - Sanitize post title before use in social share.
-* Styled Box - Ensure that number box columns have numbers by default.
-* Styled List - Convert block to new format that uses inner blocks.
-* Styled List - Add text color and background color properties to match the core list block's properties.
-* Styled List - Remove font size, item spacing, and columns properties due to incompatibility with new styled list format.
-* Tabbed Content - Remove border in vertical tabs while using pills and underline tab style.
-* Table of Contents - Prevent empty link array in Table of Contents from generating an error.
-* Image Slider - Load JavaScript file only when image slider is in use for better performance.
-* Other - Fix issue with deprecated filter on Wordpress 5.7 and older.
-* Other - Update FontAwesome to version 6.2.
-* Other - Remove final method warning.
-
-= 2.5.4 - November 7th, 2022 =
-
-* Content Toggle - Fix issue with content toggle panel insertion while the Gutenberg plugin is active.
-* Content Toggle - Allow using Content Toggle panel titles within Table of Contents.
-* Content Toggle - Increase space between plus/minus toggle icon and icon location switch in editor.
-* Content Toggle - Fix content toggle error when encountering instances w/ no child blocks.
-* Review - Fix issue with review block image size not being saved.
-* Other - Fix PHP deprecation issue.
-
-= 2.5.3 - September 19th, 2022 =
-
-Table of Contents - Hide everything except Allowed Headings in Table of Contents inspector by default.
-Table of Contents - Set color of show/hide button in ToC to color of title.
-Table of Contents - Fix issue with table of contents scrolling with reference element.
-Advanced Video - Add play button when using custom thumbnail in advanced video.
-Advanced Video - Fix issue with inserting URLs for custom thumbnails in advanced video.
-Advanced Video - Add option to make video automatically fit within its container.
-Button - Remove default nofollow from button links.
-Button - Fix Sponsored option not working for button links.
-Divider - Add option to convert core separator into divider.
-Expand - Add option to scroll show button of expand into view after clicking hide.
-Other - Fix styling for reusable blocks with more than one top-level block.
-Other - Revise block settings page.
-Other - Add option to rollback to older versions.
-Expand - Add option to scroll show button of expand into view after clicking hide.
-
-= 2.5.2 - July 25th, 2022 =
-
-* Table of Contents - Allow customizing text for show/hide button.
-* Styled List - Fix issue with selecting icon color with Astra's color palette.
-* Tabbed Content - Remove placeholder text from empty tab innerblocks.
-* Tabbed Content - Use tab number for default and placeholder tab name.
-* Tabbed Content - Add icons for tab layout selector buttons.
-* Other - Fix issue with initialization of PDF Embedder instances (and potentially other content embeds) within Content Filter, Content Toggle, Expand, and Tabbed Content.
-
-= 2.5.1 - June 27th, 2022 =
-
-* Fix: Icons missing issue in some blocks.
-
-= 2.5.0 - June 24th, 2022 =
-
-* Progress Bar - Copy settings controls to inspector.
-* Progress Bar - Match background bar height with main height.
-* Progress Bar - Set default value to 75.
-* Progress Bar - Add option to set background bar color.
-* Progress Bar - Allow resizing circular progress bar.
-* Advanced Heading - Add heading level selector to block toolbar.
-* Advanced Heading - Set default heading level to h2.
-* Advanced Heading - Automatically make paragraph block when adding empty new line from advanced heading, and a separate advanced heading block when pressing enter within advanced heading content.
-* Button - Remove minimum height from buttons while in editor.
-* Content Toggle - Fix attribute rendering in frontend.
-* Other - Update FontAwesome to 6.1.
-
-= 2.4.17 =
-
-* Compatibility with WordPress 6.0.
-* Content Toggle - Make turning on individualCollapse work properly when showOnlyOne is on.
-* Content Toggle - Force all content toggle panels to show when prevent collapse is enabled.
-* Expand - Prevent deletion of Expand Inner Portion block.
-* Tabbed Content - Prevent deletion of Tab inner block.
-* Other - Limit allowed media types for media inputs in Review, Styled Box, and Testimonial blocks to images.
-
-= 2.4.16 =
-
-* Button - Option to convert core buttons to Ultimate Blocks Buttons (Improved).
-
-= 2.4.15 =
-
-* Table of Contents - Replace toggles with checkboxes.
-* Table of Contents - Move collapsible settings to separate panels.
-* Table of Contents - Copy column and list type selector to inspector.
-* Divider - Add option to set width.
-* Divider - Add option to adjust alignment.
-* Styled List - Remove backslashes from SVG code.
-
-= 2.4.14 =
-
-* FIX: Conflict in Content Toggle.
-* FIX: Conflict in Tabbed Content.
-
-= 2.4.13 =
-
-* IMPORTANT: Security fix.
-* FIX: PHP Critical error conflict with some plugins.
-
-= 2.4.12 =
-
-* Button - Set default width to flex.
-* Button - Set default button radius to enabled and 10px.
-* Button - Add option to set individual button corner settings.
-* Button - Add code for converting old button corner data to new version.
-* Button - Allow changing button icon size.
-* Content Toggle - Fix frontend script behavior when collapse on mobile is on.
-* Content Toggle - Prevent showOnlyOne and collapseOnMobile from being simultaneously on.
-* Post Grid - Set default post title tag to h4.
-* Table of Contents - Prevent error when frontend script is loaded even in pages where the Table of Contents is not present.
-* Table of Contents - Changed Table of Contents Settings Sorting.
-* Other - Resolve simple_html_dom naming conflict.
-
-= 2.4.11 =
-
-* Content Toggle - Add option for separate Content Toggle status in mobile.
-* Table of Contents - Add option to set bullet/number color separately.
-* Table of Contents - Make colors default to theme colors when values are not set.
-* Table of Contents - Remove HTML tags from custom anchor texts.
-* Table of Contents - Set default value of gaps for old Table of Contents instances.
-* Countdown - Keep expiry message when loading expired countdown timers.
-* Review - Add option to align call to action button.
-* Review - Allow setting image position with respect to description.
-* Review - Remove image size limit.
-* Review - Rename all instances of saveAs in generated schema code into sameAs.
-* Styled Box - Allow adding inner blocks to number box.
-* Tabbed Content - Ensure accordion mode works when using pills or underline tab styles.
-* Tabbed Content - Fix issue with tabindex cycle in pills and underline tab styles.
-* Tabbed Content - Fix tabindex values of tabs when clicked.
-
-
-= 2.4.10 =
-
-* Button - Remove minimum width from flex buttons.
-* Content Toggle - Prevent event listeners from being applied to elements not part of the block itself.
-* Expand - Add buttons for adding child blocks.
-* HowTo - Prevent apostrophes from being escaped in JSON-LD code.
-* Social Share - Fix link rendering when icon captions are enabled.
-* Tabbed Content - Fix behavior when pressing Tab key.
-* Tabbed Content - Fix display of tab background color in vertical mode.
-* Tabbed Content - Fix display of tab borders when shifting from horizontal to vertical mode and vice versa.
-* Tabbed Content - Fix display of tabs when in accordion mode.
-* Table of Contents - Simplify inspector option texts.
-* Table of Contents - Add color settings.
-* Table of Contents - Fix list style selection display.
-* Other - Enable styling for blocks present in widgets.
-
-= 2.4.9 =
-
-* NEW BLOCK: Advanced Video.
-* Content Filter - Fix display of active button text color.
-* Content Toggle - Revise FAQ schema generation function.
-* Content Toggle - Add option to convert Content Toggle into core blocks.
-* Content Toggle - Allow setting toggle status for each panel separately.
-* Countdown - Allow customizing circular countdown size.
-* Expand - Fix pointer display for expand toggle button.
-* HowTo - Fix initial video start time and end time values for each step.
-* HowTo - Add unit names to start time and end time inputs.
-* HowTo - Fix generation of duration code in ISO 8601 format.
-* Post Grid - Allow togging post title visibility.
-* Review - Prevent apostrophes from being escaped in review block JSON LD.
-* Social Share - Change Reddit icon color.
-* Social Share - Update Twitter and LinkedIn share URLs.
-* Social Share - Allow adding captions to icons.
-* Tabbed Content - Fix tab alignment display in editor.
-* Table of Contents - Fix incompatibility with Headline from GenerateBlocks.
-* Other - Update Font Awesome to 5.15.4.
-* Other - Update Swiper to 6.8.4.
-
-= 2.4.8 =
-
-* NEW BLOCK: Advanced heading
-* Button - Use default icon list when current user can't access API.
-* Content filter - Prevent parent filter selection from overriding child filter selection.
-* Content filter - Allow converting content filter content to nested group blocks from core.
-* Divider - Change divider width.
-* Divider - Render divider with HR tag.
-* HowTo - Fix errors due to upgrading from previous versions.
-* HowTo - Allow changing tags for main title, section titles, and step titles.
-* HowTo - Prevent crash when toggling section mode while how to result is selected.
-* Image Slider - Upgrade Swiper to version 6.7.1.
-* Image Slider - Make image slider bullets clickable.
-* Image Slider - Make image slider navigation buttons properly respond to space keypress.
-* Image Slider - Enable arrow key navigation.
-* Review - Fix display of review image in Safari.
-* Review - Prevent review image from affecting star layout.
-* Review - Allow setting percentage values for review features.
-* Review - Allow customizing font size of call to action button.
-* Review - Prevent background image from overriding call to action button background color.
-* Star Rating - Fix frontend fractional star display.
-* Star Rating - Set star outline color for star rating in editor to match display color.
-* Styled List - Use default icon list when current user can't access API.
-* Styled List - Fix column count indicator for styled list.
-* Tabbed Content - Fix tab title alignments when rearranging and deleting tabs.
-* Testimonial - Fix alignment indicators in Testimonial.
-* Other - Replace deprecated filter (WordPress 5.8) with new filter.
-
-= 2.4.7 =
-
-* Button - Fix issue with adding links.
-* Button - Fix button radius display.
-* Star Rating - Enable values to be set at intervals of 0.1 stars.
-* Styled List - Set default list font size to theme's font size.
-
-= 2.4.6 =
-
-* Review - Change default star color and outline color to #F7B708.
-* Review - Make review description text flow under review image in mobile.
-* Review - Fix display of review block's call to action button text color.
-* Review - Add new review feature in feature list when pressing enter.
-* Review - Prevent HTML tags from being displayed in star settings.
-* Review - Allow merging of review features.
-* Table of Contents - Fix animation for 2-column and 3-column layouts.
-* Table of Contents - Allow hiding in mobile while leaving desktop settings unaffected.
-* Table of Contents - Standardize transliteration of Cyrillic headings in line with BGN/PCGN.
-* Post Grid - Allow filtering posts by author.
-* Post Grid - Allow filtering posts by tag.
-* Post Grid - Prevent unused space for Post Grid image from affecting style.
-* HowTo - Fix JSON-LD error with HowTo tip.
-* HowTo - Omit cost and time code from JSON-LD code whenever they're equal to zero.
-* HowTo - Allow individually setting width and float for images in steps and yield.
-* Image Slider - Fix image slider functionality when parent block visibility is toggled.
-* Image Slider - Update swiper to v6.5.9.
-* Progress Bar - Fix display of progress bar value input slider.
-* Progress Bar - Also apply alignment setting to progress bar when circular mode is selected.
-* Styled Box - Hide alignment options in styled box when no mode is selected.
-* Styled List - Allow setting styled list item font size.
-* Styled List - Split styled list block instance into two after entering two empty items.
-* Tabbed Content - Add options for setting color of inactive tabs and alternate tab styles.
-* Button - Set default button alignment to center.
-* Content filter - Panels that have no tags from multi-select categories are no longer filtered out when nothing from that category is selected.
-* Divider - Prevent divider block internal CSS from removing other blocks' CSS.
-* Expand - Prevent wrapper innerblock of expand block from being used as reusable.
-* Other - Move recently-picked icons to top of icon list in Button and Styled list.
-
-= 2.4.5 =
-
-* Content Toggle - Prevent the anchor ID of any panel from being automatically applied to all other panels.
-* Table of Contents - Fix issue with transitioning from the table of contents in version 2.4.3.
-* Table of Contents - Prevent possible error with page gap array in Table of Contents.
-
-= 2.4.4 =
-
-* Button - Allow customizing button border radius.
-* Button - Set button selection to new button.
-* Button - Highlight selected button.
-* Button - Ensure that a button is selected when clicking on it.
-* Button - Keep old button block instances center-aligned.
-* Content Filter - Set default matching option to matchAny.
-* Content Filter - Make a single matching tag in a multi-select category count for matchAll.
-* Content Filter - Ctegory name style change.
-* Content Toggle - Allow adding anchor IDs to individual panels.
-* Content Toggle - Enable keyboard navigation.
-* Divider - Allow changing border style.
-* Expand - Add ARIA attributes.
-* Expand - Allow toggling visibility through keyboard shortcuts.
-* Review - Allow adding link to review item page in schema.
-* Star Rating - Fix issue with setting star color to anything other than preset colors within the displayed palette.
-* Tabbed content - Force block appender button to appear within newly-inserted tabs.
-* Table of contents - When editing anchors, set default text to the actual heading text.
-* Other - Revert faulty fix for reusable block issue.
-* Other - Make texts with customizable colors text color inherit the parent element's color settings when it can be customized but is unset.
-* Other - Compatibility check with latest WordPress version.
-
-= 2.4.3 =
-
-* Button - Fix editor display of hover colors.
-* Button - Make flex buttons resize for smaller screen sizes.
-* Button -  Paginate icon selection panel.
-* Button - Remove button link settings panel from inspector.
-* Button - Split button color selection panel into tabs.
-* Button - Set default button alignment to left.
-* Content Toggle - Ensure that the color settings for the block is always set according to the color values in the panels.
-* Countdown - Replace Hubspot's odometer library with custom-made script.
-* Review - Ensure that edits to offer attributes are saved when itemType is set to SoftwareApplication.
-* Star Rating - Prevent container div for star rating review text from rendering when it's empty.
-* Styled List - Add option to set number of columns.
-* Styled List - Fix icon selection display.
-* Styled List - Paginate icon selection panel.
-* Tabbed Content - Fix getting blockID value.
-* Tabbed Content - Enable keyboard navigation.
-* Tabbed Content - Fix issue where the first tab in new tabbed content instances tends to be empty.
-* Table of Contents - Prevent Table of Contents from being turned into a reusable block.
-* Table of Contents - Fix animation issue when visibility is being toggled.
-* Table of Contents - Fix compatibility issue with the Headline block from GenerateBlocks, versions 1.2 onwards.
-* Other - Fix compatibility issue with PHP8.0.
-* Other - Fix error during conversion of reusable blocks into regular blocks when a block from Ultimate Blocks is included.
-
-= 2.4.2 =
-
-* ADD: Button - missing checkbox.
-* ADD: Content toggle - allow using percentage paddings.
-* FIX: HowTo - error with default values.
-* FIX: Review - prevent schema errors caused by unescaped inputs.
-* ADD: Review - option to toggle review summary visibility.
-* ADD: Review - option to enter decimal values in review offer price.
-* ADD: Star Rating - option to customize text color.
-* FIX: Star Rating - star alignment when used with Twenty Twenty-One theme.
-* FIX: Styled List - list icon display issue.
-* FIX: Tabbed Content - issue with pasting tab titles.
-* FIX: restore block deactivation script.
-* REMOVE: unused dashicon style import.
-
-= 2.4.1 =
-
-* ADD: Review - enable using review schema with other itemTypes.
-* ADD: Tabbed Content - ARIA attributes.
-* ADD: Button - proper role as per ARIA specifications.
-* ADD: Button - enable marking Button block links as Sponsored.
-* ADD: Call to Action - enable marking button link as Sponsored.
-* ADD: Content Toggle - allow adding links to titles and customizing its color.
-* ADD: Content Toggle - ARIA attributes and ARIA-compatible roles.
-* ADD: Content Toggle - allow setting all content toggle panels as hidden in showOnlyOne mode.
-* ADD: Image Slider - update Swiper to version 6.3.
-* ADD: Image Slider - support for alt text in images.
-* ADD: Post Grid - allow customization of featured image size.
-* ADD: Styled Box - option to set custom colors to notification box.
-* FIX: Button - alignment issue.
-* FIX: Content Filter - issue with "match all" mode on multi-selection categories.
-* FIX: Content Filter - issue with "match any" mode on single-selection categories.
-* FIX: Content Filter - prevent untagged panels from showing up in multi-select mode.
-* FIX: How To - style issue.
-* FIX: How To - prevent HTML tags from messing up how-to schema code.
-* FIX: Post Grid - display of author name and publication date.
-* FIX: Review - offerPrice input.
-* FIX: Styled List - display of list icons in Safari.
-* FIX: Styled List - issue with resetting icon color.
-* FIX: Styled List - conflict with NewsMag theme.
-* FIX: Tabbed Content - issue with align width when it's set.
-* FIX: Table of Contents - multipage links to headings when some of them are hidden or excluded
-* FIX: Other - detect if the plugin's custom CSS file exists before deleting them
-
-= 2.4.0 =
-
-* NEW: Styled Box - Allow setting Bordered Box background color.
-* NEW: Star Rating - Set default star color to #ffb901.
-* NEW: Styled Box - Increase Bordered Box default border thickness to 3.
-* NEW: Freemius SDK.
-* FIX: Button - Style reverse compatibility issue.
-* FIX: Button - Link inserter popover issue.
-* FIX: Button - Restore full-width button rendering.
-* FIX: Button - Restore top and bottom margins for the new version.
-* FIX: Content Toggle - Animation issue when only content toggle is active.
-* FIX: Styled Box - Reduce Notification Box margins.
-* FIX: Styled Box - Issue with adding text to Notification and Bordered box.
-* FIX: Styled List - Restore left margin.
-* FIX: Table of Contents - Animation issue caused by style conflict with GeneratePress.
-* FIX: Table of Contents - Prevent theme CSS from adding content to list items within Table of Contents.
-
-= 2.3.9 =
-
-* NEW: Button - Enable use of multiple buttons within a single button block.
-* NEW: Image Slider - Replace Flickity with Swiper.
-* NEW: Image Slider - Add pagination types from Swiper: bullets (equivalent of Flickity's page dots), fraction, progress bar.
-* NEW: Image Slider - Add transition modes from Swiper: slide (default), fade, cube, coverflow, flip.
-* NEW: Review - Ensure that the average rating uses dots as the decimal separator in the JSONLD code regardless of the user's localization settings.
-* NEW: Star Rating - Allow star rating value to be adjusted through slider input.
-* NEW: Styled Box - Allow use of inner blocks in notification box mode.
-* NEW: Styled Box - Provide default values to numbers in number box mode.
-* NEW: Table of Contents - Allow customization of smooth scroll offset.
-* NEW: Table of Contents - Add support for Headline block from GenerateBlocks.
-* FIX: Content Filter - Use pointer cursor when hovering on filters in frontend.
-* FIX: Content Toggle - Prevent PHP error during FAQ schema code generation.
-* FIX: Content Toggle - Issues with clicking panels when "show only one panel at a time" is chosen.
-* FIX: Content Toggle - Flickering during animation of content toggle panel.
-* FIX: HowTo Schema - JSONLD code issue with adding list of tools
-* FIX: Post Grid - Issue with selecting multiple categories in newer Gutenberg versions.
-* FIX: Social Share - Display of custom icon color.
-* FIX: Star Rating - Star alignment.
-* FIX: Styled Box - Adjust top and bottom margins for number box and feature box modes.
-* FIX: Styled List - Compatibility issues with text indent functionality in new WordPress version.
-* FIX: Table of Contents - Load values of custom text and toggled headings when editing a saved instance.
-* FIX: Table of Contents - Animation issues.
-* FIX: Testimonial - Display of testimonial body font size in frontend.
-* FIX: FontAwesome icon rendering when multiple button/styled list instances are present.
-* FIX: Prevent duplication of existing block IDs
-* REMOVE: Review - aggregateRating from JSONLD code to give way for displaying review author when the page appears in search engines.
-* REMOVE: Styled List - Left margin.
-
-= 2.3.8 =
-
-* FIX: Table of Contents - Headings Not Showing on Frontend.
-
-= 2.3.7 =
-
-* NEW: Table of Contents - Add option to remove diacritics from generated anchor texts.
-* NEW: Table of Contents - Allow replacing heading text with custom text.
-* NEW: Table of Contents - Allow toggling visibility of individual headings.
-* NEW: Review - Enhance input of review star values.
-* NEW: Styled List - Allow transforming default list into Styled List.
-* NEW: Styled List - Allow adjusting space between items.
-* FIX: Styled List - Fix issue with Twenty Twenty theme.
-* FIX: Content Toggle - Adjust panel padding in editor.
-* FIX: HowTo Schema - Adjust bottom margin of images.
-* FIX: Image Slider - Bug that prevented input of links.
-* FIX: Image Slider - Adjust bottom margin.
-* FIX: Image Slider - Issue with image caption editing.
-* FIX: Styled Box - Adjust bottom margin to Bordered Box.
-* FIX: Styled Box - Adjust layout of style selection screen.
-* FIX: Tabbed Content - Style issue.
-* FIX: Tabbed Content - Anchor links to deeply-nested tabbed content blocks.
-* FIX: Table of Contents - Adjust space between title and toggle button.
-* REMOVE: Styled Box - Bottom margin from last paragraph within Bordered Box.
-
-= 2.3.6 =
-
-* ADD: Option to Disable Some Units (Weeks, Days etc) in Countdown Block.
-* ADD: Allow Adding Captions to Step and Final Images in HowTo Block.
-* FIX: FAQ Schema JSON-LD Error in Content Toggle When Removing Duplicate Items.
-* FIX: Turning Social Share Into a Reusable Block.
-* FIX: Table of Contents Issue with Links to Headings in Other Pages.
-* FIX: Table of Contents Link Generation When a Heading is Used as an Inner Block.
-* FIX: Table of Contents Frontend Script Behavior When Third-party Heading Blocks are Present.
-* FIX: Prevent Having More Than One Dash in a Row in the Heading Anchors of Table of Contents.
-* IMPROVEMENT: Use figcaption Tag for Displaying Image Captions in Image Slider block.
-* IMPROVEMENT: Adjust location of image slider dots
-* REMOVE: Default Values for Block Attributes with Object Values in PHP.
-
-= 2.3.5 =
-
-Release Date: May 13th, 2020
-
-* ADD: Styled box - Bordered Box.
-* ADD: Allow Omitting Offer Expiration Date in Review Schema.
-* ADD: Use Image Captions as Slider Image Captions by Default.
-* ADD: Allow Customizing Tag Used for Post Grid Titles.
-* FIX: Prevent Duplicate FAQ Items From Being Added to Schema Code in Content Toggle.
-* FIX: Assignment of New Default Content Toggle Colors.
-* FIX: Issue With Styles Used in Toggle Functionality of Expand Block.
-* FIX: PHP Error Resulting From Loading of Dependent Script for Image Slider block.
-* FIX: Preserve Line Breaks and Tabs for Content of Tabbed Content Inner Blocks.
-* FIX: Prevent Replacement of Block IDs When Loading Saved Posts.
-* IMPROVEMENT: Updating of Attribute Values in Frontend of Review Block.
-
-= 2.3.4 =
-
-Release Date: May 4th, 2020
-
-* FIX: Frontend Animation Not Working When There's No Indicator Icon in Content Toggle Block.
-* FIX: Preserve Old Color Settings For Title and Background Color in Content Toggle Block.
-* FIX: Frontend Script to Handle Nested Tabbed Content Instances.
-* FIX: Button Icon Position Right Not Working.
-* FIX: Delay Image Slider Resizing After Page Load to Fix Image Issue.
-* REMOVE: Unused Styles in Post Grid Block.
-
-= 2.3.3 =
-
-Release Date: May 1st, 2020
-
-* FIX: FAQSchema Error.
-
-= 2.3.2 =
-
-Release Date: May 1st, 2020
-
-* FIX: FAQ Schema Added on Every Page Error.
-
-= 2.3.1 =
-
-Release Date: April 30th, 2020
-
-* ADD: Option to Display Panels That Match Either Any Filter or All Filters.
-* ADD: Allow Using FAQSchema on More than One block instance of Content Toggle.
-* ADD: Option for Customizing Content Toggle Icon, Color, and Location.
-* ADD: Option to Remove Panel Border in Content Toggle.
-* ADD: Option to Show Only One Content Toggle Tanel at a Time on Frontend. When one opens, other ones will close.
-* ADD: Option to Remove Content Toggle Collapse Icon.
-* ADD: Allow Scrolling of Tabs by Dragging.
-* ADD: Allow Switching to Different Display Modes in Different Screen Sizes for Tabbed Content.
-* ADD: Enable Adding Anchors to Tabs in Tabbed Content.
-* FIX: Display of Flexible Width Button.
-* FIX: Issue with Displaying Button Icon When Using Custom CSS in Click to Tweet Block.
-* FIX: Bug with Hidden Content Filter Panels.
-* FIX: Issue with Tabbed Content Titles in Twenty Twenty theme.
-* FIX: Prevent Refreshing When Clicking on Any Link Within the Table of Contents.
-* FIX: Adjust Scrolling to Account for Height of Fixed/Sticky Headers Whenever They're Present.
-* FIX: Ensure Visibility of Embedded Content Within Content Filter, Content Toggle, Expand, and Tabbed Content Blocks.
-* FIX: Prevent Variable Naming Conflicts Involving Simple HTML DOM Parser.
-* FIX: Ensure that the Custom CSS files and Their Parent Folder are Deleted Upon Plugin Deactivation.
-* FIX: Updating the Custom CSS Whenever the Plugin is Updated.
-* UPDATE: FontAwesome to v5.13.
-
-= 2.3.0 =
-
-Release Date: March 31st, 2020
-
-* ADD: NEW BLOCK: HowTo Schema.
-* ADD: Support for Wide and Full Width alignment in Tabbed Content Block.
-* ADD: Support for third party heading blocks in Table of Contents Block.
-* ADD: Option to enable romanization of Cyrillic headers in Table of Contents Block.
-* ADD: Allow rearranging icons in Social Share Block.
-* ADD: Allow setting of custom icon color in Social Share Block.
-* FIX: Hide bullets during content tag filter selection in Content Filter Block with WP 5.4.
-* FIX: Ensure that frontend script runs whenever an image slider is in a page.
-* FIX: Style conflicts with Twenty Twenty theme.
-* REMOVE: Google Plus icon from Social Share Block.
-
-= 2.2.1 =
-
-Release Date: February 12th, 2020
-
-* ADD: Option to add schema-exclusive attributes in Review block.
-* ADD: Table of Contentns anchor links work when page breaks are included in post.
-* FIX: Bottom margin issue in Image Slider.
-* FIX: Frontend script issues when Image Slider is nested within other blocks.
-* FIX: Image display issue when they are inside picture tags in Image Slider.
-* FIX: Frontend script error during panel height calculation in Content Toggle.
-* FIX: Average review rating display in editor in Review Block.
-* FIX: Post Grid error that comes up when PHP 7.4 is used.
-* REMOVE: Font size specification for Content Toggle title.
-* UPDATE: Translation .pot file.
-
-= 2.2.0 =
-
-Release Date: January 14th, 2020
-
-* ADD: Prevent Filter selection reset when only one filter is selected in Content Filter Block.
-* ADD: Allow customizing tag used for toggle title in Content Toggle (Accordion) Block.
-* ADD: Option for preventing panels from being toggled in Content Toggle Block.
-* ADD: Allow resizing of review image in Review Block.
-* FIX: Display issue when image slider is inside content filter, content toggle, expand, tabbed content.
-* FIX: Display issue when selecting inline images in Review Block.
-* FIX: Move image and description in review JSONLD to under itemReviewed for Review Block.
-* FIX: Alignment bug in Styled List Block.
-* FIX: Default Alignment in Editor for Table of Contents Block.
-* FIX: Frontend script bug when nested Tabbed Content Blocks are present.
-* FIX: Default frontend alignment for Table of Contents block.
-* FIX: Block Manager bug.
-* FIX: PHP errors when CSS files are absent in uploads folder.
-* REMOVE: Unused FontAwesome CSS in Styled List Block.
-
-= 2.1.9 =
-
-Release Date: December 12th, 2019
-
-* ADD: CSS File generation for only active only blocks.
-* ADD: Option to Change List Alignment in Styled List block.
-* FIX: Content Toggle Block issue - line breaks not preserving on the frontend.
-* FIX: Ensure boolean values for boolean Post Grid attributes.
-* UPDATE: FontAwesome to version 5.11.
-
-= 2.1.8 =
-
-Release Date: November 25th, 2019
-
-* ADD: Custom class name option in Expand block.
-* ADD: Image and Description inputs for Review block. Adding these will minimize warnings in Console for the Schema.
-* ADD: Filtering HTML tags from summary, author name and item name in generated Schema to prevent errors.
-* ADD: Editing of Content Toggle panel attributes from any of the child panels.
-* FIX: Content filter frontend script not loading correctly.
-* FIX: Compatibility issues with CodeMirror block in Content Toggle Block.
-* FIX: Double quotes from interfering with generated schema in Content Toggle Block.
-* FIX: Minimum height issue in smaller screen for Image Slider.
-* FIX: Average star value display in Review block.
-* FIX: Issue in Tabbed Content title editing. Now you can edit them easily.
-* FIX: PHP error in 404 pages.
-* FIX: URL input box from automatically getting focus when a block containing one is selected.
-* CHANGE: Removed aggregateRating and added review author property to Review Schema.
-* CHANGE: Display pointer when mouse hovers on button in Review block.
-
-= 2.1.7 =
-
-Release Date: November 5th, 2019
-
-* FIX: Category filtering not working in Post Grid block.
-* FIX: Rendering of preformatted blocks inside content toggle panels.
-* FIX: Image slider height responsiveness issue.
-* FIX: Styled List item bullet issue on frontend.
-* FIX: Table of Contents animation issues.
-* FIX: Missing attribute in expand block frontend code.
-* FIX: PHP errors in Table of Contents when there are no headings.
-* CHANGE: Ultimate Blocks menu page position.
-
-= 2.1.6 =
-
-Release Date: October 24th, 2019
-
-* NEW: Post Grid Block.
-* NEW: Vertical Tabs in Tabbed Content Block.
-* NEW: Option to Resize Styled List Icon.
-* NEW: Option to Use Heading or Paragraph tag for Call to Action Headline.
-* NEW: Option to Disable Review Schema.
-* NEW: Option to Change Star Outline Color in Review.
-* NEW: Option to Choose Width for Button - Fixed, Flexible, Full.
-* FIX: Review Schema Error in Search Console.
-* FIX: Table of Content Collapsing Animation Issues.
-* FIX: Content Toggle Assets Not Loading.
-* FIX: Alignment of Buttons in Image Slider’s Initial Display.
-* FIX: Style of Dropdown Menu in Progress Bar Block Toolbar.
-* FIX: PHP Errors Caused By Undefined Block Attributes.
-* FIX: JavaScript not Loading for Reusable Blocks.
-* FIX: Leading Extra Preciding "1" in Countdown when JS is disabled.
-* FIX: Expand Block Style.
-* FIX: Table of Contents Indentation in Editor.
-* FIX: Issue with Reusable Blocks in WordPress 5.3 and Gutenberg Plugin.
-* FIX: Responsive issues in Call to Action, Testimonial, Click to Tweet, Content Toggle, Countdown and Tabbed Content.
-* REMOVE: Unused Data Attribute in Content Filter Block.
-* REMOVE: Some Unnecessary CSS.
-
-= 2.1.5 =
-
-Release Date: September 30th, 2019
-
-* NEW: Styled Box Block.
-* NEW: Styled List Block.
-* NEW: Expand Block.
-* NEW: Option to hide Content Filter entries until any filter is selected.
-* FIX: Error in Content Toggle FAQSchema involving link URLs.
-* FIX: Convert JSON attribute in Image Slider and Review block to non-JSON versions.
-* FIX: Adding nofollow in Call to Action’s button.
-* FIX: Frontend icon display in Content Toggle and Tabbed Content.
-* DEPRECATE: Notification Box block, added as a template for Styled Box Block.
-* DEPRECATE: Number Box block, added as a template for Styled Box Block.
-* DEPRECATE: Feature Box block, added as a template for Styled Box Block.
-
-= 2.1.4 =
-
-Release Date: September 9th, 2019
-
-* ADD: Review Block pptions to show/hide call to action button, adding nofollow to button link, and opening link on another tab.
-* ADD: Option to adjust tab title alignment in Tabbed Content Block.
-* ADD: Option to adjust tab alignment in Tabbed Content Block.
-* FIX: Frontend script compatibility issues with IE11.
-* FIX: Bug that prevented new Content Toggle instances from being added.
-* FIX: Bug that prevented generation of Schema markup in Content Toggle.
-* FIX: Conflict with clickthrough feature from Gutenberg Plugin version 5.9.
-* FIX: Set initial selection value to blank in Image Slider image selection.
-* FIX: Hide call to action button on frontend when URL is not specified in Review Block.
-* FIX: Edit heading data in Table of Contents only when the headers themselves are updated.
-* FIX: Issue with accented characters in heading names in Table of Contents Block.
-* FIX: Include headings inside other blocks when generating Table of Contents.
-* FIX: Heading sort functionality that prevented some headings from being displayed in the Table of Content list.
-* REMOVE: unnecessary dependancies from Image Slider frontend script.
-* IMPROVEMENT: Table of Content design when it's shown or hidden.
-
-= 2.1.3 =
-
-Release Date: August 27th, 2019
-
-* FIX: Class name conflict with another plugin that breaks the dashboard.
-
-= 2.1.2 =
-
-Release Date: August 23rd, 2019
-
-* ADD: FAQ Schema in Content Toggle (Accordion) Block 🔥
-* ADD: Smooth scrolling for Table of Contents.
-* ADD: Scroll buttons to improve tab navigation in Tabbed Content.
-* FIX: Infinite loop while parsing existing headings in Table of Contents.
-* FIX: Trim all whitespace from headings in Table of Contents..
-* FIX: Front-end toggle button caption display in Table of Contents.
-* FIX: Rendering icons when more than one Button Block has one icon set.
-* FIX: Bugs that prevented old Button and Review blocks from loading in WordPress 5.1 and older.
-* FIX: Content Toggle and Tabbed Content front-end scripts compatibility with Edge.
-* FIX: Override theme CSS for star color in Star Rating Block.
-* FIX: Override theme CSS for button link underlines in Button and Call to Action Block.
-* FIX: Black outline in Notification Box Block.
-* IMPROVEMENT: Toggle events in Content Toggle and Table of Contents.
-* IMPROVEMENT: Move front-end Javascript to separate files for Countdown Block.
-* IMPROVEMENT: Remove most of inline CSS for new blocks.
-
-= 2.1.2 =
-
-Release Date: August 23rd, 2019
-
-* ADD: FAQ Schema in Content Toggle (Accordion) Block.
-* ADD: Smooth scrolling for Table of Contents.
-* ADD: Scroll buttons to improve tab navigation in Tabbed Content.
-* FIX: Infinite loop while parsing existing headings in Table of Contents.
-* FIX: Trim all whitespace from headings in Table of Contents.
-* FIX: Front-end toggle button caption display in Table of Contents.
-* FIX: Rendering icons when more than one Button Block has one icon set.
-* FIX: Bugs that prevented old Button and Review blocks from loading in WordPress 5.1 and older.
-* FIX: Content Toggle and Tabbed Content front-end scripts compatibility with Edge.
-* FIX: Override theme CSS for star color in Star Rating Block.
-* FIX: Override theme CSS for button link underlines in Button and Call to Action Block.
-* FIX: Black outline in Notification Box Block.
-* IMPROVEMENT: Toggle events in Content Toggle and Table of Contents.
-* IMPROVEMENT: Move front-end Javascript to separate files for Countdown Block.
-* IMPROVEMENT: Remove most of inline CSS for new blocks.
-
-= 2.1.1 =
-
-Release Date: July 24th, 2019
-
-* NEW: Allow star rating to accept half-star values.
-* FIX: Conflict with Table of Contents Plus plugin.
-* FIX: Table of Contents rendering of plain style.
-* FIX: Hide block contents when “Initially Show Table of Contents” is disabled.
-* FIX: Heading styles included in Table of Contents.
-* FIX: Issues with “Open link in new tab” and “Add nofollow” settings.
-* FIX: Bugs in frontend scripts of Table of Content and Button
-* FIX: Frontend script’s search for hidden ancestor elements in Content Toggle.
-* FIX: Content Toggle not working on Safari.
-* FIX: Adding custom class names for all blocks.
-
-= 2.1.0 =
-
-Release Date: July 17th, 2019
-
-* IMPROVE: Rendering of all blocks.
-* FIX: CSS not loading when block is used as a reusable block.
-* FIX: Display of nested Content Toggle and Tabbed Content blocks.
-* FIX: Display of multiple Table of Contents instances.
-* FIX: Frontend display of icon in button.
-* FIX: Issue with removing content toggle panels.
-* FIX: Frontend JS/CSS compatibility issues with blocks from previous versions.
-* FIX: Add Image button alignment on image slider.
-* FIX: Front-end script conflict between Table of Contents and Content Filter.
-* FIX: Issue with Table of Contents header anchors when headers are added, removed, or edited.
-* ADD: Support for Rank Math Table of Contents plugins list.
-
-= 2.0.0 =
-
-Release Date: June 10th, 2019
-
-* NEW: Content Filter Block 🔥
-* NEW: Button icons.
-* NEW: Ghost/Transparent Button style.
-* NEW: Button hover color settings.
-* NEW: Button link settings – open in a new tab and nofollow.
-* NEW: Option to add multiple Table of Contents in one post.
-* NEW: Star rating alignment options.
-* NEW: Select stars for star rating directly in the editor.
-* NEW: Option to add multiple Click to Tweet blocks.
-* FIX: HTML tags within heading tags from being parsed.
-* FIX: Table of Contents scrolling issue when sticky headers are present.
-* FIX: Testimonial image delete button placement.
-* FIX: Missing deprecation code for Content Toggle panel.
-* FIX: Blocks missing style inside reusable blocks.
-* Version 1.1.9May 10th, 2019
-* FIX: Bug that prevented adding panels to Content Toggle in WordPress 5.2.
-* FIX: Issue with conversion of old data from Content Toggle and Tabbed Content in WordPress 5.2.
-* FIX: Countdown block refreshing issue on the front-end when in regular mode.
-
-= 1.1.8 =
-
-Release Date: April 23rd, 2019
-
-* NEW – List style for Table of Contents (Bulleted, Numbered and Plain).
-* NEW – Nested Blocks support in Tabbed Content.
-* NEW – Nested Blocks support for Content Toggle (Accordion).
-* FIX – Click to Tweet including HTML tag issue.
-* FIX – Table of Contents Compatibility issue with older versions.
-* Version 1.1.7March 31st, 2019
-* IMPROVE: Loading Assets conditionally for better performance.
-* Version 1.1.6March 27th, 2019
-* FIX: Forcing one column for Table of Contents on smaller screens.
-* FIX: Prevent Show/Hide button from taking focus away from Table of Contents.
-
-= 1.1.5 =
-
-Release Date: March 22nd, 2019
-
-* NEW: Option to choose which tags (h1, h2, h3, h4, h5, h6) to include/exclude in Table of Contents block.
-* NEW: Option to toggle Show/Hide for Table of Contents block.
-* NEW: Option to split the table of contents in two, three columns.
-* NEW: Formatting and alignment options for Button, Call to Action, Content Toggle, Countdown, Feature Box, Number Box, Progress Bar, Review, Star Rating, and Testimonial block.
-* ADD: Missing Translation for Click to Tweet and Countdown block.
-
-= 1.1.4 =
-
-Release Date: February 28th, 2019
-
-* NEW: Image Slider Block.
-* NEW: Support for Unicode character anchors in Table of Contents Block.
-* FIX: Dashboard background color issue.
-* FIX: Link issues on Button, Call to Action, Review Block.
-
-= 1.1.3 =
-
-Release Date: January 29th, 2019
-
-* NEW: Review Block (Schema Markup Enabled).
-* NEW: Countdown Block.
-* FIX: Image Change issue in Feature Box Block and Testimonial Block.
-* FIX: Rendering issue in Table of Contents Block.
-* UPDATE: Other minor Improvements.
-* NOTE: v1.1.3 is not backward compatible with lower versions, upgrading can weird out some of your existing blocks. If that happens, you’ll need to redo some of your blocks.
+= 3.6.2 =
+
+* NEW: Table of Contents Block - Added an optional "Show more" link that shortens long lists.
+* NEW: Tabs Block - Added a Tab Spacing control to set the space between tab buttons, including no space at all.
+* NEW: Tabs Block - Added a Show Border option that removes all of the block's borders.
+* NEW: Styled List Block - Paragraph blocks can now be transformed into a Styled List.
+* UPDATE: Tabs Block - Renamed to "Tabs (UB)" so it is easy to tell apart from the core Tabs block.
+* UPDATE: Updated Freemius SDK to the latest version.
+* FIX: Countdown Block - New timers now start 7 days from today instead of showing as already finished.
+* FIX: Accordions Block - The "Default Open" panel now shows open in the editor when Collapsed is enabled.
+* FIX: Video Block - Fixed white bars inside Vimeo videos when a border is set.
+* FIX: Video Block - Fixed the video becoming much wider than the page when autofit is turned off.
+* FIX: Video Block - Rounded corners now apply to the video itself, not only to its border.
+* FIX: Review Block - The Offer schema is now kept when the block has no call-to-action button.
+* FIX: Review Block - Invalid GTIN values and empty SKU and publisher fields are no longer added to the schema.
+* PRO: NEW: Summarize with AI Block - Added a background color, a full width buttons option and a side by side layout for the heading and buttons.
+* PRO: FIX: Coupon Block - "Doesn't Expire" coupons no longer show as "Expired" on the frontend.
+* PRO: FIX: Coupon Block - New coupons now start with an expiration date one week ahead.
+* PRO: FIX: Fixed PHP 8.5 deprecation notices.
+
+= 3.6.1 =
+
+* FIX: Accordions Block, Tabs Block, Table of Contents Block, Expand Block, Review Block, Divider Block, Image Slider Block, Progress Bar Block, Social Share Block - Fixed these blocks breaking in the editor on sites that also run the Widget Options plugin.
+* FIX: Button Block - Fixed the transform from the core Buttons block failing with an error, and stopped one button's colors carrying over to the next one.
+* FIX: Block Settings - Fixed the spacing control icon sitting slightly below its slider in some settings panels.
+* PRO: NEW: Summarize with AI Block - Lets readers send the post they are reading to an AI tool for a summary, with ChatGPT, Claude, Perplexity, Gemini and Grok, an editable prompt, and rules for archives, private, password protected and noindex content.
+
+= 3.6.0 =
+
+* FIX: Review Block - Fixed Product reviews being counted several times over in Google Search.
+* FIX: React 19 Compatibility - Fixed the Blocks settings screen going blank on sites where WordPress serves React 19. Plugin scripts now use the React version WordPress provides instead of bundling their own copy.
+* PRO: FIX: Accordions Block - Fixed the search box icons not appearing on the frontend.
+* PRO: FIX: Accordions Block - Fixed the search icon being drawn inside an unwanted border box.
+* PRO: FIX: Tabs Block, Review Block - Fixed tab icons and pros/cons icons that could fail to appear for the same reason.
+* PRO: IMPROVE: Accordions Block - The frontend search script is now 4 KB instead of 3.7 MB and no longer loads React on the frontend, so pages using a searchable accordion load considerably faster.
+* IMPROVE: Settings Page - The Blocks settings screen script is now 148 KB instead of 281 KB.
+* IMPROVE: Setup Wizard - The setup wizard script is now 40 KB instead of 165 KB.
+
+= 3.5.9 =
+
+* PRO: NEW: Image Hotspots Block - Added Border, Border Radius, Caption, and Link options, plus Duotone filter support.
+* PRO: NEW: Image Hotspots Block - Added an option to transform an Image block into an Image Hotspots block.
+* NEW: Review Block - Added shipping and return policy schema markup for Product reviews.
+* NEW: Review Block - Added review and aggregateRating fields to Product schema markup.
+* NEW: Review Block - Added a notice highlighting missing or recommended schema fields.
+* UPDATE: Accordions Block - Renamed the "Container Color" label to "Title Container Color" for clarity.
+* UPDATE: Accordions Block - Panels now also collapse in the editor when the "Collapsed" option is enabled, matching the frontend.
+* UPDATE: Setup Wizard - Added Image Hotspots to the Pro Blocks list and AssistCamp to the Optional Plugins list; updated the "Get WP Block Suite" button link.
+* FIX: Review Block - Fixed Offer Price showing as 0 after reopening a saved post.
+* FIX: Review Block - Fixed Offer Status missing from schema markup.
+* FIX: Review Block - New blocks now default to today's date instead of a fixed 2023 publication date.
+* FIX: Accordions Block - Fixed inconsistent spacing in the color settings panel.
+* PRO: FIX: Fixed the Pro block toggle silently reactivating after a page reload.
+* FIX: Saved Styles - Fixed the hover preview causing a visible "bounce" in the editor for Accordions, Content Toggle, and Social Share blocks.
+
+= 3.5.8 =
+
+* PRO: NEW: Image Hotspots Block - Added a new Pro block for placing interactive hotspots with rich tooltips on top of any image.
+* NEW: Accordions Block - Panels now have an 8px border-radius by default.
+* NEW: Social Share Block - Added a Radius option for square-shaped icons, with an 8px default.
+* UPDATE: Countdown Block - Renamed to "Countdown Timer" for clarity.
+* UPDATE: Setup Wizard - Updated the OpinionCamp description and changed the ConvertForce/OpinionCamp badges from "Optional" to "Free".
+* FIX: Icon Block - Padding now applies to the icon itself instead of the block wrapper, so it no longer looks identical to Margin.
+* FIX: Advanced Video Block - Fixed the editor preview failing to load for YouTube, Vimeo, and Dailymotion embeds (was showing a YouTube "Error 153" / blank preview).
+* FIX: Advanced Video Block - Fixed an unwanted scrollbar appearing on the video preview in the editor.
+* PRO: FIX: Social Share Block - Fixed the block becoming unselectable in the editor when Pro is active.
+* PRO: FIX: Admin Notices - Fixed messages showing raw HTML tags instead of rendering them (e.g. bold text) in the "requires Ultimate Blocks" and license activation notices.
+
+= 3.5.7 =
+
+* FIX: Content Toggle Block - Fixed hover controls positioning and replaced dashicons with SVG icons.
+* FIX: Tabs Block - Replaced dashicons with SVG icons for drag, remove, and add tab controls.
+* FIX: Content Filter Block - Replaced dashicons with SVG icons for delete filter controls.
+* FIX: Custom CSS - Fixed quotes being HTML-encoded in CSS output.
+
+= 3.5.6 =
+
+* FIX: Styled List Block - Fixed icon styling for newly added list items.
+* FIX: Fixed a bug where clicking a tab anchor link caused all tabs to appear active.
+* UPDATE: Updated block names and labels for Accordions (UB) and Tabs.
+* NEW: Table of Contents Block - Shows the table of contents title by default, and you can edit it anytime.
+* NEW: Tabs Block - Added an option to choose which tab opens first.
+* NEW: Progress Bar Block - Added text position control for both line and circle styles.
+* NEW: Updated setup wizard
+* Tested with WordPress 7.0.
+
+= 3.5.5 =
+
+* PRO: NEW: Tabbed Content Block - Added sticky tab navigation option to keep tabs visible while scrolling.
+* NEW: Table of Contents Block - Added font size control for table of contents items.
+* NEW: Content Toggle Block - Added ability to convert a list of questions (Heading Block) and answers (Paragraph Block) into a Content Toggle block with multiple panels automatically.
+* IMPROVE: Content Toggle Block - Panels now open correctly when collapsed option is enabled.
+* FIX: Styled List Block - Fixed accessibility complaint issue.
+
+= 3.5.4 =
+
+* FIX: Expand Block - Fixed infinite loop issue.
+* FIX: Review Block - Preserved HTML formatting in item labels.
+
+= 3.5.3 =
+
+* FIX: All Blocks - Enhanced security with improved output escaping and sanitization.
+
+= 3.5.2 =
+
+* NEW: Styled List Block - Added custom SVG icon support for list items.
+* NEW: Table Of Contents Block - Added spacing option to control space between list items.
+* NEW: Styled List Block - Added full typography control for list and list items.
+* NEW: Content Toggle Block - Added border control for customization.
+
+= 3.5.1 =
+
+* NEW: Styled List Block - Added device switcher component for easier responsive editing in block editor.
+
+= 3.5.0 =
+
+* IMPROVE: Styled List Block - Added visual column preview in editor with Gutenberg device preview.
+* IMPROVE: Styled List Block - Default mobile columns set to 1 for better mobile experience.
+
+= 3.4.9 =
+
+* NEW: Image Slider Block - Added option to place navigation arrows outside of the slider for better visibility.
+* NEW: All Blocks - Added copy and paste styles option to easily duplicate styling across blocks.
+* NEW: Content Toggle Block - Added border radius control to customize rounded corners.
+* FIX: Content Toggle Block - Fixed styles panel not appearing.
+
+= 3.4.8 =
+
+* NEW: Image Block - Add support for bold and italic formatting in captions.
+* IMPROVE: Color Settings - Enhanced color picker to include theme colors, custom colors, and default colors in all blocks.
+* IMPROVE: Table of Contents Block - Fixed collapsible icon color issue in editor.
+* IMPROVE: Image Slider Block - Increased slider height option limit for better customization.
+* FIX: Image Slider Block - Fixed link not working properly.
+* FIX: Table of Contents Block - Fixed icon not showing without setting title color.
+* FIX: Styled List Block - Fixed mobile columns not working properly.
+* PRO: FIX: Coupon Block - Fixed deprecated warning.
+* PRO: FIX: Coupon Block - Fixed date picker timezone issue causing incorrect expiration dates.
+* PRO: FIX: Coupon Block - Fixed gradient color not working on coupon wrapper.
+* PRO: FIX: Pro Blocks - Fixed enable/disable not working in settings.
+
+= 3.4.7 =
+
+* FIX: Expand Block - Fixed WCAG 2.0 accessibility violations with duplicate IDs in ARIA attributes.
+* FIX: Expand Block - Fixed aria-controls to properly reference the toggled content section.
+* FIX: Expand Block - Added proper aria-hidden state management for screen reader accessibility.
+* FIX: Expand Block - Both toggle buttons now correctly control the full section that's being toggled.
+* PRO: FIX: Button Block - Fixed SavedStylesInspector panel not showing when pro version is active.
+
+= 3.4.6 =
+
+* FIX: Advanced Video Block - Fixed autoplay not working properly.
+
+= 3.4.5 =
+
+* FIX: Table of Contents Block - Fixed headings not showing when viewing template in editor.
+* UPDATE: Updated Freemius SDK to latest version for improved licensing and updates.
+
+= 3.4.4 =
+
+* PRO: NEW: Countdown Block - Add "Show Expiry Content" option to display custom blocks when timer expires.
+* PRO: NEW: Countdown Block - Add "Redirect on Expiry" option to redirect users to a custom URL when timer reaches zero.
+* PRO: FIX: Animation Extension - Fixed animation trigger to activate when element enters viewport (prevents animation from playing before element is visible).
+* PRO: FIX: Animation Extension - Fixed element blinking before animation starts.
+* NEW: Styled List Block - Add individual list item controls for text color, background color, and icon color.
+* NEW: Image Block - Add copy and paste style controls.
+* NEW: Divider Block - Add copy and paste style controls.
+
+= 3.4.3 =
+
+* NEW: Add Item per view option for Mobile and Tablet in the Horizontal view in timeline block.
+* NEW: Core details block can be converted into content toggle block.
+* NEW: Image block can be converted from core image block.
+* IMPROVE: Icon paste style now can paste it on multiple icon blocks.
+* FIX: Hide font family option if font families not found.
+
+= 3.4.2 =
+
+* FIX: Disabling extension is not working.
+* FIX: Button automatically adds noopener noreferrer.
+* FIX: Memory exhausted issue.
+* FIX: Free version shows settings tab on core blocks like paragraph.
+* IMPROVE: Update plugin name in readme.
+* IMPROVE: Remove unnecessary metadata.
+
+= 3.4.1 =
+
+* FIX: Button block text cannot be changed.
+* FIX: Coupon block border radius not working.
+* FIX: Button shadow not working in classic theme.
+* FIX: Content Toggle icon alignment.
+* NEW: Add copy & paste styling option for the Icon block
+* IMPROVE: Upload image button in Styled Box block.
+
+= 3.4.0 =
+
+* NEW: Image block.
+* NEW: Box shadow option in button block.
+* FIX: PHP Fatal error Uncaught TypeError fwrite().
+* FIX: countdown timer shows expired on frontend when insert a block.
+* FIX: Custom css is not working in content filter block.
+
+= 3.3.9 =
+
+* PRO: FIX: Content toggle space inconsistent when using search.
+* FIX: Google parse error in review block schema.
+* NEW: Add Gap option to add space between tabs and content.
+
+= 3.3.8 =
+
+* NEW: Add border and border radius options to Table of Contents block.
+* NEW: Add description color option to Progress Bar block.
+* IMPROVE: Update 'Click to Tweet' block to 'Post on X' with X icon.
+* IMPROVE: Update default padding in Button block.
+* IMPROVE: Refine color controls in Table of Contents block.
+* IMPROVE: Refine Progress Bar block controls.
+* IMPROVE: Extend default end time for Countdown block to 2025.
+* FIX: Resolve fatal error in Tabbed Content block.
+* FIX: Address undefined variable error in Button block.
+* FIX: Correct type error in Button block.
+
+= 3.3.7 =
+
+* FIX: Make Table of contents compatibility with FSE.
+* IMPROVE: Table of contents edit and delete icon.
+* IMPROVE: Make tabbed content scrollbar always visible.
+* IMPROVE: Post grid block controls.
+* NEW: Typography controls in button block and remove old button size option.
+* PRO: NEW: Manual post selection option in Post grid block.
+
+= 3.3.6 =
+
+* FIX: Content toggle schema rendering without it enabled.
+* FIX: Border issue in tabbed content block.
+* FIX: Countdown is not showing properly in responsive.
+* FIX: Promoter director path issue.
+* FIX: Image width is not working on frontend in post grid block.
+* FIX: Plus sign add in schema review block.
+* PRO: NEW: Search bar position in content toggle block.
+* NEW: Add border color for content toggle search box.
+* IMPROVE: Enable image and description by default in the review block.
+
+= 3.3.5 =
+
+* FIX: Icon not showing on frontend in button block.
+* FIX: Tab title bottom border not showing in nested tab in vertical style.
+* FIX: Heading block transforming issue.
+* FIX: Schema issue in review block.
+
+= 3.3.4 =
+
+* FIX: Icon control not showing in button block.
+* FIX: Icon not showing in new button.
+* FIX: Styled list language characters issue.
+* FIX: XXS issue in how to block.
+* FIX: XXS issue in tabbed content block.
+* FIX: Variable is not defined in button block.
+
+= 3.3.3 =
+
+* FIX: Version bump for update failed issues.
+
+= 3.3.2 =
+
+* FIX: Divider spacing issue.
+* FIX: Icon control not showing in free version in button block.
+* FIX: Button block full size issue.
+* FIX: HTML showing in dashboard notice.
+* FIX: PHP deprecated warning in styled list block.
+* FIX: Promoter's config file path issue.
+* IMPROVE: Styled list layout.
+
+= 3.3.1 =
+
+* IMPROVE: Move set value in Rating Format in review block.
+* FIX: PHP warning.
+* FIX: Feature rating not working review block.
+* FIX: XXS issue in content filter block.
+
+= 3.3.0 =
+
+* PRO: FIX: Icon type warning in button block.
+* FIX: Frontend script is not working in fse in all blocks.
+* FIX: Expand block alignment issue.
+* FIX: Content background color not working in underline and pills type.
+* FIX: Review block star rating not working in 6.8.
+* FIX: XSS issue in content toggle panel block.
+* FIX: php warning on 6.8.
+
+= 3.2.9 =
+
+* FIX: Empty content error in responsive control extension.
+* FIX: Some language characters appear incorrectly.
+* FIX: Classes are not applying on content toggle panel block.
+* FIX: Custom CSS not working from content toggle block.
+
+= 3.2.8 =
+
+* IMPROVE: Ensure compatibility of all free and pro blocks with Full Site Editing (FSE).
+* FIX: Warning issue in the divider block.
+* FIX: XSS issue.
+
+= 3.2.7 =
+
+* FIX: Content toggle wide width issue.
+* FIX: Styled List item duplication issue.
+* NEW: Add full and wide width option on content toggle block.
+
+= 3.2.6 =
+
+* FIX: PHP warning.
+* FIX: Button block icon not showing in styled box block.
+* FIX: Tab color issue in tabbed content block.
+* FIX: Blocks can be inserted after deactivating them.
+* IMPROVE: Update Required PHP to 7.2.
+
+= 3.2.5 =
+
+* FIX: Button block color issue on frontend.
+
+= 3.2.4 =
+
+* FIX: Fatal Error on PHP 7.x and earlier.
+
+= 3.2.3 =
+
+* NEW: Add alignment control in tabbed content block.
+* NEW: Border radius option for tab title and tab content.
+* NEW: Alignment option for the divider block.
+* NEW: Add navigation and pagination color option in image slider.
+* FIX: Editor breaks when changing the styled block mode to bordered.
+* FIX: Styling removed when convert content toggle block into group block.
+* FIX: XSS issue with countdown timer block.
+* PRO: FIX: Wipe animation in editor button block.
+
+= 3.2.2 =
+
+* NEW: Link to Divider Feature in Table of content block.
+* NEW: Add gap option in Star Rating block.
+* NEW: Add all typography options in counter block.
+* FIX: Accessibility issue in tabbed content block.
+* FIX: Block Editor hang when inserting pattern with UB block.
+* PRO: FIX: PHP warning from saved styles.
+
+= 3.2.1 =
+
+* FIX: On Split not working on WP 6.6.
+* FIX: Review Block Schema error.
+* FIX: Content Filter multiple selection not working.
+* FIX: Content Toggle performance issue.
+* FIX: Post Excerpt null warning in post grid block.
+* FIX: Post image preserve aspect ratio not working properly on frontend.
+* IMPROVE: Run counter when it visible on the screen in the counter block.
+* IMPROVE: Image width in image slider.
+* NEW: Spacing between counter and label in counter block.
+* NEW: Top, Right, Bottom, and Left position for the text in star rating block.
+
+= 3.2.0 =
+
+* FIX: Aspect Ratio not working on uploaded video in advanced video block.
+* FIX: Content Toggle not working properly.
+* FIX: Howto step image height showing incorrectly.
+* FIX: Styled List Item icon change to default on add new item by pressing enter.
+
+= 3.1.9 =
+
+* FIX: Steps not saving in the how to block.
+* FIX: Security issues in blocks.
+* FIX: Progress bar percentage position inside not showing properly.
+* FIX: Inner content toggle not working when search is used.
+* FIX: Letter spacing not working in editor advanced heading block.
+* NEW: Square Fill, Square Outline, Circle Fill, Circle Outline styles in the icon block.
+* NEW: Alignment option in table of content block.
+* NEW: Summary title and title font size in review block.
+* NEW: Slider speed to make slider work smoothly in image slider.
+* PRO: FIX: Horizontal Timeline not working properly on block insert.
+* PRO: FIX: Image alignment in Horizontal Timeline.
+
+= 3.1.8 =
+
+* FIX: Slides per view not working properly in the frontend in image slider block.
+* FIX: Uncaught Error on content toggle block.
+* PRO: FIX: Post grid block breaks when change the post type.
+* NEW: Block Spacing in button block.
+* PRO: NEW: Icon spacing in divider block.
+* IMPROVE: Add flex wrap on content filter buttons.
+* IMPROVE: Width control in divider block.
+
+= 3.1.7 =
+
+* FIX: Advanced heading generated block security checks.
+* FIX: Button (Improved) breaks when select empty icon.
+* FIX: Table of content not getting nested toggle content block.
+* NEW: Alignment control for the filter buttons in content filter block.
+* NEW: Icon Option for individual list item in styled list block.
+* PRO: Fix: Pro features not showing.
+
+= 3.1.6 =
+
+* FIX: Security issue in heading block.
+* PRO: NEW: Horizontal timeline in the timeline block.
+* PRO: NEW: Block Visibility Extension.
+
+= 3.1.5 =
+
+* NEW: Number settings (Show Number, Number Prefix, Number Suffix) in the progress bar block.
+* IMPROVE: Change default counter, and label font size in the counter block.
+* FIX: Counter bug when change animation.
+* FIX: Attribute schema validating warning in (styled list, advanced video, how to).
+* FIX: Countdown styling not working on frontend.
+* FIX: Advanced heading not working in table of content.
+* FIX: Image slider not showing properly in row block.
+* FIX: Anchor issue in tabbed content block.
+* PRO: NEW: Load more pagination in post grid.
+* PRO: FIX: Schema indexing error Bad escape sequence in string in review block.
+
+= 3.1.4 =
+
+* IMPROVE: Increase bar thickness progress bar.
+* IMPROVE: Make center default alignment of progress bar.
+* IMPROVE: Remove responsive settings from advanced video block.
+* IMPROVE: Add toggle color option on main content toggle block.
+* IMPROVE: Remove bottom white space when add a border in the advanced video block.
+* NEW: Content color and background color option in tabbed content.
+* NEW: Alignment option in advanced video.
+* NEW: Equal Height option in post grid.
+* NEW: Colors Option for (Title, Author, Date, Excerpt, Link, Post) in post grid.
+* NEW: Spacing Option for (Link, Content, Post) in post grid.
+* NEW: Row and Column gap in post grid.
+* NEW: Border Radius Option for (Link, Post, Image) in post grid.
+* FIX: Upload video height issue advanced video block.
+* FIX: Image alignment inside the toggle content.
+* PRO: FIX: Review block colors styling not working on frontend.
+* PRO: FIX: Show more button not working when fade is enable expand block.
+* PRO: NEW: Show taxonomy like badge in post grid.
+
+= 3.1.3 =
+
+* IMPROVE: Separated Styled list and list item alignment.
+* IMPROVE: Make default width for the uploaded video.
+* IMPROVE: Separated normal and hover colors in icon block.
+* IMPROVE: Advanced heading initially without bold.
+* IMPROVE: Shorts support in the advanced video block.
+* IMPROVE: Color Controls in the styled list block.
+* FIX: Shadow in the advanced video block.
+* FIX: Image alignment inside the tabbed content block.
+* FIX: Autoplay in the advanced video block youtube.
+* PRO: FIX: German umlauts (ä,ö,ü) not showing correctly on frontend.
+* PRO: NEW: Ajax functionality for the post grid pagination.
+

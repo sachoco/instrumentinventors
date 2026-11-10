@@ -22,7 +22,7 @@
  */
 class Ultimate_Blocks_Constants {
 
-	const PLUGIN_VERSION = '2.5.6';
+	const PLUGIN_VERSION = '3.6.2';
 
 	const PLUGIN_NAME = 'ultimate-blocks';
 

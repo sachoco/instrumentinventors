@@ -8,12 +8,25 @@
 	margin-top: 20px;
 	margin-bottom: 20px;
 	display: grid;
+	overflow: hidden;
+
+	* {
+		box-sizing: border-box;
+	}
+
 	ul,
 	ol {
 		margin-bottom: 0;
 		margin-left: 1.3em;
 		padding-inline-start: 0;
 		padding-left: 0;
+		li:not(:first-child) {
+			margin-top: var(--ub-toc-item-spacing, 0);
+		}
+		ul,
+		ol {
+			margin-top: var(--ub-toc-item-spacing, 0);
+		}
 	}
 	ol {
 		list-style-type: none;
@@ -92,5 +105,35 @@
 	.ub_table-of-contents-2-column,
 	.ub_table-of-contents-3-column {
 		column-count: 1;
+	}
+}
+.ub-linked-to-toc {
+	font-size: 11px;
+	text-align: right;
+	cursor: pointer;
+	display: block;
+	text-decoration: none;
+	color: #73accf;
+	width: 100%;
+	white-space: pre;
+}
+
+/*** Show more ***/
+.ub_table-of-contents-container:not(.ub-toc-show-all) .ub_table-of-contents-extra-item {
+	display: none;
+}
+
+.ub_table-of-contents-show-more {
+	display: block;
+	//under all the columns of a multi-column list, not inside the last one
+	column-span: all;
+	//only the text is clickable, not the whole line
+	width: fit-content;
+	margin-top: 8px;
+	cursor: pointer;
+
+	//no focus ring from a mouse click, keyboard users still get one
+	&:focus:not(:focus-visible) {
+		outline: none;
 	}
 }

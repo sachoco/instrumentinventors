@@ -7,7 +7,6 @@
 @import "../../common";
 
 @mixin tab-vertical-wrap {
-	border: 1px solid lightgrey;
 	border-top-left-radius: 5px;
 	padding: 10px 15px;
 	border-right: 0;
@@ -19,26 +18,68 @@
 		color: #000000;
 	}
 }
-
 .wp-block-ub-tabbed-content {
 	margin-top: 30px;
 	margin-bottom: 30px;
+	.wp-block-ub-tabbed-content-tabs-content {
+		.wp-block-ub-tabbed-content-tab-content-wrap {
+			> .alignright {
+				float: right;
+				margin-inline-start: 2em;
+				margin-inline-end: 0;
+			}
 
-	& .wp-block-ub-tabbed-content-tabs-content {
-		border: 1px solid lightgrey;
+			> .alignleft {
+				float: left;
+				margin-inline-start: 0;
+				margin-inline-end: 2em;
+			}
+
+			> .aligncenter {
+				margin-inline-start: auto;
+				margin-inline-end: auto;
+			}
+		}
 	}
 
-	& .wp-block-ub-tabbed-content-tab-title-wrap {
-		border: 1px solid lightgrey;
-		border-bottom: 0;
+	&:not(.wp-block-ub-tabbed-content-pills):not(
+			.wp-block-ub-tabbed-content-underline
+		):not(.ub-tabs-no-border) {
+		.wp-block-ub-tabbed-content-tabs-content {
+			border: 1px solid lightgrey;
+		}
+		.wp-block-ub-tabbed-content-tab-title-wrap,
+		.wp-block-ub-tabbed-content-tab-title-vertical-wrap {
+			border: 1px solid lightgrey;
+		}
+	}
+
+	&.wp-block-ub-tabbed-content-underline {
+		.wp-block-ub-tabbed-content-tab-title-wrap,
+		.wp-block-ub-tabbed-content-tab-title-vertical-wrap {
+			&.active {
+				border-bottom: 5px solid var(--ub-tabbed-active-title-color, #000000);
+			}
+		}
+	}
+	& .wp-block-ub-tabbed-content-tab-title-wrap,
+	.wp-block-ub-tabbed-content-tab-title-vertical-wrap {
+		background: var(--ub-tabbed-title-background-color);
+		color: var(--ub-tabbed-title-color);
+		&.active {
+			background: var(--ub-tabbed-active-title-background-color);
+			color: var(--ub-tabbed-active-title-color);
+		}
 	}
 
 	&-holder {
 		.blocks-rich-text__tinymce.mce-content-body {
 			font-size: 14px;
 		}
+		display: flex;
+		flex-direction: column;
 		&.vertical-holder {
-			display: flex;
+			flex-direction: row;
 		}
 	}
 	&-tab-holder {
@@ -50,7 +91,24 @@
 	}
 	&-tabs-title {
 		display: flex;
-		overflow-x: hidden;
+		overflow-x: auto;
+		&:hover,
+		&:focus {
+			overflow-x: auto;
+		}
+	}
+	&-tabs-title-vertical-tab {
+		@media (max-width: 699px) {
+			display: flex;
+			overflow-x: auto;
+			&:hover,
+			&:focus {
+				overflow-x: auto;
+			}
+		}
+	}
+	&-tabs-title,
+	&-tabs-title-vertical-tab {
 		&:hover,
 		&:focus {
 			overflow-x: auto;
@@ -71,6 +129,13 @@
 		padding: 25px;
 		&.vertical-content-width {
 			width: 79%;
+		}
+	}
+	&:not(.wp-block-ub-tabbed-content-pills):not(
+			.wp-block-ub-tabbed-content-underline
+		):not(.ub-tabs-no-border) {
+		.wp-block-ub-tabbed-content-tab-title-wrap {
+			border-right: 1px solid lightgrey;
 		}
 	}
 	&-tab-title {
@@ -213,11 +278,28 @@
 	}
 }
 
+// "Show Border" off: no borders on tab buttons, content or the mobile accordion.
+// The underline style's active indicator stays, it is the style itself.
+.wp-block-ub-tabbed-content-holder.ub-tabs-no-border {
+	.wp-block-ub-tabbed-content-tab-title-wrap,
+	.wp-block-ub-tabbed-content-tab-title-vertical-wrap,
+	.wp-block-ub-tabbed-content-tabs-content,
+	.wp-block-ub-tabbed-content-accordion-toggle,
+	.wp-block-ub-tabbed-content-tab-content-wrap {
+		border: none;
+	}
+}
+
 .wp-block-ub-tabbed-content-accordion-toggle {
 	border: 1px solid lightgray;
 	padding: 10px 15px;
 	display: none;
+	background-color: var(--ub-tabbed-accordion-background-color);
+	color: var(--ub-tabbed-accordion-color);
+
 	&.active {
+		background-color: var(--ub-tabbed-active-accordion-background-color);
+		color: var(--ub-tabbed-active-accordion-color);
 		border-bottom: none;
 	}
 	@media (max-width: 699px) {

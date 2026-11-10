@@ -1,7 +1,14 @@
 <?php
 
+use DotCamp\Promoter\Promotion;
+use DotCamp\Promoter\Promoter;
+use Ultimate_Blocks\admin\Setup_Wizard;
 use Ultimate_Blocks\includes\Editor_Data_Manager;
+use Ultimate_Blocks\includes\managers\Render_Assistant;
+use Ultimate_Blocks\includes\pro_manager\Pro_Manager;
+use Ultimate_Blocks\includes\Saved_Styles_Manager;
 use Ultimate_Blocks\includes\Ultimate_Blocks_Version_Control;
+use Ultimate_Blocks\includes\Version_Sync_Manager;
 
 /**
  * The file that defines the core plugin class
@@ -59,6 +66,31 @@ class Ultimate_Blocks {
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
 
+		$this->initialize_promoter();
+
+	}
+
+	/**
+	 * Initialize DotCamp promoter.
+	 *
+	 * @return void
+	 */
+	private function initialize_promoter()
+	{
+		$default_promotions = Promoter::generate_default_promotions(ULTIMATE_BLOCKS_PLUGIN_FILE, 'Ultimate Blocks', 'ultimate-blocks/ultimate-blocks.php');
+		Promoter::add_promotions($default_promotions, ULTIMATE_BLOCKS_PLUGIN_FILE);
+		Promoter::add_promotions([
+			new Promotion(
+				'Ultimate Blocks',
+				'ultimate-blocks/ultimate-blocks.php',
+				'Galleryberg',
+				'galleryberg-gallery-block/galleryberg-gallery-block.php',
+				'Gallery Block by Galleryberg: Lightbox with Tiles, Masonry, Square, and Justified Layouts',
+				['core/gallery'],
+				'https://galleryberg.com/',
+				'Learn More'
+			)
+		], ULTIMATE_BLOCKS_PLUGIN_FILE);
 	}
 
 	/**
@@ -103,6 +135,11 @@ class Ultimate_Blocks {
 		require_once ULTIMATE_BLOCKS_PATH . 'admin/class-ultimate-blocks-help.php';
 
 		/**
+		 * The setup wizard shown to new users on first activation.
+		 */
+		require_once ULTIMATE_BLOCKS_PATH . 'admin/class-ultimate-blocks-setup-wizard.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
@@ -137,6 +174,9 @@ class Ultimate_Blocks {
 	 */
 	private function define_admin_hooks() {
 
+		// Initialize the first-run setup wizard.
+		Setup_Wizard::init();
+
 		$plugin_admin = new Ultimate_Blocks_Admin();
 		$plugin_help  = new Ultimate_Blocks_Help();
 
@@ -153,6 +193,7 @@ class Ultimate_Blocks {
 
 		// Ajax hooks.
 		$this->loader->add_action( 'wp_ajax_toggle_block_status', $plugin_admin, 'toggle_block_status' );
+		$this->loader->add_action( 'wp_ajax_toggle_extension_status', $plugin_admin, 'toggle_extension_status' );
 
 		// Insert blocks setting.
 		$this->loader->add_action( 'admin_head', $plugin_admin, 'insert_blocks_settings' );
@@ -162,13 +203,23 @@ class Ultimate_Blocks {
 		$this->loader->add_action( 'wp_ajax_UltimateBlocksReviewNoticeHide', $plugin_admin,
 			'UltimateBlocks_hide_review_notify' );
 
+		// initialize version sync manager
+		Version_Sync_Manager::init();
+
 		// initialize version control manager
 		Ultimate_Blocks_Version_Control::init();
 
 		// initialize editor data manager
 		Editor_Data_Manager::init();
 
+		// initialize pro manager
+		$this->loader->add_action( 'init', Pro_Manager::class, 'init' );
 
+		// initialize saved styles manager
+		Saved_Styles_Manager::init();
+
+		// initialize render assistant
+		Render_Assistant::init();
 	}
 
 	/**

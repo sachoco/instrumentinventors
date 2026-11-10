@@ -1,38 +1,44 @@
 import "./formats/register-formats";
 import fontsList from "./fonts";
+import { useSelect } from "@wordpress/data";
 import {
 	textTransformOptions,
 	fontWeightOptions,
 	fontFamilyOptions,
 } from "./settings-options";
 import { h1Icon, h2Icon, h3Icon, h4Icon, h5Icon, h6Icon } from "./icons";
-
-const { __ } = wp.i18n;
-const {
+import { SpacingControl } from "../components";
+import { generateStyles, getSpacingCss } from "../utils/styling-helpers";
+import { getParentBlock } from "../../common";
+import { isNumber } from "lodash";
+import { __ } from "@wordpress/i18n";
+import {
 	InspectorControls,
 	BlockControls,
 	PanelColorSettings,
 	RichText,
+	useBlockProps,
 	AlignmentToolbar,
-} = wp.blockEditor || wp.editor;
-const {
+} from "@wordpress/block-editor";
+import {
 	PanelBody,
 	Button,
 	ButtonGroup,
 	RangeControl,
 	SelectControl,
 	DropdownMenu,
-} = wp.components;
-const { createRef, useEffect } = wp.element;
-const { createBlock } = wp.blocks;
+} from "@wordpress/components";
+import { createRef, useEffect } from "@wordpress/element";
+import { createBlock } from "@wordpress/blocks";
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
 
 const AdvancedHeadingEdit = ({
 	attributes,
 	setAttributes,
-	block,
-	getBlock,
-	getClientIdsWithDescendants,
 	onReplace,
+	clientId,
 }) => {
 	const {
 		blockID,
@@ -47,59 +53,110 @@ const AdvancedHeadingEdit = ({
 		fontFamily,
 		fontWeight,
 		lineHeight,
+		padding,
+		margin,
 	} = attributes;
 
+	const { block, rootBlockClientId } = useSelect((select) => {
+		const { getBlock, getBlockRootClientId } =
+			select("core/block-editor") || select("core/editor");
+		const block = getBlock(clientId);
+		const rootBlockClientId = getBlockRootClientId(block.clientId);
+
+		return {
+			block,
+			rootBlockClientId,
+		};
+	});
 	/* set default values for the style attributes */
 	const elementRef = createRef();
 	useEffect(() => {
-		if (!fontSize) {
-			let defaultFontSize = window.getComputedStyle(
-				elementRef.current
-			).fontSize;
-			setAttributes({ fontSize: parseInt(defaultFontSize) });
-		}
-
-		if (!fontFamily) {
-			let defaultFontFamily = window.getComputedStyle(
-				elementRef.current
-			).fontFamily;
-			setAttributes({ fontFamily: defaultFontFamily });
-		}
-
-		if (!lineHeight) {
-			let defaultLineHeight = window.getComputedStyle(
-				elementRef.current
-			).lineHeight;
-			setAttributes({ lineHeight: parseInt(defaultLineHeight) });
-		}
-		if (blockID === "") {
-			setAttributes({ blockID: block.clientId, level: "h2" });
-		} else {
-			if (!level) {
-				setAttributes({ level: "h1" });
+		if (elementRef.current) {
+			if (!fontSize) {
+				let defaultFontSize = getComputedStyle(elementRef.current).fontSize;
+				setAttributes({ fontSize: parseInt(defaultFontSize) });
 			}
-			if (
-				getClientIdsWithDescendants().some(
-					(ID) =>
-						"blockID" in getBlock(ID).attributes &&
-						getBlock(ID).attributes.blockID === blockID
-				)
-			) {
-				setAttributes({ blockID: block.clientId });
+
+			if (!fontFamily) {
+				let defaultFontFamily = getComputedStyle(elementRef.current).fontFamily;
+				setAttributes({ fontFamily: defaultFontFamily });
+			}
+
+			if (!lineHeight) {
+				let defaultLineHeight = getComputedStyle(elementRef.current).lineHeight;
+				setAttributes({ lineHeight: parseInt(defaultLineHeight) });
+			}
+			if (blockID === "") {
+				setAttributes({ blockID: block.clientId, level: "h2" });
+			} else {
+				if (!level) {
+					setAttributes({ level: "h1" });
+				}
 			}
 		}
 	}, [elementRef]);
+	useEffect(() => {
+		const rootBlock = getParentBlock(rootBlockClientId, "core/block");
+		if (!rootBlock) {
+			setAttributes({ blockID: block.clientId });
+		}
+	}, [block?.clientId]);
+	const paddingObj = getSpacingCss(padding);
+	const marginObj = getSpacingCss(margin);
+
+	// Clean up the content from img and script tags.
+	useEffect(() => {
+		const imgTagRegex = /<img[^>]+>/i;
+		const imgTagCleaned = content.replace(imgTagRegex, "");
+
+		const scriptTagRegex = /<script[^>]*?>.*?<\/script>/is;
+		const allCleaned = imgTagCleaned.replace(scriptTagRegex, "");
+
+		setAttributes({ content: allCleaned });
+	}, []);
 
 	const headingIcons = [h1Icon, h2Icon, h3Icon, h4Icon, h5Icon, h6Icon];
+	const styles = {
+		paddingTop: paddingObj?.top,
+		paddingRight: paddingObj?.right,
+		paddingBottom: paddingObj?.bottom,
+		paddingLeft: paddingObj?.left,
+		marginTop: marginObj?.top,
+		marginRight: marginObj?.right,
+		marginBottom: marginObj?.bottom,
+		marginLeft: marginObj?.left,
+		textAlign: alignment,
+		color: textColor,
+		backgroundColor,
+		fontSize: fontSize ? `${fontSize}px` : null,
+		letterSpacing: isNumber(letterSpacing) ? `${letterSpacing}px` : "",
+		textTransform,
+		fontFamily: fontFamily.includes(" ") ? `'${fontFamily}'` : fontFamily,
+		fontWeight,
+		lineHeight: lineHeight ? `${lineHeight}px` : null,
+	};
 
+	const styleClipboard = createStyleClipboard(
+		"ub_advanced_heading_copied_style",
+		[
+			"alignment",
+			"textColor",
+			"backgroundColor",
+			"fontSize",
+			"letterSpacing",
+			"textTransform",
+			"fontFamily",
+			"fontWeight",
+			"lineHeight",
+			"highlightBgColor",
+			"padding",
+			"margin",
+		],
+	);
 	return (
-		<>
-			<InspectorControls>
-				<PanelBody
-					title={__("Heading Settings", "ultimate-blocks")}
-					intialOpen={false}
-				>
-					{/* Heading Level */}
+		<div {...useBlockProps()}>
+			<InspectorControls group="settings">
+				<PanelBody title={__("General", "ultimate-blocks")} intialOpen={true}>
 					<p>{__("Heading Level", "ultimate-blocks")}</p>
 					<ButtonGroup aria-label={__("Heading Level", "ultimate-blocks")}>
 						{headingIcons.map((h, i) => (
@@ -117,16 +174,18 @@ const AdvancedHeadingEdit = ({
 							/>
 						))}
 					</ButtonGroup>
-					{/* Alignment */}
 					<p>{__("Heading Alignment", "ultimate-blocks")}</p>
 					<AlignmentToolbar
 						value={alignment}
 						onChange={(alignment) => setAttributes({ alignment })}
 						isCollapsed={false}
 					/>
-					{/* Background & Text Color */}
+				</PanelBody>
+			</InspectorControls>
+			<InspectorControls group="styles">
+				<PanelBody title={__("Colors", "ultimate-blocks")} initialOpen={true}>
 					<PanelColorSettings
-						title={__("Colors", "ultimate-blocks")}
+						title={__("Heading Colors", "ultimate-blocks")}
 						colorSettings={[
 							{
 								value: textColor,
@@ -141,7 +200,11 @@ const AdvancedHeadingEdit = ({
 							},
 						]}
 					/>
-					{/* Font Size */}
+				</PanelBody>
+				<PanelBody
+					title={__("Typography", "ultimate-blocks")}
+					initialOpen={false}
+				>
 					<RangeControl
 						label={__("Font Size", "ultimate-blocks")}
 						value={fontSize}
@@ -149,26 +212,18 @@ const AdvancedHeadingEdit = ({
 						min={12}
 						max={100}
 					/>
-				</PanelBody>
-				<PanelBody
-					title={__("Typography Settings", "ultimate-blocks")}
-					intialOpen={false}
-				>
-					{/* Text Transform */}
 					<SelectControl
 						label={__("Text Transform", "ultimate-blocks")}
 						options={textTransformOptions}
 						value={textTransform}
 						onChange={(textTransform) => setAttributes({ textTransform })}
 					/>
-					{/* Font Family */}
 					<SelectControl
 						label={__("Font Family", "ultimate-blocks")}
 						options={fontFamilyOptions}
 						value={fontsList.includes(fontFamily) ? fontFamily : "Default"}
 						onChange={(fontFamily) => setAttributes({ fontFamily })} //default doesn't work here
 					/>
-					{/* Letter Spacing */}
 					<RangeControl
 						label={__("Letter Spacing", "ultimate-blocks")}
 						value={letterSpacing}
@@ -176,20 +231,34 @@ const AdvancedHeadingEdit = ({
 						min={-2}
 						max={6}
 					/>
-					{/* Font Weight */}
 					<SelectControl
 						label={__("Font Weight", "ultimate-blocks")}
 						options={fontWeightOptions}
 						value={fontWeight}
 						onChange={(fontWeight) => setAttributes({ fontWeight })}
 					/>
-					{/* Line Height */}
 					<RangeControl
 						label={__("Line Height", "ultimate-blocks")}
 						value={lineHeight}
 						onChange={(lineHeight) => setAttributes({ lineHeight })}
 						min={10}
 						max={120}
+					/>
+				</PanelBody>
+				<PanelBody
+					title={__("Dimension Settings", "ultimate-blocks")}
+					initialOpen={false}
+				>
+					<SpacingControl
+						showByDefault
+						attrKey="padding"
+						label={__("Padding", "ultimate-blocks")}
+					/>
+					<SpacingControl
+						minimumCustomValue={-Infinity}
+						showByDefault
+						attrKey="margin"
+						label={__("Margin", "ultimate-blocks")}
 					/>
 				</PanelBody>
 			</InspectorControls>
@@ -222,35 +291,37 @@ const AdvancedHeadingEdit = ({
 						</>
 					)}
 				</DropdownMenu>
+				<GenericStyleControl
+					attributes={attributes}
+					setAttributes={setAttributes}
+					clipboard={styleClipboard}
+					blockName="Advanced Heading"
+				/>
 			</BlockControls>
+			<link
+				rel="stylesheet"
+				href={`https://fonts.googleapis.com/css?family=${fontFamily}`}
+			/>
 			<RichText
 				ref={elementRef}
 				tagName={level || "h2"}
 				value={content}
+				placeholder={__("Write heading...", "ultimate-blocks")}
 				onChange={(value) => setAttributes({ content: value })}
-				style={{
-					textAlign: alignment,
-					color: textColor,
-					backgroundColor,
-					fontSize: fontSize ? `${fontSize}px` : null,
-					letterSpacing,
-					textTransform,
-					fontFamily: fontFamily.includes(" ") ? `'${fontFamily}'` : fontFamily,
-					fontWeight,
-					lineHeight: lineHeight ? `${lineHeight}px` : null,
-				}}
+				style={generateStyles(styles)}
+				identifier="content"
 				onSplit={(contentFragment) =>
 					contentFragment
 						? createBlock("ub/advanced-heading", {
 								...attributes,
 								blockID: "",
 								content: contentFragment,
-						  })
+							})
 						: createBlock("core/paragraph")
 				}
 				onReplace={onReplace}
 			/>
-		</>
+		</div>
 	);
 };
 

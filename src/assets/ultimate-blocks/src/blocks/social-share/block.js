@@ -12,7 +12,7 @@ import {
 	SortableElement,
 	arrayMove,
 } from "react-sortable-hoc";
-
+import metadata from "./block.json";
 import {
 	FacebookIcon,
 	TwitterIcon,
@@ -25,8 +25,13 @@ import {
 
 // Import components
 import Inspector from "./inspector";
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
 
 import { useEffect, useState } from "react";
+import { getParentBlock } from "../../common";
+import { generateStyles, getSpacingCss } from "../utils/styling-helpers";
 
 // variables
 const iconSizes = {
@@ -35,11 +40,15 @@ const iconSizes = {
 	large: 40,
 };
 
-const { __ } = wp.i18n; // Import __() from wp.i18n
-const { registerBlockType } = wp.blocks;
+import { __ } from "@wordpress/i18n";
+import { registerBlockType } from "@wordpress/blocks";
 
-const { BlockControls, AlignmentToolbar } = wp.blockEditor || wp.editor;
-const { withSelect } = wp.data;
+import {
+	BlockControls,
+	useBlockProps,
+	JustifyContentControl,
+} from "@wordpress/block-editor";
+import { useSelect } from "@wordpress/data";
 
 /**
  * Register: aa Gutenberg Block.
@@ -56,7 +65,7 @@ const { withSelect } = wp.data;
  */
 
 const SortableItem = SortableElement(
-	({ icon, iconSize, iconShape, color, caption, addOutline }) => {
+	({ icon, iconSize, iconShape, color, caption, addOutline, borderRadius }) => {
 		const iconDetails = {
 			facebook: {
 				bgColor: color || "#1877f2",
@@ -128,7 +137,7 @@ const SortableItem = SortableElement(
 								border: `1px solid ${iconDetails[icon].bgColor}`,
 								margin: "5px",
 								paddingRight: "5px",
-						  }
+							}
 						: null
 				}
 			>
@@ -142,7 +151,18 @@ const SortableItem = SortableElement(
 						height: iconSize * 1.5,
 						backgroundColor:
 							iconShape === "none" ? "transparent" : iconDetails[icon].bgColor,
-						borderRadius: iconShape === "circle" ? "50%" : "0",
+						borderTopLeftRadius:
+							iconShape === "circle" ? "50%" : (borderRadius?.topLeft ?? "0"),
+						borderTopRightRadius:
+							iconShape === "circle" ? "50%" : (borderRadius?.topRight ?? "0"),
+						borderBottomLeftRadius:
+							iconShape === "circle"
+								? "50%"
+								: (borderRadius?.bottomLeft ?? "0"),
+						borderBottomRightRadius:
+							iconShape === "circle"
+								? "50%"
+								: (borderRadius?.bottomRight ?? "0"),
 						display: "inline-flex",
 						boxShadow: iconShape === "none" ? "none" : null,
 					}}
@@ -152,7 +172,7 @@ const SortableItem = SortableElement(
 				<span style={{ color: iconDetails[icon].bgColor }}>{caption}</span>
 			</div>
 		);
-	}
+	},
 );
 
 const SortableList = SortableContainer(
@@ -161,14 +181,15 @@ const SortableList = SortableContainer(
 		iconShape,
 		iconSize,
 		align,
+		orientation,
 		color,
 		captions,
 		useCaptions,
 		addOutline,
+		borderRadius,
 	}) => (
 		<div
-			className={"social-share-icons align-icons-" + align}
-			style={{ display: "flex", flexDirection: "row" }}
+			className={`social-share-icons align-icons-${align} orientation-icons-${orientation}`}
 		>
 			{items.map((value, index) => (
 				<SortableItem
@@ -180,10 +201,11 @@ const SortableList = SortableContainer(
 					color={color}
 					addOutline={addOutline && useCaptions}
 					caption={useCaptions ? captions[value] : ""}
+					borderRadius={borderRadius}
 				/>
 			))}
 		</div>
-	)
+	),
 );
 
 function SocialShareMain(props) {
@@ -197,8 +219,9 @@ function SocialShareMain(props) {
 		block,
 		getBlock,
 		getClientIdsWithDescendants,
+		rootBlockClientId,
 	} = props;
-
+	const blockProps = useBlockProps();
 	const {
 		blockID,
 		align,
@@ -207,6 +230,10 @@ function SocialShareMain(props) {
 		buttonColor,
 		useCaptions,
 		addOutline,
+		orientation,
+		padding,
+		margin,
+		iconBorderRadius,
 	} = attributes;
 
 	const iconSize = iconSizes[attributes.iconSize];
@@ -221,14 +248,7 @@ function SocialShareMain(props) {
 	};
 
 	useEffect(() => {
-		if (
-			blockID === "" ||
-			getClientIdsWithDescendants().some(
-				(ID) =>
-					"blockID" in getBlock(ID).attributes &&
-					getBlock(ID).attributes.blockID === blockID
-			)
-		) {
+		if (blockID === "" && block) {
 			setAttributes({ blockID: block.clientId });
 		}
 
@@ -247,153 +267,140 @@ function SocialShareMain(props) {
 			setHasTransitioned(true);
 		}
 	}, []);
+	useEffect(() => {
+		if (!block) {
+			return;
+		}
 
+		const rootBlock = getParentBlock(rootBlockClientId, "core/block");
+		if (!rootBlock) {
+			setAttributes({ blockID: block.clientId });
+		}
+	}, [block?.clientId]);
+
+	const styleClipboard = createStyleClipboard("ub_social_share_copied_style", [
+		"align",
+		"iconShape",
+		"iconSize",
+		"buttonColor",
+		"iconColor",
+		"padding",
+		"margin",
+		"iconBorderRadius",
+	]);
+
+	const paddingObj = getSpacingCss(padding);
+	const marginObj = getSpacingCss(margin);
+
+	let styles = {
+		paddingTop: paddingObj?.top,
+		paddingRight: paddingObj?.right,
+		paddingBottom: paddingObj?.bottom,
+		paddingLeft: paddingObj?.left,
+		marginTop: marginObj?.top,
+		marginRight: marginObj?.right,
+		marginBottom: marginObj?.bottom,
+		marginLeft: marginObj?.left,
+	};
 	return (
 		<>
-			{isSelected && (
-				<BlockControls>
-					<AlignmentToolbar
-						value={align}
-						onChange={(newAlignment) => setAttributes({ align: newAlignment })}
-						controls={["left", "center", "right"]}
-					/>
-				</BlockControls>
-			)}
-			{isSelected && <Inspector {...props} />}
-			<div id="ub-social-share-block-editor" className={className}>
-				<SortableList
-					axis="x"
-					items={iconOrder}
-					onSortEnd={({ oldIndex, newIndex }) =>
-						setAttributes({
-							iconOrder: arrayMove(iconOrder, oldIndex, newIndex),
-						})
-					}
-					iconSize={iconSize}
-					iconShape={iconShape}
-					align={align}
-					color={buttonColor}
-					useCaptions={useCaptions}
-					addOutline={addOutline}
-					captions={{
-						facebook: attributes.facebookCaption,
-						twitter: attributes.twitterCaption,
-						linkedin: attributes.linkedInCaption,
-						pinterest: attributes.pinterestCaption,
-						reddit: attributes.redditCaption,
-						tumblr: attributes.tumblrCaption,
+			<BlockControls group="block">
+				<JustifyContentControl
+					allowedControls={["left", "center", "right"]}
+					value={align}
+					onChange={(next) => {
+						setAttributes({ align: next });
 					}}
 				/>
+			</BlockControls>
+
+			<BlockControls>
+				<GenericStyleControl
+					attributes={attributes}
+					setAttributes={setAttributes}
+					clipboard={styleClipboard}
+					blockName="Social Share"
+				/>
+			</BlockControls>
+			<Inspector {...props} />
+			<div {...blockProps}>
+				<div
+					id="ub-social-share-block-editor"
+					className={className}
+					style={generateStyles(styles)}
+				>
+					<SortableList
+						axis="x"
+						items={iconOrder}
+						onSortEnd={({ oldIndex, newIndex }) =>
+							setAttributes({
+								iconOrder: arrayMove(iconOrder, oldIndex, newIndex),
+							})
+						}
+						iconSize={iconSize}
+						iconShape={iconShape}
+						align={align}
+						orientation={orientation}
+						color={buttonColor}
+						useCaptions={useCaptions}
+						addOutline={addOutline}
+						borderRadius={iconBorderRadius}
+						captions={{
+							facebook: attributes.facebookCaption,
+							twitter: attributes.twitterCaption,
+							linkedin: attributes.linkedInCaption,
+							pinterest: attributes.pinterestCaption,
+							reddit: attributes.redditCaption,
+							tumblr: attributes.tumblrCaption,
+						}}
+					/>
+				</div>
 			</div>
 		</>
 	);
 }
 
-registerBlockType("ub/social-share", {
-	title: __("Social Share"),
+registerBlockType(metadata.name, {
+	...metadata,
+	attributes: metadata.attributes,
 	icon: icon,
-	category: "ultimateblocks",
-	keywords: [__("social"), __("share"), __("Ultimate Blocks")],
-	attributes: {
-		blockID: {
-			type: "string",
-			default: "",
-		},
-		showFacebookIcon: {
-			type: "boolean",
-			default: true,
-		},
-		facebookCaption: {
-			type: "string",
-			default: "share",
-		},
-		showTwitterIcon: {
-			type: "boolean",
-			default: true,
-		},
-		twitterCaption: {
-			type: "string",
-			default: "tweet",
-		},
-		showLinkedInIcon: {
-			type: "boolean",
-			default: true,
-		},
-		linkedInCaption: {
-			type: "string",
-			default: "share",
-		},
-		showPinterestIcon: {
-			type: "boolean",
-			default: true,
-		},
-		pinterestCaption: {
-			type: "string",
-			default: "pin",
-		},
-		showRedditIcon: {
-			type: "boolean",
-			default: true,
-		},
-		redditCaption: {
-			type: "string",
-			default: "post",
-		},
-		showTumblrIcon: {
-			type: "boolean",
-			default: true,
-		},
-		tumblrCaption: {
-			type: "string",
-			default: "share",
-		},
-		iconSize: {
-			type: "string",
-			default: "normal",
-		},
-		iconShape: {
-			type: "string",
-			default: "circle", //available options: square, none
-		},
-		align: {
-			type: "string",
-			default: "left",
-		},
-		iconOrder: {
-			type: "array",
-			default: [
-				"facebook",
-				"twitter",
-				"linkedin",
-				"pinterest",
-				"reddit",
-				"tumblr",
-			],
-		},
-		useCaptions: {
-			type: "boolean",
-			default: false,
-		},
-		addOutline: {
-			type: "boolean",
-			default: false, //default should be false
-		},
-		buttonColor: {
-			type: "string",
-			default: "", //when turned on, default value should be #cccccc
-		},
+	example: {},
+	edit: (props) => {
+		const { block, getBlock, getClientIdsWithDescendants, rootBlockClientId } =
+			useSelect(
+				(select) => {
+					const {
+						getBlock,
+						getClientIdsWithDescendants,
+						getBlockRootClientId,
+					} = select("core/block-editor");
+					// `block` is null when this instance was never actually inserted
+					// into the real block-editor store (e.g. a <BlockPreview> preview
+					// render), so it can't be looked up by clientId, guard against
+					// that instead of throwing here and blanking the whole render.
+					const block = getBlock(props.clientId);
+					return {
+						block,
+						getBlock,
+						getClientIdsWithDescendants,
+						rootBlockClientId: block
+							? getBlockRootClientId(block.clientId)
+							: null,
+					};
+				},
+				[props.clientId],
+			);
+
+		return (
+			<SocialShareMain
+				{...props}
+				block={block}
+				getBlock={getBlock}
+				getClientIdsWithDescendants={getClientIdsWithDescendants}
+				rootBlockClientId={rootBlockClientId}
+			/>
+		);
 	},
-
-	edit: withSelect((select, ownProps) => {
-		const { getBlock, getClientIdsWithDescendants } =
-			select("core/block-editor") || select("core/editor");
-
-		return {
-			block: getBlock(ownProps.clientId),
-			getBlock,
-			getClientIdsWithDescendants,
-		};
-	})(SocialShareMain),
 
 	save: () => null,
 });

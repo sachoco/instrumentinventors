@@ -1,9 +1,16 @@
-const { RichText, MediaUpload, URLInput } = wp.blockEditor || wp.editor;
-const { Button, Dashicon } = wp.components;
-const { __ } = wp.i18n;
+import { isEmpty } from "lodash";
+import {
+	RichText,
+	MediaUpload,
+	URLInput,
+	InnerBlocks,
+} from "@wordpress/block-editor";
+import { Button, Dashicon } from "@wordpress/components";
+import { __ } from "@wordpress/i18n";
 
 import { removeIcon } from "./icon";
 import { useEffect, useRef, useState } from "react";
+import { generateStyles, getSpacingCss } from "../utils/styling-helpers";
 
 export function OldStars(props) {
 	const {
@@ -23,7 +30,7 @@ export function OldStars(props) {
 					display: "flex",
 					flexDirection: "flex-row",
 				},
-				style
+				style,
 			)}
 		>
 			{[...Array(limit).keys()].map((i) => (
@@ -112,55 +119,58 @@ export function Stars(props) {
 					display: "flex",
 					flexDirection: "flex-row",
 				},
-				style
+				style,
 			)}
 		>
-			{[...Array(limit).keys()].map((i) => (
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					key={i}
-					height="20"
-					width="20"
-					viewBox="0 0 150 150"
-					onMouseOver={() => onHover || mouseHover(i)}
-					onMouseOut={() => mouseLeave()}
-					onClick={() => onClick || mouseClick(i)}
-				>
-					<defs>
-						<mask id={`ub_review_star_filter-${id}-${i}`}>
-							<rect
-								height="150"
-								width={
-									(displayValue - i > 0
-										? displayValue - i < 1
-											? displayValue - i
-											: 1
-										: 0) * 150
-								}
-								y="0"
-								x="0"
-								fill="#fff"
-							/>
-						</mask>
-					</defs>
+			{[...Array(limit).keys()].map((i) => {
+				return (
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						key={i}
+						height="20"
+						width="20"
+						viewBox="0 0 150 150"
+						style={{ pointerEvents: "all" }}
+						onMouseOver={() => onHover || mouseHover(i)}
+						onMouseOut={() => mouseLeave()}
+						onClick={() => onClick || mouseClick(i)}
+					>
+						<defs>
+							<mask id={`ub_review_star_filter-${id}-${i}`}>
+								<rect
+									height="150"
+									width={
+										(displayValue - i > 0
+											? displayValue - i < 1
+												? displayValue - i
+												: 1
+											: 0) * 150
+									}
+									y="0"
+									x="0"
+									fill="#fff"
+								/>
+							</mask>
+						</defs>
 
-					<path
-						fill={inactiveStarColor}
-						strokeWidth="2.5"
-						d="m0.75,56.89914l56.02207,0l17.31126,-56.14914l17.31126,56.14914l56.02206,0l-45.32273,34.70168l17.31215,56.14914l-45.32274,-34.70262l-45.32274,34.70262l17.31215,-56.14914l-45.32274,-34.70168z"
-						stroke={starOutlineColor}
-					/>
-					<path
-						className="star"
-						id={`star${i}`}
-						mask={`url(#ub_review_star_filter-${id}-${i})`}
-						fill={displayColor}
-						strokeWidth="2.5"
-						d="m0.75,56.89914l56.02207,0l17.31126,-56.14914l17.31126,56.14914l56.02206,0l-45.32273,34.70168l17.31215,56.14914l-45.32274,-34.70262l-45.32274,34.70262l17.31215,-56.14914l-45.32274,-34.70168z"
-						stroke={starOutlineColor}
-					/>
-				</svg>
-			))}
+						<path
+							fill={inactiveStarColor}
+							strokeWidth="2.5"
+							d="m0.75,56.89914l56.02207,0l17.31126,-56.14914l17.31126,56.14914l56.02206,0l-45.32273,34.70168l17.31215,56.14914l-45.32274,-34.70262l-45.32274,34.70262l17.31215,-56.14914l-45.32274,-34.70168z"
+							stroke={starOutlineColor}
+						/>
+						<path
+							className="star"
+							id={`star${i}`}
+							mask={`url(#ub_review_star_filter-${id}-${i})`}
+							fill={displayColor}
+							strokeWidth="2.5"
+							d="m0.75,56.89914l56.02207,0l17.31126,-56.14914l17.31126,56.14914l56.02206,0l-45.32273,34.70168l17.31215,56.14914l-45.32274,-34.70262l-45.32274,34.70262l17.31215,-56.14914l-45.32274,-34.70168z"
+							stroke={starOutlineColor}
+						/>
+					</svg>
+				);
+			})}
 		</div>
 	);
 }
@@ -205,12 +215,23 @@ export function ReviewBody(props) {
 		measureCTAFontSize,
 		imageSize,
 		ctaFontSize,
+		ctaOpenInNewTab,
+		ctaNoFollow,
+		ctaIsSponsored,
+		block,
+		padding,
+		margin,
+		summaryTitleFontSize,
+		mainTitleFontSize,
+		children,
+		proWrapperStyles,
+		wrapperRef,
 	} = props;
 
 	const { titleAlign, authorAlign, descriptionAlign } = alignments;
 
 	const [average, setAverage] = useState(
-		parts.map((i) => i.value).reduce((total, v) => total + v) / parts.length
+		parts?.map((i) => i.value).reduce((total, v) => total + v) / parts?.length,
 	);
 	const [mouseOnHold, setMouseOnHold] = useState(false);
 
@@ -221,7 +242,7 @@ export function ReviewBody(props) {
 			if (ctaButton.current) {
 				setAttributes({
 					callToActionFontSize: parseInt(
-						getComputedStyle(ctaButton.current).fontSize.slice(0, -2)
+						getComputedStyle(ctaButton.current).fontSize.slice(0, -2),
 					),
 				});
 			}
@@ -237,7 +258,7 @@ export function ReviewBody(props) {
 
 	const setNewPercentage = (percentageBar, mouseX, i, j) => {
 		const newValue = Math.round(
-			(100 * (mouseX - percentageBar.x)) / percentageBar.width
+			(100 * (mouseX - percentageBar.x)) / percentageBar.width,
 		);
 		const newArray = [
 			...parts.slice(0, i),
@@ -248,17 +269,42 @@ export function ReviewBody(props) {
 		setActiveStarIndex(i);
 		setAverage(
 			newArray.map((i) => i.value).reduce((total, v) => total + v) /
-				newArray.length
+				newArray.length,
 		);
 	};
+	const paddingObj = getSpacingCss(padding);
+	const marginObj = getSpacingCss(margin);
+	const summaryStyles = {
+		fontSize: summaryTitleFontSize || "24px",
+	};
+	const mainTitleStyles = {
+		textAlign: titleAlign,
+		fontSize: mainTitleFontSize || "28px",
+	};
+	const styles = {
+		paddingTop: paddingObj?.top,
+		paddingRight: paddingObj?.right,
+		paddingBottom: paddingObj?.bottom,
+		paddingLeft: paddingObj?.left,
+		marginTop: marginObj?.top,
+		marginRight: marginObj?.right,
+		marginBottom: marginObj?.bottom,
+		marginLeft: marginObj?.left,
+		...(proWrapperStyles || {}),
+	};
 
+	const has_button_block = block.innerBlocks.length > 0;
 	return (
-		<div className="ub_review_block">
+		<div
+			className="ub_review_block"
+			style={generateStyles(styles)}
+			ref={wrapperRef}
+		>
 			<RichText
 				className="ub_review_item_name"
 				placeholder={__("Title of the review")}
 				value={itemName}
-				style={{ textAlign: titleAlign }}
+				style={generateStyles(mainTitleStyles)}
 				onChange={(text) => setAttributes({ itemName: text })}
 				unstableOnFocus={() => setEditable("reviewTitle")}
 			/>
@@ -415,7 +461,7 @@ export function ReviewBody(props) {
 								className="dashicons dashicons-trash"
 								onClick={() => {
 									setEditable("");
-									let newParts = parts
+									const newParts = parts
 										.slice(0, i)
 										.concat(parts.slice(i + 1, parts.length));
 									setAttributes({ parts: newParts });
@@ -423,7 +469,7 @@ export function ReviewBody(props) {
 									setAverage(
 										newParts
 											.map((i) => i.value)
-											.reduce((total, v) => total + v) / newParts.length
+											.reduce((total, v) => total + v) / newParts.length,
 									);
 
 									if (i <= activeStarIndex) {
@@ -449,7 +495,7 @@ export function ReviewBody(props) {
 									setAverage(
 										newArray
 											.map((i) => i.value)
-											.reduce((total, v) => total + v) / newArray.length
+											.reduce((total, v) => total + v) / newArray.length,
 									);
 								}}
 								inactiveStarColor={inactiveStarColor}
@@ -462,6 +508,7 @@ export function ReviewBody(props) {
 								<svg
 									className="ub_review_percentage_bar"
 									viewBox="0 0 100 1"
+									style={{ pointerEvents: "all" }}
 									preserveAspectRatio="none"
 									height="10"
 									onClick={(e) =>
@@ -469,7 +516,7 @@ export function ReviewBody(props) {
 											e.currentTarget.getBoundingClientRect(),
 											e.clientX,
 											i,
-											j
+											j,
 										)
 									}
 									//in cases where the user drags across the bar
@@ -481,7 +528,7 @@ export function ReviewBody(props) {
 												e.currentTarget.getBoundingClientRect(),
 												e.clientX,
 												i,
-												j
+												j,
 											);
 										}
 									}}
@@ -490,13 +537,13 @@ export function ReviewBody(props) {
 										className="ub_review_percentage_bar_trail"
 										d="M 0.5,0.5 L 99.5,0.5"
 										stroke={percentBarColor || "#d9d9d9"}
-										stroke-width="1"
+										strokeWidth="1"
 									/>
 									<path
 										className="ub_review_percentage_bar_path"
 										d="M 0.5,0.5 L 99.5,0.5"
 										stroke={activePercentBarColor}
-										stroke-width="1"
+										strokeWidth="1"
 										strokeDashoffset={`${100 - j.value}px`}
 									/>
 								</svg>
@@ -509,7 +556,9 @@ export function ReviewBody(props) {
 			<div
 				title={__("Insert new review entry")}
 				onClick={() => {
-					setAttributes({ parts: [...parts, { label: "", value: 0 }] });
+					setAttributes({
+						parts: [...parts, { label: "", value: 0 }],
+					});
 					setAverage(average / (parts.length + 1));
 				}}
 				className="ub_review_add_entry dashicons dashicons-plus-alt"
@@ -517,6 +566,7 @@ export function ReviewBody(props) {
 			<div className="ub_review_summary">
 				{useSummary && (
 					<RichText
+						style={generateStyles(summaryStyles)}
 						className="ub_review_summary_title"
 						placeholder={__("Title of the summary goes here")}
 						onChange={(text) => setAttributes({ summaryTitle: text })}
@@ -554,45 +604,89 @@ export function ReviewBody(props) {
 						)}
 					</div>
 				</div>
+				{children}
 				<div className="ub_review_cta_panel">
 					<div
 						className="ub_review_cta_main"
-						style={{ justifyContent: ctaAlignment }}
+						style={{
+							justifyContent: ctaAlignment,
+						}}
 					>
 						{enableCTA && (
-							<div //do not merge into RichText child
-								className="ub_review_cta_btn"
-								style={{
-									backgroundColor: callToActionBackColor,
-									borderColor: callToActionBorderColor,
-									fontSize: ctaFontSize > 0 ? `${ctaFontSize}px` : null,
-								}}
-								ref={ctaButton}
-							>
-								<RichText
-									style={{ color: callToActionForeColor || "inherit" }}
-									placeholder={__("Call to action")}
-									value={callToActionText}
-									onChange={(text) => setAttributes({ callToActionText: text })}
-									unstableOnFocus={() => setEditable("")}
-								/>
-							</div>
+							<InnerBlocks
+								renderAppender={
+									has_button_block ? false : InnerBlocks.ButtonBlockAppender
+								}
+								allowedBlocks={["ub/button"]}
+								template={[
+									[
+										"ub/button",
+										{
+											chosenIcon: "",
+											placeholder: "Call To Action",
+											buttonText: "Button Text",
+											align: ctaAlignment,
+											buttons: [
+												{
+													buttonText: !isEmpty(callToActionText)
+														? callToActionText
+														: "Call To Action",
+													chosenIcon: "",
+													buttonColor: !isEmpty(callToActionBackColor)
+														? callToActionBackColor
+														: "#E11B4C",
+													buttonTextColor: callToActionForeColor || "#FFFFFF",
+													url: callToActionURL,
+													openInNewTab: ctaOpenInNewTab,
+													addSponsored: ctaIsSponsored,
+													addNoFollow: ctaNoFollow,
+													size: "medium",
+													buttonHoverColor: !isEmpty(callToActionBackColor)
+														? callToActionBackColor
+														: "#E11B4C",
+													buttonTextHoverColor: "#ffffff",
+													buttonRounded: true,
+													buttonRadius: 10,
+													buttonRadiusUnit: "px",
+													topLeftRadius: 10,
+													topLeftRadiusUnit: "px",
+													topRightRadius: 10,
+													topRightRadiusUnit: "px",
+													bottomLeftRadius: 10,
+													bottomLeftRadiusUnit: "px",
+													bottomRightRadius: 10,
+													bottomRightRadiusUnit: "px",
+													iconPosition: "left",
+													iconSize: 0,
+													iconUnit: "px",
+													buttonIsTransparent: false,
+													buttonWidth: "flex",
+												},
+											],
+											buttonColor: "#313131",
+											buttonHoverColor: "#313131",
+											buttonIsTransparent: false,
+											buttonRounded: true,
+											buttonTextColor: "#ffffff",
+											buttonTextHoverColor: "#ffffff",
+											buttonWidth: "flex",
+											iconPosition: "left",
+											isFlexWrap: true,
+											margin: {},
+											openInNewTab: ctaOpenInNewTab,
+											addSponsored: ctaIsSponsored,
+											addNoFollow: ctaNoFollow,
+											orientation: "row",
+											padding: {},
+											size: "medium",
+											url: "",
+										},
+									],
+								]}
+							/>
 						)}
 					</div>
 				</div>
-				{isSelected && enableCTA && (
-					<div className="ub_review_link_input">
-						<div className="ub-icon-holder">
-							<Dashicon icon={"admin-links"} />
-						</div>
-						<URLInput
-							autoFocus={false}
-							style={{ width: "200px" }} //inline style used to override gutenberg's default style
-							value={callToActionURL}
-							onChange={(text) => setAttributes({ callToActionURL: text })}
-						/>
-					</div>
-				)}
 			</div>
 		</div>
 	);

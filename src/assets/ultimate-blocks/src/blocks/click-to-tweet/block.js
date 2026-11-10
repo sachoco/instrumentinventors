@@ -1,15 +1,23 @@
 //Import Icon
 import icon from "./icons/icon";
 import { useEffect } from "react";
-
-const { __ } = wp.i18n;
-const { registerBlockType } = wp.blocks;
-const { RichText, InspectorControls, PanelColorSettings } =
-	wp.blockEditor || wp.editor;
-
-const { TextControl, RangeControl, PanelBody } = wp.components;
-
-const { withSelect } = wp.data;
+import { SpacingControl } from "../components";
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
+import metadata from "./block.json";
+import { __ } from "@wordpress/i18n";
+import { registerBlockType } from "@wordpress/blocks";
+import {
+	RichText,
+	InspectorControls,
+	PanelColorSettings,
+	useBlockProps,
+} from "@wordpress/block-editor";
+import { TextControl, RangeControl, PanelBody } from "@wordpress/components";
+import { useSelect } from "@wordpress/data";
+import { getParentBlock } from "../../common";
+import { generateStyles, getSpacingCss } from "../utils/styling-helpers";
 
 /**
  * Register: aa Gutenberg Block.
@@ -26,124 +34,173 @@ const { withSelect } = wp.data;
  */
 
 function ClickToTweet(props) {
-	const {
-		isSelected,
-		setAttributes,
-		block,
-		getBlock,
-		getClientIdsWithDescendants,
-		attributes,
-	} = props;
+	const { isSelected, setAttributes, attributes } = props;
 
-	const { ubTweet, ubVia, tweetFontSize, tweetColor, borderColor, blockID } =
-		attributes;
+	const {
+		ubTweet,
+		ubVia,
+		tweetFontSize,
+		tweetColor,
+		borderColor,
+		blockID,
+		padding,
+		margin,
+	} = attributes;
+
+	const { block, rootBlockClientId } = useSelect((select) => {
+		const { getBlock, getBlockRootClientId } =
+			select("core/block-editor") || select("core/editor");
+		const block = getBlock(props.clientId);
+		const rootBlockClientId = getBlockRootClientId(block.clientId);
+
+		return {
+			block,
+			rootBlockClientId,
+		};
+	});
 	useEffect(() => {
 		if (blockID === "") {
 			setAttributes({ blockID: block.clientId }); //setting attributes via props.attributes is not working here
-		} else if (
-			getClientIdsWithDescendants().some(
-				(ID) =>
-					"blockID" in getBlock(ID).attributes &&
-					getBlock(ID).attributes.blockID === blockID
-			)
-		) {
-			setAttributes({ blockID: block.clientId });
 		}
 	}, []);
+	useEffect(() => {
+		const rootBlock = getParentBlock(rootBlockClientId, "core/block");
+		if (!rootBlock) {
+			setAttributes({ blockID: block.clientId });
+		}
+	}, [block?.clientId]);
 
+	const styleClipboard = createStyleClipboard(
+		"ub_click_to_tweet_copied_style",
+		["tweetFontSize", "tweetColor", "borderColor", "padding", "margin"],
+	);
+	const blockProps = useBlockProps();
+	const paddingObj = getSpacingCss(padding);
+	const marginObj = getSpacingCss(margin);
+	const clickToTweetStyles = {
+		borderColor: borderColor,
+		paddingTop: paddingObj?.top,
+		paddingRight: paddingObj?.right,
+		paddingBottom: paddingObj?.bottom,
+		paddingLeft: paddingObj?.left,
+		marginTop: marginObj?.top,
+		marginRight: marginObj?.right,
+		marginBottom: marginObj?.bottom,
+		marginLeft: marginObj?.left,
+	};
 	return (
-		<>
+		<div {...blockProps}>
 			{isSelected && (
-				<InspectorControls>
-					<PanelBody title={__("Click to Tweet Settings")}>
-						<TextControl
-							label={__("Twitter Username")}
-							placeholder="@"
-							value={ubVia}
-							onChange={(value) => setAttributes({ ubVia: value })}
-						/>
-						<RangeControl
-							label={__("Font Size")}
-							value={tweetFontSize}
-							onChange={(value) => setAttributes({ tweetFontSize: value })}
-							min={10}
-							max={200}
-							beforeIcon="editor-textcolor"
-							allowReset
-						/>
-						<PanelColorSettings
-							title={__("Color Scheme")}
+				<>
+					<InspectorControls group="settings">
+						<PanelBody title={__("General")}>
+							<TextControl
+								label={__("X Username")}
+								placeholder="@"
+								value={ubVia}
+								onChange={(value) => setAttributes({ ubVia: value })}
+							/>
+						</PanelBody>
+					</InspectorControls>
+					<InspectorControls group="styles">
+						<PanelBody title={__("General")}>
+							<RangeControl
+								label={__("Font Size")}
+								value={tweetFontSize}
+								onChange={(value) => setAttributes({ tweetFontSize: value })}
+								min={10}
+								max={200}
+								beforeIcon="editor-textcolor"
+								allowReset
+							/>
+						</PanelBody>
+						<PanelBody title={__("Colors")} initialOpen={false}>
+							<PanelColorSettings
+								title={__("Color Scheme")}
+								initialOpen={false}
+								colorSettings={[
+									{
+										value: tweetColor,
+										onChange: (tweetColor) => setAttributes({ tweetColor }),
+										label: __("Tweet Color"),
+									},
+									{
+										value: borderColor,
+										onChange: (borderColor) => setAttributes({ borderColor }),
+										label: __("Border Color"),
+									},
+								]}
+							/>
+						</PanelBody>
+						<PanelBody
+							title={__("Dimension Settings", "ultimate-blocks")}
 							initialOpen={false}
-							colorSettings={[
-								{
-									value: tweetColor,
-									onChange: (tweetColor) => setAttributes({ tweetColor }),
-									label: __("Tweet Color"),
-								},
-								{
-									value: borderColor,
-									onChange: (borderColor) => setAttributes({ borderColor }),
-									label: __("Border Color"),
-								},
-							]}
-						/>
-					</PanelBody>
-				</InspectorControls>
+						>
+							<SpacingControl
+								showByDefault
+								attrKey="padding"
+								label={__("Padding", "ultimate-blocks")}
+							/>
+							<SpacingControl
+								minimumCustomValue={-Infinity}
+								showByDefault
+								attrKey="margin"
+								label={__("Margin", "ultimate-blocks")}
+							/>
+						</PanelBody>
+					</InspectorControls>
+				</>
 			)}
+			<GenericStyleControl
+				attributes={attributes}
+				setAttributes={setAttributes}
+				clipboard={styleClipboard}
+				blockName="Click to Tweet"
+			/>
 			<div className={props.className}>
-				<div className="ub_click_to_tweet" style={{ borderColor: borderColor }}>
+				<div
+					className="ub_click_to_tweet"
+					style={generateStyles(clickToTweetStyles)}
+				>
 					<RichText
 						style={{
 							fontSize: tweetFontSize + "px",
 							color: tweetColor || "inherit",
 						}}
-						placeholder={__("Add Tweetable Content Here")}
+						placeholder={__("Add Content to Post on X", "ultimate-blocks")}
 						className="ub_tweet"
 						value={ubTweet}
 						onChange={(value) => setAttributes({ ubTweet: value })}
 					/>
 
 					<div className="ub_click_tweet">
-						<span>
-							<i />
-							{__("Click to Tweet")}
-						</span>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 512 512"
+						>
+							<path
+								fill="#171111"
+								d="M389.2 48h70.6L305.6 224.2L487 464H345L233.7 318.6L106.5 464H35.8l164.9-188.5L26.8 48h145.6l100.5 132.9zm-24.8 373.8h39.1L151.1 88h-42z"
+							/>
+						</svg>
+						{__("Post on X", "ultimate-blocks")}
 					</div>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 }
 
-registerBlockType("ub/click-to-tweet", {
-	title: __("Click to Tweet"),
+registerBlockType(metadata.name, {
+	...metadata,
 	icon: icon,
-	category: "ultimateblocks",
-	keywords: [__("Click to tweet"), __("Twitter"), __("Ultimate Blocks")],
-	attributes: {
-		blockID: {
-			type: "string",
-			default: "",
-		},
-		ubTweet: {
-			type: "string",
-			default: "",
-		},
-		ubVia: {
-			source: "meta",
-			meta: "ub_ctt_via",
-		},
-		tweetFontSize: {
-			type: "number",
-			default: 20,
-		},
-		tweetColor: {
-			type: "string",
-			default: "",
-		},
-		borderColor: {
-			type: "string",
-			default: "#CCCCCC",
+	attributes: metadata.attributes,
+	example: {
+		attributes: {
+			ubTweet:
+				"Ultimate Blocks helps you create better and engaging content with Gutenberg.",
 		},
 	},
 	/**
@@ -154,16 +211,7 @@ registerBlockType("ub/click-to-tweet", {
 	 *
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
-	edit: withSelect((select, ownProps) => {
-		const { getBlock, getClientIdsWithDescendants } =
-			select("core/block-editor") || select("core/editor");
-
-		return {
-			block: getBlock(ownProps.clientId),
-			getBlock,
-			getClientIdsWithDescendants,
-		};
-	})(ClickToTweet),
+	edit: ClickToTweet,
 
 	/**
 	 * The save function defines the way in which the different attributes should be combined

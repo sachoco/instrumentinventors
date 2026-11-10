@@ -1,17 +1,42 @@
-import { convertFromSeconds } from "../../common";
+import {
+	DEFAULT_ASPECT_RATIO_OPTIONS,
+	convertFromSeconds,
+	getParentBlock,
+} from "../../common";
+import { get, isEmpty } from "lodash";
 import { useState, useEffect } from "react";
-const { __ } = wp.i18n;
-const { MediaUpload, MediaUploadCheck, InspectorControls, ColorPalette } =
-	wp.blockEditor || wp.editor;
+import { BorderControl, SpacingControl, UBSelectControl } from "../components";
+import { useDispatch, useSelect, select } from "@wordpress/data";
+import AdvancedVideoPlaceholder from "./placeholder";
+import AdvancedVideoBlockControls from "./block-controls";
+import { store as noticesStore } from "@wordpress/notices";
+
+import { __ } from "@wordpress/i18n";
+import {
+	generateStyles,
+	getBorderCSS,
+	getSingleSideBorderValue,
+	getSpacingCss,
+} from "../utils/styling-helpers";
+const {
+	MediaUpload,
+	MediaUploadCheck,
+	InspectorControls,
+	ColorPalette,
+	useBlockProps,
+} = wp.blockEditor || wp.editor;
 const {
 	Button,
 	RangeControl,
 	ToggleControl,
 	PanelBody,
 	PanelRow,
-	SelectControl,
 	AnglePickerControl,
+	SandBox,
 } = wp.components;
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
 
 function editEmbedArgs(source, embedCode, mode, arg, isTimeCode = false) {
 	let newEmbedCode = embedCode;
@@ -21,8 +46,18 @@ function editEmbedArgs(source, embedCode, mode, arg, isTimeCode = false) {
 
 	const sizeRegex = /width="\d+" height="\d+"/;
 
+	// Check if arg is a URL parameter (not an iframe attribute like width/height)
+	const isUrlParameter =
+		/^(autoplay|mute|loop|controls|start|end|muted|rel|modestbranding)/.test(
+			arg,
+		);
+
 	if (mode === "add") {
-		if (validSources.includes(source) && embedCode.search(sizeRegex)) {
+		if (
+			validSources.includes(source) &&
+			embedCode.search(sizeRegex) &&
+			!isUrlParameter
+		) {
 			switch (source) {
 				case "youtube":
 					newEmbedCode = embedCode.replace("<iframe", `<iframe ${arg}`);
@@ -48,7 +83,7 @@ function editEmbedArgs(source, embedCode, mode, arg, isTimeCode = false) {
 					[
 						regexPart,
 						'(\\?[A-Za-z_]+=[^&"#\\s]+(?:(?:&[A-Za-z_]+=[^&#"\\s]+)*))?(?:#[^&#"\\s]+)?',
-					].join("")
+					].join(""),
 				);
 
 				const embedArgs = embedRegex.exec(embedCode);
@@ -60,25 +95,25 @@ function editEmbedArgs(source, embedCode, mode, arg, isTimeCode = false) {
 					if (timecodeCanBeRemoved) {
 						newEmbedCode = embedCode.replace(
 							embedArgs[0],
-							`${timecodeCanBeRemoved[1]}#${arg}`
+							`${timecodeCanBeRemoved[1]}#${arg}`,
 						);
 					} else {
 						newEmbedCode = embedCode.replace(
 							embedArgs[0],
-							`${embedArgs[0]}#${arg}`
+							`${embedArgs[0]}#${arg}`,
 						);
 					}
 				} else if (embedArgs && embedArgs[1]) {
 					if (!embedArgs[1].includes(arg)) {
 						newEmbedCode = embedCode.replace(
 							embedArgs[1],
-							`${embedArgs[1]}&${arg}`
+							`${embedArgs[1]}&${arg}`,
 						);
 					}
 				} else {
 					newEmbedCode = embedCode.replace(
 						embedArgs[0],
-						`${embedArgs[0]}?${arg}`
+						`${embedArgs[0]}?${arg}`,
 					);
 				}
 			} else {
@@ -86,12 +121,16 @@ function editEmbedArgs(source, embedCode, mode, arg, isTimeCode = false) {
 
 				newEmbedCode = embedCode.replace(
 					videoTag[0],
-					videoTag[0].replace("<video", `<video ${arg}`)
+					videoTag[0].replace("<video", `<video ${arg}`),
 				);
 			}
 		}
 	} else if (mode === "remove") {
-		if (validSources.includes(source) && embedCode.search(sizeRegex)) {
+		if (
+			validSources.includes(source) &&
+			embedCode.search(sizeRegex) &&
+			!isUrlParameter
+		) {
 			switch (source) {
 				case "youtube":
 					newEmbedCode = embedCode.replace(`<iframe ${arg}`, "<iframe");
@@ -123,7 +162,7 @@ function editEmbedArgs(source, embedCode, mode, arg, isTimeCode = false) {
 						arg,
 						"))",
 					].join(""),
-					"g"
+					"g",
 				);
 
 				const embedArgs = embedRegex.exec(newEmbedCode);
@@ -131,12 +170,12 @@ function editEmbedArgs(source, embedCode, mode, arg, isTimeCode = false) {
 					//embedargs cannot be used. use another regex code. vimeo scenario
 					const vimeoTimeCode =
 						/https:\/\/player\.vimeo\.com\/video\/[0-9]+(\?[A-Za-z_]+=[^&"\s]+(?:(?:&[A-Za-z_]+=[^&"\s]+)*))?/.exec(
-							newEmbedCode
+							newEmbedCode,
 						);
 
 					newEmbedCode = newEmbedCode.replace(
 						vimeoTimeCode[1],
-						vimeoTimeCode[1].replace(/#t=.+/, "")
+						vimeoTimeCode[1].replace(/#t=.+/, ""),
 					);
 				} else {
 					if (embedArgs[1].includes(arg)) {
@@ -151,12 +190,12 @@ function editEmbedArgs(source, embedCode, mode, arg, isTimeCode = false) {
 
 							newEmbedCode = embedCode.replace(
 								embedArgs[1],
-								embedArgs[1].replace(fullArg, "")
+								embedArgs[1].replace(fullArg, ""),
 							);
 						} else {
 							newEmbedCode = embedCode.replace(
 								embedArgs[0],
-								embedArgs[0].replace(`?${arg}`, "")
+								embedArgs[0].replace(`?${arg}`, ""),
 							);
 						}
 					}
@@ -164,14 +203,14 @@ function editEmbedArgs(source, embedCode, mode, arg, isTimeCode = false) {
 			} else {
 				const videoControlsRegex = new RegExp(
 					`<video(?: .+)* ${arg}(?: .+?)*?>`,
-					"g"
+					"g",
 				);
 
 				const videoControlsMatch = videoControlsRegex.exec(embedCode);
 
 				newEmbedCode = embedCode.replace(
 					videoControlsMatch[0],
-					videoControlsMatch[0].replace(` ${arg}`, "")
+					videoControlsMatch[0].replace(` ${arg}`, ""),
 				);
 			}
 		}
@@ -225,7 +264,7 @@ function adjustVideoStart(source, embedCode, startTime, prevStartTime = 0) {
 			embedCode,
 			startTime > 0 ? "add" : "remove",
 			startTime > 0 ? startCode : makeTimeCode(prevStartTime),
-			true
+			true,
 		);
 	} else if (["youtube", "dailymotion"].includes(source)) {
 		if (prevStartTime > 0) {
@@ -233,7 +272,7 @@ function adjustVideoStart(source, embedCode, startTime, prevStartTime = 0) {
 				source,
 				embedCode,
 				"remove",
-				`start=${prevStartTime}`
+				`start=${prevStartTime}`,
 			);
 		}
 
@@ -244,21 +283,21 @@ function adjustVideoStart(source, embedCode, startTime, prevStartTime = 0) {
 		//case handler for local/direct
 		const embedArgs =
 			/<source (?:[^"=\s]+=".+?" )*(src="[^#"]+(#t=[0-9]+)?")/.exec(
-				newEmbedCode
+				newEmbedCode,
 			);
 
-		if (embedArgs[2]) {
+		if (!isEmpty(embedArgs[2])) {
 			newEmbedCode = newEmbedCode.replace(
 				embedArgs[1],
 				embedArgs[1].replace(
 					embedArgs[2],
-					startTime > 0 ? `#t=${startTime}` : ""
-				)
+					startTime > 0 ? `#t=${startTime}` : "",
+				),
 			);
 		} else {
 			newEmbedCode = newEmbedCode.replace(
 				embedArgs[1],
-				embedArgs[1].replace(/"$/g, `#t=${startTime}"`)
+				embedArgs[1].replace(/"$/g, `#t=${startTime}"`),
 			);
 		}
 	}
@@ -274,7 +313,9 @@ function editThumbnail(source, embedCode, mode, thumbnailURL) {
 
 export function AdvancedVideoBlock(props) {
 	const [enterVideoURL, setVideoURLStatus] = useState(false);
-	const [videoURLInput, setVideoURLInput] = useState("");
+	const [videoURLInput, setVideoURLInput] = useState(
+		props.attributes.url ?? "",
+	);
 	const [allowCustomStartTime, setStartTimeStatus] = useState(false);
 	const [useCustomThumbnail, setCustomThumbnailStatus] = useState(false);
 	const [enterImageURL, setImageURLInputStatus] = useState(false);
@@ -284,24 +325,39 @@ export function AdvancedVideoBlock(props) {
 	const [startTime_m, setStartTime_m] = useState(0);
 	const [startTime_s, setStartTime_s] = useState(0);
 
-	const [youtubeCache, setYoutubeCache] = useState({});
-	const [vimeoCache, setVimeoCache] = useState({});
-	const [dailyMotionCache, setDailyMotionCache] = useState({});
-	const [videoPressCache, setVideoPressCache] = useState({});
-
-	const [currentBorder, setCurrentBorder] = useState("");
-	const [currentCorner, setCurrentCorner] = useState("");
 	const [useShadow, setShadowStatus] = useState(false);
+	const { attributes, setAttributes, clientId } = props;
+	const paddingObj = getSpacingCss(attributes.padding);
+	const marginObj = getSpacingCss(attributes.margin);
+	const blockStyles = {
+		paddingTop: paddingObj?.top,
+		paddingRight: paddingObj?.right,
+		paddingBottom: paddingObj?.bottom,
+		paddingLeft: paddingObj?.left,
+		marginTop: !isEmpty(marginObj?.top) ? marginObj?.top : "",
+		marginRight: !isEmpty(marginObj?.right) ? marginObj?.right : " ",
+		marginBottom: !isEmpty(marginObj?.bottom) ? marginObj?.bottom : "",
+		marginLeft: !isEmpty(marginObj?.left) ? marginObj?.left : "",
+	};
+	const blockProps = useBlockProps({
+		style: generateStyles(blockStyles),
+	});
+	const { block, rootBlockClientId } = useSelect((select) => {
+		const { getBlock, getBlockRootClientId } =
+			select("core/block-editor") || select("core/editor");
+		const block = getBlock(clientId);
+		const rootBlockClientId = getBlockRootClientId(block.clientId);
 
-	const { attributes, setAttributes, block } = props;
-
+		return {
+			block,
+			rootBlockClientId,
+		};
+	});
 	const {
 		blockID,
-
 		videoId,
 		url,
 		videoEmbedCode,
-
 		showPlayerControls,
 		topBorderSize,
 		leftBorderSize,
@@ -338,8 +394,83 @@ export function AdvancedVideoBlock(props) {
 		showInDesktop,
 		showInTablet,
 		showInMobile,
+		isTransformed,
+		aspectRatio,
+		isBorderComponentChanged,
+		border,
+		borderRadius,
+		isResponsiveSettingsRemoved,
 	} = attributes;
 
+	const styleClipboard = createStyleClipboard(
+		"ub_advanced_video_copied_style",
+		[
+			"padding",
+			"margin",
+			"borderRadius",
+			"border",
+			"width",
+			"height",
+			"playerColor",
+			"shadow",
+			"aspectRatio",
+			"showInMobile",
+			"showInTablet",
+			"showInDesktop",
+			"origWidth",
+			"origHeight",
+			"autofit",
+			"preserveAspectRatio",
+		],
+	);
+	useEffect(() => {
+		if (!isBorderComponentChanged) {
+			setAttributes({
+				isBorderComponentChanged: true,
+				borderRadius: {
+					topLeft: topLeftRadius + "px",
+					topRight: topRightRadius + "px",
+					bottomLeft: bottomLeftRadius + "px",
+					bottomRight: bottomRightRadius + "px",
+				},
+				border: {
+					top: {
+						width: topBorderSize + "px",
+						color: topBorderColor,
+						style: topBorderStyle,
+					},
+					right: {
+						width: rightBorderSize + "px",
+						color: rightBorderColor,
+						style: rightBorderStyle,
+					},
+					bottom: {
+						width: bottomBorderSize + "px",
+						color: bottomBorderColor,
+						style: bottomBorderStyle,
+					},
+					left: {
+						width: leftBorderSize + "px",
+						color: leftBorderColor,
+						style: leftBorderStyle,
+					},
+				},
+			});
+		}
+		if (typeof ub_extensions !== "undefined") {
+			const responsiveControl = ub_extensions.find(
+				(extensions) => extensions.name === "responsive-control",
+			);
+			if (!isResponsiveSettingsRemoved && responsiveControl.active) {
+				setAttributes({
+					isResponsiveSettingsRemoved: true,
+					isHideOnDesktop: !showInDesktop,
+					isHideOnTablet: !showInTablet,
+					isHideOnMobile: !showInMobile,
+				});
+			}
+		}
+	}, []);
 	useEffect(() => {
 		if (
 			startTime !== 0 &&
@@ -369,39 +500,32 @@ export function AdvancedVideoBlock(props) {
 			setShadowStatus(true);
 		}
 	}, []);
-
-	const currentColor =
-		currentBorder === "top"
-			? topBorderColor
-			: currentBorder === "left"
-			? leftBorderColor
-			: currentBorder === "right"
-			? rightBorderColor
-			: bottomBorderColor;
-
-	const hasBorder =
-		[topBorderSize, rightBorderSize, bottomBorderSize, leftBorderSize].filter(
-			(s) => s > 0
-		).length > 0;
+	useEffect(() => {
+		const rootBlock = getParentBlock(rootBlockClientId, "core/block");
+		if (!rootBlock) {
+			setAttributes({ blockID: block.clientId });
+		}
+	}, [block?.clientId]);
 
 	const checkVideoURLInput = () => {
 		let videoURL = videoURLInput.trim();
+
 		if (/^http(s)?:\/\//g.test(videoURL)) {
 			const youtubeMatch =
-				/^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/g.exec(
-					videoURL
+				/^(?:https?:\/\/)?(?:m\.|www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))((\w|-){11})(?:\S+)?$/g.exec(
+					videoURL,
 				);
 			const vimeoMatch =
 				/^(?:https?\:\/\/)?(?:www\.|player\.)?(?:vimeo\.com\/)([0-9]+)/g.exec(
-					videoURL
+					videoURL,
 				);
 			const dailyMotionMatch =
 				/^(?:https?\:\/\/)?(?:www\.)?(?:dailymotion\.com\/video|dai\.ly)\/([0-9a-z]+)(?:[\-_0-9a-zA-Z]+#video=([a-z0-9]+))?/g.exec(
-					videoURL
+					videoURL,
 				);
 			const videoPressMatch =
 				/^https?:\/\/(?:www\.)?videopress\.com\/(?:embed|v)\/([a-zA-Z0-9]{8,})/g.exec(
-					videoURL
+					videoURL,
 				);
 
 			const facebookVideoRegex = new RegExp(
@@ -411,38 +535,75 @@ export function AdvancedVideoBlock(props) {
 					"?\\.?facebook\\.com\\/(?:(?:watch\\/\\?v=)|(?:[A-Za-z0-9.]+\\/videos\\/))[0-9]+)", //main fb video url, second part (both watch/?v=[postid] and [userid/pageid]/videos/[postid] variants)
 					"|fb\\.watch\\/[A-Za-z0-9_]+)\\/?", //fb.watch variant
 				].join(""),
-				"g"
+				"g",
 			);
 
 			const facebookVideoMatch = facebookVideoRegex.exec(videoURL);
+			const tiktokMatch =
+				/^(?:https?:\/\/)?(?:www\.)?tiktok\.com\/(?:\w+\/)?@[\w.-]+\/video\/\d+/g.exec(
+					videoURL,
+				);
 
 			if (youtubeMatch) {
 				fetch(
-					`https://www.googleapis.com/youtube/v3/videos?id=${youtubeMatch[1]}&part=snippet,contentDetails,player&key=AIzaSyDgItjYofyXkIZ4OxF6gN92PIQkuvU319c`
+					`https://www.googleapis.com/youtube/v3/videos?id=${youtubeMatch[1]}&part=snippet,contentDetails,player&key=AIzaSyDgItjYofyXkIZ4OxF6gN92PIQkuvU319c`,
 				)
 					.then((response) => {
 						response.json().then((data) => {
 							if (data.items.length) {
 								let timePeriods = data.items[0].contentDetails.duration.match(
-									/(\d{1,2}(?:W|D|H|M|S))/g
+									/(\d{1,2}(?:W|D|H|M|S))/g,
+								);
+								const videoHeight = get(
+									data.items[0],
+									"snippet.thumbnails.maxres.height",
+									get(data.items[0], "snippet.thumbnails.high.height", height),
 								);
 
-								const embedCode = data.items[0].player.embedHtml;
+								const videoWidth = get(
+									data.items[0],
+									"snippet.thumbnails.maxres.width",
+									get(data.items[0], "snippet.thumbnails.high.width", width),
+								);
+								let embedCode = data.items[0].player.embedHtml;
+								embedCode = embedCode.replace(
+									/height="[0-9]+%?"/,
+									`height="${videoHeight}"`,
+								);
+								embedCode = embedCode.replace(
+									/width="[0-9]+%?"/,
+									`width="${videoWidth}"`,
+								);
+
+								// Add autoplay and mute parameters if autoplay is enabled
+								if (autoplay) {
+									embedCode = editEmbedArgs(
+										"youtube",
+										embedCode,
+										"add",
+										"autoplay=1",
+									);
+									embedCode = editEmbedArgs(
+										"youtube",
+										embedCode,
+										"add",
+										"mute=1",
+									);
+								}
 
 								const parsedCode = /<iframe width="(\d+)" height="(\d+)/.exec(
-									embedCode
+									embedCode,
 								);
 
 								setAttributes({
+									channelId: data.items[0].snippet.channelId,
 									url: `https://www.youtube.com/watch?v=${youtubeMatch[1]}`,
 									videoSource: "youtube",
-									videoEmbedCode: data.items[0].player.embedHtml,
+									videoEmbedCode: embedCode,
 									origWidth: parseInt(parsedCode[1]),
 									origHeight: parseInt(parsedCode[2]),
-									width: Math.min(600, parsedCode[1]),
-									height:
-										(parsedCode[2] * Math.min(600, parsedCode[1])) /
-										parsedCode[1],
+									width: Math.min(100, parsedCode[1]),
+									height: parsedCode[2],
 									videoLength: timePeriods.reduce((sum, part) => {
 										let multiplier = {
 											W: 604800,
@@ -477,7 +638,7 @@ export function AdvancedVideoBlock(props) {
 								.then((data) => {
 									const newWidth = Math.min(600, data[0].width);
 									const newHeight = Math.round(
-										(data[0].height * newWidth) / data[0].width
+										(data[0].height * newWidth) / data[0].width,
 									);
 
 									setAttributes({
@@ -490,8 +651,8 @@ export function AdvancedVideoBlock(props) {
 									});
 									fetch(
 										`https://vimeo.com/api/oembed.json?url=${encodeURIComponent(
-											data[0].url
-										)}&width=${newWidth}&height=${newHeight}`
+											data[0].url,
+										)}&width=${newWidth}&height=${newHeight}`,
 									)
 										.then((response) => {
 											response.json().then((data) => {
@@ -520,14 +681,14 @@ export function AdvancedVideoBlock(props) {
 					});
 			} else if (dailyMotionMatch) {
 				fetch(
-					`https://api.dailymotion.com/video/${dailyMotionMatch[1]}?fields=created_time%2Cthumbnail_1080_url%2Ctitle%2Cdescription%2Curl%2Cembed_html%2Cheight%2Cwidth%2Cduration`
+					`https://api.dailymotion.com/video/${dailyMotionMatch[1]}?fields=created_time%2Cthumbnail_1080_url%2Ctitle%2Cdescription%2Curl%2Cembed_html%2Cheight%2Cwidth%2Cduration`,
 				)
 					.then((response) => {
 						if (response.ok) {
 							response.json().then((data) => {
 								const newWidth = Math.min(600, data.width);
 								const newHeight = Math.round(
-									(data.height * newWidth) / data.width
+									(data.height * newWidth) / data.width,
 								);
 
 								setAttributes({
@@ -551,14 +712,14 @@ export function AdvancedVideoBlock(props) {
 					});
 			} else if (videoPressMatch) {
 				fetch(
-					`https://public-api.wordpress.com/rest/v1.1/videos/${videoPressMatch[1]}`
+					`https://public-api.wordpress.com/rest/v1.1/videos/${videoPressMatch[1]}`,
 				)
 					.then((response) => {
 						if (response.ok) {
 							response.json().then((data) => {
 								const newWidth = Math.min(600, data.width);
 								const newHeight = Math.round(
-									(data.height * newWidth) / data.width
+									(data.height * newWidth) / data.width,
 								);
 
 								setAttributes({
@@ -584,24 +745,45 @@ export function AdvancedVideoBlock(props) {
 				setAttributes({
 					url: videoURL,
 					videoEmbedCode: `<iframe src="https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
-						videoURL
+						videoURL,
 					)}&width=600&show_text=false&height=600&appId" width="600" height="600" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowFullScreen="true"></iframe>`,
 					width: 600,
 					height: 600,
 					videoSource: "facebook",
 					preserveAspectRatio: false,
 				});
+			} else if (tiktokMatch) {
+				fetch(`https://www.tiktok.com/oembed?url=${tiktokMatch[0]}`)
+					.then((response) => {
+						if (response.ok) {
+							response.json().then((data) => {
+								const newWidth = Math.min(600, data.width);
+								const newHeight = Math.round(
+									(data.height * newWidth) / data.width,
+								);
+								setAttributes({
+									url: tiktokMatch[0],
+									videoEmbedCode: data.html,
+									videoSource: "tiktok",
+									height: newHeight,
+									width: newWidth,
+								});
+							});
+						}
+					})
+					.catch((err) => {
+						console.log("tiktok input error");
+						console.log(err);
+					});
 			} else {
 				console.log(
-					"site not supported. presume it's a direct link to a video"
+					"site not supported. presume it's a direct link to a video",
 				);
 
 				setAttributes({
 					url: videoURL,
 					videoEmbedCode: `<video controls width="500" height="500"><source src="${videoURLInput}"></video>`,
 					videoSource: "unknown",
-					width: 500,
-					height: 500,
 					preserveAspectRatio: false,
 				});
 				setVideoURLInput("");
@@ -611,49 +793,204 @@ export function AdvancedVideoBlock(props) {
 			console.log("invalid input");
 		}
 	};
+	useEffect(() => {
+		if (isTransformed) {
+			checkVideoURLInput();
+		}
+	}, []);
 
 	let autofitContainerStyle = {};
 	let extraEmbeds = null;
-
 	switch (videoSource) {
 		case "youtube":
-			autofitContainerStyle = Object.assign(
-				{},
-				{ aspectRatio: `${origWidth}/${origHeight}` }
-			);
+			const currentAspectRatio =
+				!isEmpty(aspectRatio) && aspectRatio !== "auto"
+					? aspectRatio
+					: `${origWidth}/${origHeight}`;
+			// The iframe carries the aspect ratio. On the container it would fix
+			// the height, and with overflow hidden cut off the channel details.
+			autofitContainerStyle = {};
 			extraEmbeds = (
 				<style>
 					{`#ub-advanced-video-${blockID}.ub-advanced-video-autofit-youtube iframe{
-						aspect-ratio: ${origWidth}/${origHeight}
+						aspect-ratio: ${currentAspectRatio};
+						height: auto !important;
 					}`}
 				</style>
 			);
 			break;
 		case "vimeo":
-			autofitContainerStyle = Object.assign(
-				{},
-				{ padding: `${(origHeight / origWidth) * 100}% 0 0 0` }
+			// Same as YouTube, see block.php.
+			autofitContainerStyle = {};
+			extraEmbeds = (
+				<>
+					<style>
+						{`#ub-advanced-video-${blockID}.ub-advanced-video-autofit-vimeo iframe{
+							aspect-ratio: ${origWidth}/${origHeight};
+							height: auto !important;
+						}`}
+					</style>
+					<script src="https://player.vimeo.com/api/player.js" />
+				</>
 			);
-			extraEmbeds = <script src="https://player.vimeo.com/api/player.js" />;
 			break;
 		case "dailymotion":
 			autofitContainerStyle = Object.assign(
 				{},
-				{ paddingBottom: `${(origHeight / origWidth) * 100}%` }
+				{ paddingBottom: `${(origHeight / origWidth) * 100}%` },
 			);
 			extraEmbeds = null;
+			break;
+		case "unknown":
+			const localAspectRatio =
+				!isEmpty(aspectRatio) && aspectRatio !== "auto"
+					? aspectRatio
+					: `${origWidth}/${origHeight}`;
+			extraEmbeds = (
+				<style>
+					{`#ub-advanced-video-${blockID}.ub-advanced-video-autofit video{
+						aspect-ratio: ${localAspectRatio};
+						height: auto !important;
+						object-fit:cover;
+					}`}
+				</style>
+			);
 			break;
 		default:
 			autofitContainerStyle = {};
 			extraEmbeds = null;
 	}
+	const onSelectVideo = (media) => {
+		const newWidth = media.width;
+		const newHeight = media.height;
+		let timeUnits = [0];
+		const conversionFactor = [1, 60, 3600, 86400];
 
+		if (!isEmpty(media?.fileLength)) {
+			timeUnits = media.fileLength
+				.split(":")
+				.map((t) => parseInt(t))
+				.reverse();
+			setAttributes({
+				videoLength: timeUnits.reduce(
+					(total, curr, i) => total + curr * conversionFactor[i],
+					0,
+				),
+			});
+		} else {
+			const videoElement = document.createElement("video");
+			videoElement.src = media.url;
+
+			videoElement.addEventListener("loadedmetadata", () => {
+				const duration = videoElement.duration;
+				timeUnits = duration
+					.toString()
+					.split(":")
+					.map((t) => parseInt(t))
+					.reverse();
+				videoElement.remove();
+				setAttributes({
+					videoLength: timeUnits.reduce(
+						(total, curr, i) => total + curr * conversionFactor[i],
+						0,
+					),
+				});
+			});
+		}
+		setAttributes({
+			videoId: media.id,
+			url: media.url,
+			width: newWidth,
+			height: newHeight,
+			videoEmbedCode: `<video ${
+				showPlayerControls ? "controls" : ""
+			} width="${newWidth}" height="${newHeight}"><source src="${
+				media.url
+			}"></video>`,
+			videoSource: "local",
+		});
+	};
+	const onSelectURL = (url) => {
+		setVideoURLInput(url);
+	};
+	useEffect(() => {
+		if (!isEmpty(videoURLInput) && videoURLInput !== props.attributes.url) {
+			checkVideoURLInput();
+
+			if (!isEmpty(videoSource) && videoSource !== "tiktok") {
+				setAttributes({
+					videoEmbedCode: adjustVideoStart(
+						videoSource,
+						videoEmbedCode,
+						startTime,
+						startTime,
+					),
+				});
+			}
+		}
+	}, [videoURLInput]);
+
+	const { createErrorNotice } = useDispatch(noticesStore);
+	const onUploadError = (message) => {
+		createErrorNotice(message, { type: "snackbar" });
+	};
+	const advancedVideoPlaceholderProps = {
+		onSelectVideo,
+		onSelectURL,
+		onUploadError,
+		value: videoId,
+	};
+	const advancedVideoBlockControlPropsProps = {
+		...advancedVideoPlaceholderProps,
+		url,
+	};
+	const isIframeEmbed = /<iframe/i.test(videoEmbedCode);
+	const embedContainerClassName = `ub-advanced-video-container${
+		autofit
+			? ` ub-advanced-video-autofit${
+					["youtube", "dailymotion", "vimeo"].includes(videoSource)
+						? `-${videoSource}`
+						: ""
+				}`
+			: ""
+	}`;
+	const embedContainerStyle = Object.assign(
+		// The width is a percentage, but some sources stored pixels (600).
+		autofit ? autofitContainerStyle : { width: `${Math.min(width, 100)}%` },
+		{
+			borderTop: getSingleSideBorderValue(getBorderCSS(border), "top"),
+			borderLeft: getSingleSideBorderValue(getBorderCSS(border), "left"),
+			borderRight: getSingleSideBorderValue(getBorderCSS(border), "right"),
+			borderBottom: getSingleSideBorderValue(getBorderCSS(border), "top"),
+			borderTopLeftRadius: borderRadius?.topLeft,
+			borderTopRightRadius: borderRadius?.topRight,
+			borderBottomLeftRadius: borderRadius?.bottomLeft,
+			borderBottomRightRadius: borderRadius?.bottomRight,
+		},
+		shadow[0].radius > 0
+			? {
+					boxShadow: `${
+						shadow[0].radius *
+						Math.cos(((450 - shadow[0].angle) % 360) * (Math.PI / 180))
+					}px ${
+						-shadow[0].radius *
+						Math.sin(((450 - shadow[0].angle) % 360) * (Math.PI / 180))
+					}px ${shadow[0].blur}px ${shadow[0].spread}px rgba(${parseInt(
+						"0x" + shadow[0].color.substring(1, 3),
+					)}, ${parseInt(
+						"0x" + shadow[0].color.substring(3, 5),
+					)}, ${parseInt("0x" + shadow[0].color.substring(5, 7))}, ${
+						(100 - shadow[0].transparency) / 100
+					})`,
+				}
+			: {},
+	);
 	return (
 		<>
-			<InspectorControls>
+			<InspectorControls group="settings">
 				{url !== "" && (
 					<>
-						<PanelBody title={__("Embedded video player settings")}>
+						<PanelBody title={__("General")} initialOpen={true}>
 							<div className="ub-labelled-toggle">
 								<p>{__("Autofit video embed")}</p>
 								<ToggleControl
@@ -667,11 +1004,11 @@ export function AdvancedVideoBlock(props) {
 														videoSource,
 														videoEmbedCode,
 														autofit ? "add" : "remove",
-														`width="${width}" height="${
+														`width="100%" height="${
 															preserveAspectRatio
 																? Math.round((width * origHeight) / origWidth)
 																: height
-														}"`
+														}%"`,
 													),
 												});
 
@@ -689,7 +1026,7 @@ export function AdvancedVideoBlock(props) {
 							{!autofit && (
 								<>
 									<RangeControl
-										label={__("Video width (pixels)")}
+										label={__("Video width (percentage)")}
 										value={width}
 										onChange={(newWidth) => {
 											setAttributes({ width: newWidth });
@@ -698,38 +1035,38 @@ export function AdvancedVideoBlock(props) {
 
 											newVideoEmbedCode = newVideoEmbedCode.replace(
 												/width="[0-9]+"/,
-												`width="${newWidth}"`
+												`width="${newWidth}%"`,
 											);
 											if (videoSource === "facebook") {
 												newVideoEmbedCode = newVideoEmbedCode.replace(
 													/&width=[0-9]+/,
-													`width="${newWidth}"`
+													`width="${newWidth}%"`,
 												);
 											}
 
 											if (preserveAspectRatio) {
 												//get ratio between current width and current height, then recalculate height according to ratio
 												const newHeight = Math.round(
-													(height * newWidth) / width
+													(height * newWidth) / width,
 												);
 												setAttributes({
 													height: newHeight,
 												});
 												newVideoEmbedCode = newVideoEmbedCode.replace(
-													/height="[0-9]+"/,
-													`height="${newHeight}"`
+													/height="[\d.]+"/,
+													`height="${newHeight}%"`,
 												);
 												if (videoSource === "facebook") {
 													newVideoEmbedCode = newVideoEmbedCode.replace(
-														/&height=[0-9]+/,
-														`height="${newHeight}"`
+														/&height=[\d.]+/,
+														`height="${newHeight}%"`,
 													);
 												}
 											}
 											setAttributes({ videoEmbedCode: newVideoEmbedCode });
 										}}
-										min={200}
-										max={1600}
+										min={0}
+										max={100}
 									/>
 									{!preserveAspectRatio && (
 										<RangeControl
@@ -739,13 +1076,14 @@ export function AdvancedVideoBlock(props) {
 												let newVideoEmbedCode = videoEmbedCode;
 
 												newVideoEmbedCode = newVideoEmbedCode.replace(
-													/height="[0-9]+"/,
-													`height="${height}"`
+													/height="[\d.]+%?"/,
+													`height="${height}"`,
 												);
+
 												if (videoSource === "facebook") {
 													newVideoEmbedCode = newVideoEmbedCode.replace(
-														/&height=[0-9]+/,
-														`height="${height}"`
+														/&height=[\d.]+%?/,
+														`height="${height}"`,
 													);
 												}
 												setAttributes({
@@ -770,17 +1108,17 @@ export function AdvancedVideoBlock(props) {
 													!["facebook", "unknown"].includes(videoSource)
 												) {
 													const newHeight = Math.round(
-														(origHeight * width) / origWidth
+														(origHeight * width) / origWidth,
 													);
 
 													let newVideoEmbedCode = videoEmbedCode.replace(
 														/height="[0-9]+"/,
-														`height="${newHeight}"`
+														`height="${newHeight}"`,
 													);
 													if (videoSource === "facebook") {
 														newVideoEmbedCode = newVideoEmbedCode.replace(
 															/&height=[0-9]+/,
-															`height="${newHeight}"`
+															`height="${newHeight}"`,
 														);
 													}
 													setAttributes({
@@ -793,6 +1131,17 @@ export function AdvancedVideoBlock(props) {
 									</div>
 								</>
 							)}
+							{autofit && (
+								<UBSelectControl
+									onChange={(newValue) => {
+										setAttributes({ aspectRatio: newValue });
+									}}
+									value={aspectRatio}
+									options={DEFAULT_ASPECT_RATIO_OPTIONS}
+									label={__("Aspect Ratio", "ultimate-blocks")}
+								/>
+							)}
+
 							{/* SUPPORTED IN DAILYMOTION, YOUTUBE, LOCAL, DIRECT */}
 							{([
 								"local",
@@ -819,7 +1168,7 @@ export function AdvancedVideoBlock(props) {
 															videoSource,
 															videoEmbedCode,
 															showPlayerControls ? "remove" : "add",
-															"controls"
+															"controls",
 														),
 													});
 													break;
@@ -830,7 +1179,7 @@ export function AdvancedVideoBlock(props) {
 															videoSource,
 															videoEmbedCode,
 															showPlayerControls ? "add" : "remove",
-															"controls=0"
+															"controls=0",
 														),
 													});
 													break;
@@ -840,7 +1189,7 @@ export function AdvancedVideoBlock(props) {
 															"dailymotion",
 															videoEmbedCode,
 															showPlayerControls ? "add" : "remove",
-															"controls=false"
+															"controls=false",
 														),
 													});
 													break;
@@ -872,19 +1221,71 @@ export function AdvancedVideoBlock(props) {
 																	videoSource,
 																	videoEmbedCode,
 																	autoplay ? "remove" : "add",
-																	"autoplay"
+																	"autoplay",
 																),
 															});
 															break;
 
 														case "youtube":
+															let srcRegex =
+																/<iframe[^>]*src=["']([^"']*)["'][^>]*>/;
+
+															let match = videoEmbedCode.match(srcRegex);
+															if (!autoplay) {
+																if (match) {
+																	let modifiedSrc = match[1] + "?autoplay=1";
+																	let updatedVideoEmbedCode =
+																		videoEmbedCode.replace(
+																			match[1],
+																			modifiedSrc,
+																		);
+																	// Add mute parameter for autoplay to work
+																	let finalEmbedCode = editEmbedArgs(
+																		videoSource,
+																		updatedVideoEmbedCode,
+																		"add",
+																		"autoplay=1",
+																	);
+																	finalEmbedCode = editEmbedArgs(
+																		videoSource,
+																		finalEmbedCode,
+																		"add",
+																		"mute=1",
+																	);
+																	setAttributes({
+																		videoEmbedCode: finalEmbedCode,
+																	});
+																}
+															} else {
+																if (match) {
+																	let updatedVideoEmbedCode =
+																		videoEmbedCode.replace("?autoplay=1", "");
+																	// Remove both autoplay and mute parameters
+																	let finalEmbedCode = editEmbedArgs(
+																		videoSource,
+																		updatedVideoEmbedCode,
+																		"remove",
+																		"autoplay=1",
+																	);
+																	finalEmbedCode = editEmbedArgs(
+																		videoSource,
+																		finalEmbedCode,
+																		"remove",
+																		"mute=1",
+																	);
+																	setAttributes({
+																		videoEmbedCode: finalEmbedCode,
+																	});
+																}
+															}
+															break;
 														case "vimeo":
 															setAttributes({
 																videoEmbedCode: editEmbedArgs(
 																	videoSource,
 																	videoEmbedCode,
 																	autoplay ? "remove" : "add",
-																	"autoplay=1"
+																	"autoplay=1",
 																),
 															});
 															if (!autoplay) {
@@ -902,7 +1303,7 @@ export function AdvancedVideoBlock(props) {
 																	"dailymotion",
 																	videoEmbedCode,
 																	autoplay ? "remove" : "add",
-																	"autoplay=true"
+																	"autoplay=true",
 																),
 															});
 															break;
@@ -927,7 +1328,7 @@ export function AdvancedVideoBlock(props) {
 																videoSource,
 																videoEmbedCode,
 																0,
-																startTime
+																startTime,
 															),
 														});
 														setStartTime_d(0);
@@ -972,7 +1373,7 @@ export function AdvancedVideoBlock(props) {
 																videoSource,
 																videoEmbedCode,
 																startPoint,
-																startTime
+																startTime,
 															),
 														});
 													}
@@ -1007,7 +1408,7 @@ export function AdvancedVideoBlock(props) {
 																videoSource,
 																videoEmbedCode,
 																startPoint,
-																startTime
+																startTime,
 															),
 														});
 													}
@@ -1041,7 +1442,7 @@ export function AdvancedVideoBlock(props) {
 															videoSource,
 															videoEmbedCode,
 															startPoint,
-															startTime
+															startTime,
 														);
 														setAttributes({
 															startTime: startPoint,
@@ -1064,7 +1465,6 @@ export function AdvancedVideoBlock(props) {
 													startTime_h * 3600 +
 													startTime_m * 60 +
 													s;
-
 												if (
 													startPoint < videoLength &&
 													s % 1 === 0 &&
@@ -1078,7 +1478,7 @@ export function AdvancedVideoBlock(props) {
 															videoSource,
 															videoEmbedCode,
 															startPoint,
-															startTime
+															startTime,
 														),
 													});
 												}
@@ -1088,7 +1488,7 @@ export function AdvancedVideoBlock(props) {
 								</>
 							)}
 							{["youtube", "local", "unknown", "videopress", "vimeo"].includes(
-								videoSource
+								videoSource,
 							) && (
 								<div className="ub-labelled-toggle">
 									<p>{__("Loop")}</p>
@@ -1105,21 +1505,21 @@ export function AdvancedVideoBlock(props) {
 															videoSource,
 															videoEmbedCode,
 															loop ? "remove" : "add",
-															"loop"
+															"loop",
 														),
 													});
 													break;
 												case "youtube":
 													let videoId =
 														/https:\/\/www\.youtube\.com\/watch\?v=((?:\w|-){11})/.exec(
-															url
+															url,
 														)[1];
 
 													let newEmbedCode = editEmbedArgs(
 														videoSource,
 														videoEmbedCode,
 														loop ? "remove" : "add",
-														"loop=1"
+														"loop=1",
 													);
 
 													setAttributes({
@@ -1127,7 +1527,7 @@ export function AdvancedVideoBlock(props) {
 															videoSource,
 															newEmbedCode,
 															loop ? "remove" : "add",
-															`playlist=${videoId}`
+															`playlist=${videoId}`,
 														),
 													});
 													break;
@@ -1137,7 +1537,7 @@ export function AdvancedVideoBlock(props) {
 															videoSource,
 															videoEmbedCode,
 															loop ? "remove" : "add",
-															"loop=true"
+															"loop=true",
 														),
 													});
 													break;
@@ -1170,7 +1570,7 @@ export function AdvancedVideoBlock(props) {
 															videoSource,
 															videoEmbedCode,
 															mute ? "remove" : "add",
-															"muted"
+															"muted",
 														),
 													});
 													break;
@@ -1180,7 +1580,7 @@ export function AdvancedVideoBlock(props) {
 															"vimeo",
 															videoEmbedCode,
 															mute ? "remove" : "add",
-															"muted=1"
+															"muted=1",
 														),
 													});
 													break;
@@ -1190,7 +1590,7 @@ export function AdvancedVideoBlock(props) {
 															"dailymotion",
 															videoEmbedCode,
 															mute ? "remove" : "add",
-															"mute=true"
+															"mute=true",
 														),
 													});
 													break;
@@ -1216,7 +1616,7 @@ export function AdvancedVideoBlock(props) {
 														videoSource,
 														videoEmbedCode,
 														"remove",
-														thumbnail
+														thumbnail,
 													),
 												});
 												setImageURLInputStatus(false);
@@ -1253,7 +1653,7 @@ export function AdvancedVideoBlock(props) {
 															videoSource,
 															videoEmbedCode,
 															"add",
-															imageURLInput
+															imageURLInput,
 														),
 													});
 													setImageURLInput("");
@@ -1274,7 +1674,7 @@ export function AdvancedVideoBlock(props) {
 															videoSource,
 															videoEmbedCode,
 															"add",
-															img.url
+															img.url,
 														),
 													});
 												}}
@@ -1302,7 +1702,7 @@ export function AdvancedVideoBlock(props) {
 													videoSource,
 													videoEmbedCode,
 													"remove",
-													thumbnail
+													thumbnail,
 												),
 											});
 											setCustomThumbnailStatus(true);
@@ -1314,651 +1714,174 @@ export function AdvancedVideoBlock(props) {
 									</button>
 								</>
 							)}
-
-							<p>{__("Toggle visibility")}</p>
-							<Button
-								isPrimary={showInDesktop}
-								isSecondary={!showInDesktop}
-								icon="desktop"
-								showTooltip={true}
-								label={"Desktop"}
-								onClick={() => setAttributes({ showInDesktop: !showInDesktop })}
-							/>
-							<Button
-								isPrimary={showInTablet}
-								isSecondary={!showInTablet}
-								icon="tablet"
-								showTooltip={true}
-								label={"Tablet"}
-								onClick={() => setAttributes({ showInTablet: !showInTablet })}
-							/>
-							<Button
-								isPrimary={showInMobile}
-								isSecondary={!showInMobile}
-								icon="smartphone"
-								showTooltip={true}
-								label={"Mobile"}
-								onClick={() => setAttributes({ showInMobile: !showInMobile })}
-							/>
-						</PanelBody>
-						<PanelBody title={__("Border settings")}>
-							<div className="ub-labelled-toggle">
-								<p>{__("Use a border")}</p>
-								<ToggleControl
-									checked={hasBorder}
-									onChange={() => {
-										if (!hasBorder) {
-											setAttributes({
-												borderSize: 1,
-												borderStyle: "solid",
-												borderColor: "#000000",
-
-												topBorderSize: 1,
-												rightBorderSize: 1,
-												bottomBorderSize: 1,
-												leftBorderSize: 1,
-
-												topBorderStyle: "solid",
-												rightBorderStyle: "solid",
-												bottomBorderStyle: "solid",
-												leftBorderStyle: "solid",
-
-												topBorderColor: "#000000",
-												rightBorderColor: "#000000",
-												bottomBorderColor: "#000000",
-												leftBorderColor: "#000000",
-
-												topLeftRadius: 0,
-												topRightRadius: 0,
-												bottomLeftRadius: 0,
-												bottomRightRadius: 0,
-											});
-											setCurrentBorder("all");
-											setCurrentCorner("all");
-										} else {
-											setAttributes({
-												borderSize: 0,
-												borderStyle: "",
-												borderColor: "",
-
-												topBorderSize: 0,
-												rightBorderSize: 0,
-												bottomBorderSize: 0,
-												leftBorderSize: 0,
-
-												topBorderStyle: "",
-												rightBorderStyle: "",
-												bottomBorderStyle: "",
-												leftBorderStyle: "",
-
-												topBorderColor: "",
-												rightBorderColor: "",
-												bottomBorderColor: "",
-												leftBorderColor: "",
-											});
-										}
-									}}
-								/>
-							</div>
-							{hasBorder && (
-								<>
-									<div className="ub-indicator-grid">
-										{/* FIRST ROW */}
-										<div className="ub-indicator-grid-cell" />
-										<div
-											className="ub-indicator-grid-cell ub-indicator-grid-left-border ub-indicator-grid-right-border"
-											style={{
-												borderTop: `2px solid ${
-													currentBorder === "top" ? "blue" : "black"
-												}`,
-											}}
-											onClick={() => setCurrentBorder("top")}
-										></div>
-										<div className="ub-indicator-grid-cell" />
-										{/* SECOND ROW */}
-										<div
-											className="ub-indicator-grid-cell ub-indicator-grid-top-border ub-indicator-grid-bottom-border"
-											style={{
-												borderLeft: `2px solid ${
-													currentBorder === "left" ? "blue" : "black"
-												}`,
-											}}
-											onClick={() => setCurrentBorder("left")}
-										/>
-										<div
-											className="ub-indicator-grid-cell"
-											style={{
-												border: `2px solid ${
-													currentBorder === "all" ? "blue" : "black"
-												}`,
-											}}
-											onClick={() => setCurrentBorder("all")}
-										/>
-										<div
-											className="ub-indicator-grid-cell ub-indicator-grid-top-border ub-indicator-grid-bottom-border"
-											style={{
-												borderRight: `2px solid ${
-													currentBorder === "right" ? "blue" : "black"
-												}`,
-											}}
-											onClick={() => setCurrentBorder("right")}
-										/>
-										{/* THIRD ROW */}
-										<div className="ub-indicator-grid-cell" />
-										<div
-											className="ub-indicator-grid-cell ub-indicator-grid-left-border ub-indicator-grid-right-border"
-											style={{
-												borderBottom: `2px solid ${
-													currentBorder === "bottom" ? "blue" : "black"
-												}`,
-											}}
-											onClick={() => setCurrentBorder("bottom")}
-										/>
-										<div className="ub-indicator-grid-cell" />
-									</div>
-									<RangeControl
-										label={__(
-											currentBorder === "all"
-												? "Border size (pixels)"
-												: "Border size of current side (pixels)"
-										)}
-										value={
-											currentBorder === "top"
-												? topBorderSize
-												: currentBorder === "left"
-												? leftBorderSize
-												: currentBorder === "right"
-												? rightBorderSize
-												: bottomBorderSize
-										}
-										onChange={(borderSize) => {
-											if (currentBorder === "all") {
-												setAttributes({
-													topBorderSize: borderSize,
-													leftBorderSize: borderSize,
-													rightBorderSize: borderSize,
-													bottomBorderSize: borderSize,
-												});
-											} else if (currentBorder === "top") {
-												setAttributes({ topBorderSize: borderSize });
-											} else if (currentBorder === "left") {
-												setAttributes({ leftBorderSize: borderSize });
-											} else if (currentBorder === "right") {
-												setAttributes({ rightBorderSize: borderSize });
-											} else if (currentBorder === "bottom") {
-												setAttributes({ bottomBorderSize: borderSize });
-											}
-										}}
-										min={
-											currentBorder === "all" ||
-											[
-												topBorderSize,
-												rightBorderSize,
-												bottomBorderSize,
-												leftBorderSize,
-											].filter((s) => s > 0).length > 1
-												? 0
-												: 1
-										}
-										max={30}
-									/>
-									<div className="ub-indicator-grid">
-										{/* FIRST ROW */}
-										<div
-											className="ub-indicator-grid-cell ub-indicator-grid-bottom-border ub-indicator-grid-right-border"
-											style={{
-												borderTop: `2px solid ${
-													currentCorner === "topleft" ? "blue" : "black"
-												}`,
-												borderLeft: `2px solid ${
-													currentCorner === "topleft" ? "blue" : "black"
-												}`,
-											}}
-											onClick={() => setCurrentCorner("topleft")}
-										/>
-										<div className="ub-indicator-grid-cell" />
-										<div
-											className="ub-indicator-grid-cell ub-indicator-grid-bottom-border ub-indicator-grid-left-border"
-											style={{
-												borderTop: `2px solid ${
-													currentCorner === "topright" ? "blue" : "black"
-												}`,
-												borderRight: `2px solid ${
-													currentCorner === "topright" ? "blue" : "black"
-												}`,
-											}}
-											onClick={() => setCurrentCorner("topright")}
-										></div>
-										{/* SECOND ROW */}
-										<div className="ub-indicator-grid-cell" />
-										<div
-											className="ub-indicator-grid-cell"
-											style={{
-												border: `2px solid ${
-													currentCorner === "all" ? "blue" : "black"
-												}`,
-											}}
-											onClick={() => setCurrentCorner("all")}
-										></div>
-										<div className="ub-indicator-grid-cell" />
-										{/* THIRD ROW */}
-										<div
-											className="ub-indicator-grid-cell ub-indicator-grid-top-border ub-indicator-grid-right-border"
-											style={{
-												borderBottom: `2px solid ${
-													currentCorner === "bottomleft" ? "blue" : "black"
-												}`,
-												borderLeft: `2px solid ${
-													currentCorner === "bottomleft" ? "blue" : "black"
-												}`,
-											}}
-											onClick={() => setCurrentCorner("bottomleft")}
-										/>
-										<div className="ub-indicator-grid-cell" />
-										<div
-											className="ub-indicator-grid-cell ub-indicator-grid-top-border ub-indicator-grid-left-border"
-											style={{
-												borderBottom: `2px solid ${
-													currentCorner === "bottomright" ? "blue" : "black"
-												}`,
-												borderRight: `2px solid ${
-													currentCorner === "bottomright" ? "blue" : "black"
-												}`,
-											}}
-											onClick={() => setCurrentCorner("bottomright")}
-										></div>
-									</div>
-									<RangeControl
-										label={__(
-											currentCorner === "all"
-												? "Border radius"
-												: "Border radius of current corner"
-										)}
-										value={
-											currentCorner === "topleft"
-												? topLeftRadius
-												: currentCorner === "topright"
-												? topRightRadius
-												: currentCorner === "bottomleft"
-												? bottomLeftRadius
-												: bottomRightRadius
-										}
-										onChange={(radius) => {
-											if (currentCorner === "all") {
-												setAttributes({
-													topLeftRadius: radius,
-													topRightRadius: radius,
-													bottomLeftRadius: radius,
-													bottomRightRadius: radius,
-												});
-											} else if (currentCorner === "topleft") {
-												setAttributes({ topLeftRadius: radius });
-											} else if (currentCorner === "topright") {
-												setAttributes({ topRightRadius: radius });
-											} else if (currentCorner === "bottomleft") {
-												setAttributes({ bottomLeftRadius: radius });
-											} else if (currentCorner === "bottomright") {
-												setAttributes({ bottomRightRadius: radius });
-											}
-										}}
-										min={0}
-										max={30}
-									/>
-									<SelectControl
-										label={__("Border Style")}
-										options={["solid", "dotted", "dashed"].map((o) => ({
-											value: o,
-											label: __(o),
-										}))}
-										value={
-											currentBorder === "top"
-												? topBorderStyle
-												: currentBorder === "left"
-												? leftBorderStyle
-												: currentBorder === "right"
-												? rightBorderStyle
-												: bottomBorderStyle
-										}
-										onChange={(borderStyle) => {
-											if (currentBorder === "all") {
-												setAttributes({
-													topBorderStyle: borderStyle,
-													leftBorderStyle: borderStyle,
-													rightBorderStyle: borderStyle,
-													bottomBorderStyle: borderStyle,
-												});
-											} else if (currentBorder === "top") {
-												setAttributes({ topBorderStyle: borderStyle });
-											} else if (currentBorder === "left") {
-												setAttributes({ leftBorderStyle: borderStyle });
-											} else if (currentBorder === "right") {
-												setAttributes({ rightBorderStyle: borderStyle });
-											} else if (currentBorder === "bottom") {
-												setAttributes({ bottomBorderStyle: borderStyle });
-											}
-										}}
-									/>
-									<p>
-										{__("Border Color")}
-										{currentColor && (
-											<span
-												class="component-color-indicator"
-												aria-label={`(Color: ${currentColor})`}
-												style={{ background: currentColor }}
-											/>
-										)}
-									</p>
-
-									<ColorPalette
-										value={currentColor}
-										onChange={(borderColor) => {
-											if (currentBorder === "all") {
-												setAttributes({
-													topBorderColor: borderColor,
-													leftBorderColor: borderColor,
-													rightBorderColor: borderColor,
-													bottomBorderColor: borderColor,
-												});
-											} else if (currentBorder === "top") {
-												setAttributes({ topBorderColor: borderColor });
-											} else if (currentBorder === "left") {
-												setAttributes({ leftBorderColor: borderColor });
-											} else if (currentBorder === "right") {
-												setAttributes({ rightBorderColor: borderColor });
-											} else if (currentBorder === "bottom") {
-												setAttributes({ bottomBorderColor: borderColor });
-											}
-										}}
-									/>
-								</>
-							)}
-						</PanelBody>
-						<PanelBody title={__("Shadow settings")}>
-							<PanelRow>
-								<p>{__("Include a shadow")}</p>
-								<ToggleControl
-									checked={useShadow}
-									onChange={() => {
-										setShadowStatus(!useShadow);
-										if (useShadow) {
-											setAttributes({
-												shadow: [
-													{
-														angle: 0,
-														radius: 0,
-														color: "#000000",
-														transparency: 0,
-														blur: 0,
-														spread: 0,
-													},
-												],
-											});
-										}
-									}}
-								/>
-							</PanelRow>
-							{useShadow && (
-								<>
-									<AnglePickerControl
-										label={__("Shadow angle")}
-										value={shadow[0].angle}
-										onChange={(angle) =>
-											setAttributes({
-												shadow: [Object.assign({}, shadow[0], { angle })],
-											})
-										}
-									/>
-									<RangeControl
-										label={__("Shadow radius (px)")}
-										value={shadow[0].radius}
-										onChange={(radius) =>
-											setAttributes({
-												shadow: [Object.assign({}, shadow[0], { radius })],
-											})
-										}
-										min={0}
-										max={100}
-									/>
-									<ColorPalette
-										value={shadow[0].color}
-										onChange={(color) =>
-											setAttributes({
-												shadow: [Object.assign({}, shadow[0], { color })],
-											})
-										}
-									/>
-
-									<RangeControl
-										label={__("Shadow transparency")}
-										value={shadow[0].transparency}
-										onChange={(transparency) =>
-											setAttributes({
-												shadow: [
-													Object.assign({}, shadow[0], { transparency }),
-												],
-											})
-										}
-										min={0}
-										max={100}
-									/>
-									<RangeControl
-										label={__("Shadow blur radius (px)")}
-										value={shadow[0].blur}
-										onChange={(blur) =>
-											setAttributes({
-												shadow: [Object.assign({}, shadow[0], { blur })],
-											})
-										}
-										min={0}
-										max={100}
-									/>
-									<RangeControl
-										label={__("Shadow spread radius (px)")}
-										value={shadow[0].spread}
-										onChange={(spread) =>
-											setAttributes({
-												shadow: [Object.assign({}, shadow[0], { spread })],
-											})
-										}
-										min={-50}
-										max={50}
-									/>
-								</>
-							)}
 						</PanelBody>
 					</>
 				)}
 			</InspectorControls>
-			{url === "" && (
-				<>
-					<div>{__("Select video source")}</div>
-
-					<div className="ub-advanced-video-input-choices">
-						<MediaUploadCheck>
-							<MediaUpload
-								onSelect={(media) => {
-									const newWidth = Math.min(600, media.width);
-									const newHeight = Math.round(
-										(media.height * newWidth) / media.width
-									);
-
-									const timeUnits = media.fileLength
-										.split(":")
-										.map((t) => parseInt(t))
-										.reverse();
-
-									const conversionFactor = [1, 60, 3600, 86400];
-
+			<InspectorControls group="styles">
+				<PanelBody title={__("Shadow")} initialOpen={false}>
+					<PanelRow>
+						<p>{__("Include a shadow")}</p>
+						<ToggleControl
+							checked={useShadow}
+							onChange={() => {
+								setShadowStatus(!useShadow);
+								if (useShadow) {
 									setAttributes({
-										videoId: media.id,
-										url: media.url,
-										width: newWidth,
-										height: newHeight,
-										videoLength: timeUnits.reduce(
-											(total, curr, i) => total + curr * conversionFactor[i],
-											0
-										),
-										videoEmbedCode: `<video ${
-											showPlayerControls ? "controls" : ""
-										} width="${newWidth}" height="${newHeight}"><source src="${
-											media.url
-										}"></video>`,
-										videoSource: "local",
+										shadow: [
+											{
+												angle: 0,
+												radius: 0,
+												color: "#000000",
+												transparency: 0,
+												blur: 0,
+												spread: 0,
+											},
+										],
 									});
-								}}
-								allowedTypes={["video"]}
-								value={videoId}
-								render={({ open }) => (
-									<Button isPrimary icon="video-alt2" onClick={open}>
-										{__("Upload local video")}
-									</Button>
-								)}
+								}
+							}}
+						/>
+					</PanelRow>
+					{useShadow && (
+						<>
+							<AnglePickerControl
+								label={__("Shadow angle")}
+								value={shadow[0].angle}
+								onChange={(angle) =>
+									setAttributes({
+										shadow: [Object.assign({}, shadow[0], { angle })],
+									})
+								}
 							/>
-						</MediaUploadCheck>
+							<RangeControl
+								label={__("Shadow radius (px)")}
+								value={shadow[0].radius}
+								onChange={(radius) =>
+									setAttributes({
+										shadow: [Object.assign({}, shadow[0], { radius })],
+									})
+								}
+								min={0}
+								max={100}
+							/>
+							<ColorPalette
+								value={shadow[0].color}
+								onChange={(color) =>
+									setAttributes({
+										shadow: [Object.assign({}, shadow[0], { color })],
+									})
+								}
+							/>
 
-						<Button
-							isPrimary
-							icon="embed-video"
-							onClick={() => setVideoURLStatus(!enterVideoURL)}
-						>
-							{__("Insert video URL")}
-						</Button>
-					</div>
-					{enterVideoURL && (
-						<div className="ub-advanced-video-url-input">
-							<input
-								type="url"
-								placeholder={__("Insert video URL")}
-								value={videoURLInput}
-								onChange={(e) => setVideoURLInput(e.target.value)}
-								onKeyDown={(e) => {
-									if (e.key === "Enter") {
-										checkVideoURLInput();
-									}
-								}}
+							<RangeControl
+								label={__("Shadow transparency")}
+								value={shadow[0].transparency}
+								onChange={(transparency) =>
+									setAttributes({
+										shadow: [Object.assign({}, shadow[0], { transparency })],
+									})
+								}
+								min={0}
+								max={100}
 							/>
-							<Button
-								icon={"editor-break"}
-								label={__("Apply", "ultimate-blocks")}
-								onClick={checkVideoURLInput}
+							<RangeControl
+								label={__("Shadow blur radius (px)")}
+								value={shadow[0].blur}
+								onChange={(blur) =>
+									setAttributes({
+										shadow: [Object.assign({}, shadow[0], { blur })],
+									})
+								}
+								min={0}
+								max={100}
 							/>
-						</div>
+							<RangeControl
+								label={__("Shadow spread radius (px)")}
+								value={shadow[0].spread}
+								onChange={(spread) =>
+									setAttributes({
+										shadow: [Object.assign({}, shadow[0], { spread })],
+									})
+								}
+								min={-50}
+								max={50}
+							/>
+						</>
 					)}
+				</PanelBody>
+				<PanelBody
+					title={__("Dimension Settings", "ultimate-blocks")}
+					initialOpen={false}
+				>
+					<SpacingControl
+						showByDefault
+						attrKey="padding"
+						label={__("Padding", "ultimate-blocks")}
+					/>
+					<SpacingControl
+						minimumCustomValue={-Infinity}
+						showByDefault
+						attrKey="margin"
+						label={__("Margin", "ultimate-blocks")}
+					/>
+				</PanelBody>
+			</InspectorControls>
+			<InspectorControls group="border">
+				<BorderControl
+					showDefaultBorder
+					showDefaultBorderRadius
+					attrBorderRadiusKey="borderRadius"
+					attrBorderKey="border"
+					borderLabel={__("Border", "ultimate-blocks")}
+					borderRadiusLabel={__("Border Radius", "ultimate-blocks")}
+				/>
+			</InspectorControls>
+			{url !== "" && (
+				<>
+					<AdvancedVideoBlockControls
+						{...advancedVideoBlockControlPropsProps}
+					/>
+					<GenericStyleControl
+						attributes={props.attributes}
+						setAttributes={props.setAttributes}
+						clipboard={styleClipboard}
+						blockName="Advanced Video"
+					/>
 				</>
 			)}
-			<div
-				id={`ub-advanced-video-${blockID}`}
-				className={`ub-advanced-video-container${
-					autofit
-						? ` ub-advanced-video-autofit${
-								["youtube", "dailymotion", "vimeo"].includes(videoSource)
-									? `-${videoSource}`
-									: ""
-						  }`
-						: ""
-				}`}
-				dangerouslySetInnerHTML={{
-					__html:
-						videoEmbedCode ||
-						"<p>If a valid video source is entered, the video should appear here</p>",
-				}}
-				style={Object.assign(
-					autofit ? autofitContainerStyle : { width: `${width}px` },
-					[
-						topBorderSize,
-						leftBorderSize,
-						rightBorderSize,
-						bottomBorderSize,
-					].filter((s) => s > 0).length > 0
-						? {
-								borderTop: `${topBorderSize}px ${topBorderStyle} ${topBorderColor}`,
-								borderLeft: `${leftBorderSize}px ${leftBorderStyle} ${leftBorderColor}`,
-								borderRight: `${rightBorderSize}px ${rightBorderStyle} ${rightBorderColor}`,
-								borderBottom: `${bottomBorderSize}px ${bottomBorderStyle} ${bottomBorderColor}`,
-								borderTopLeftRadius: `${topLeftRadius}px`,
-								borderTopRightRadius: `${topRightRadius}px`,
-								borderBottomLeftRadius: `${bottomLeftRadius}px`,
-								borderBottomRightRadius: `${bottomRightRadius}px`,
-						  }
-						: {},
-					shadow[0].radius > 0
-						? {
-								boxShadow: `${
-									shadow[0].radius *
-									Math.cos(((450 - shadow[0].angle) % 360) * (Math.PI / 180))
-								}px ${
-									-shadow[0].radius *
-									Math.sin(((450 - shadow[0].angle) % 360) * (Math.PI / 180))
-								}px ${shadow[0].blur}px ${shadow[0].spread}px rgba(${parseInt(
-									"0x" + shadow[0].color.substring(1, 3)
-								)}, ${parseInt(
-									"0x" + shadow[0].color.substring(3, 5)
-								)}, ${parseInt("0x" + shadow[0].color.substring(5, 7))}, ${
-									(100 - shadow[0].transparency) / 100
-								})`,
-						  }
-						: {}
+			<div {...blockProps}>
+				{url === "" && (
+					<AdvancedVideoPlaceholder {...advancedVideoPlaceholderProps} />
 				)}
-			/>
-			{autofit && extraEmbeds}
-			{url !== "" && (
-				<div>
-					<p>{`${__("Video URL: ")}${url}`}</p>
-					<button
-						onClick={() => {
-							setAttributes({
-								url: "",
-								videoEmbedCode: "",
-								videoId: -1,
-								videoSource: "",
-								preserveAspectRatio: true,
-								autofit: false,
-								autoplay: false,
-								showPlayerControls: true,
-								startTime: 0,
-								mute: false,
-								loop: false,
-								thumbnail: "",
-								thumbnailId: -1,
-
-								topBorderSize: 0,
-								leftBorderSize: 0,
-								rightBorderSize: 0,
-								bottomBorderSize: 0,
-
-								topBorderStyle: "",
-								leftBorderStyle: "",
-								rightBorderStyle: "",
-								bottomBorderStyle: "",
-
-								topBorderColor: "",
-								leftBorderColor: "",
-								rightBorderColor: "",
-								bottomBorderColor: "",
-
-								topLeftRadius: 0,
-								topRightRadius: 0,
-								bottomLeftRadius: 0,
-								bottomRightRadius: 0,
-
-								shadow: [Object.assign({}, shadow[0], { radius: 0 })],
-							});
-							setVideoURLInput("");
-							setStartTimeStatus(false);
-							setStartTime_d(0);
-							setStartTime_h(0);
-							setStartTime_m(0);
-							setStartTime_s(0);
-							setShadowStatus(false);
-							setCustomThumbnailStatus(false);
-							setImageURLInputStatus(false);
-							setImageURLInput("");
-						}}
+				{isIframeEmbed ? (
+					<div
+						id={`ub-advanced-video-${blockID}`}
+						className={embedContainerClassName}
+						style={embedContainerStyle}
 					>
-						{__("Replace")}
-					</button>
-				</div>
-			)}
+						<SandBox
+							allowSameOrigin
+							html={videoEmbedCode}
+							title={__("Video preview", "ultimate-blocks")}
+							type="video wp-has-aspect-ratio"
+						/>
+					</div>
+				) : (
+					<div
+						id={`ub-advanced-video-${blockID}`}
+						className={embedContainerClassName}
+						style={embedContainerStyle}
+						dangerouslySetInnerHTML={{
+							__html: videoEmbedCode,
+						}}
+					/>
+				)}
+				{autofit && extraEmbeds}
+				{!props.isSelected && (
+					<div className="ub-advanced-video__interactive-overlay" />
+				)}
+			</div>
 		</>
 	);
 }

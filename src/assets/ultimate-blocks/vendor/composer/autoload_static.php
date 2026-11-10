@@ -4,12 +4,17 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitcd31b4be92019016acc8795d7b95d7c7
+class ComposerStaticInit4b7b070f8154dbc6753933c96b230c13
 {
     public static $prefixLengthsPsr4 = array (
         'U' => 
         array (
             'Ultimate_Blocks\\' => 16,
+        ),
+        'D' => 
+        array (
+            'DotCamp\\Promoter\\Tests\\' => 23,
+            'DotCamp\\Promoter\\' => 17,
         ),
     );
 
@@ -17,6 +22,15 @@ class ComposerStaticInitcd31b4be92019016acc8795d7b95d7c7
         'Ultimate_Blocks\\' => 
         array (
             0 => __DIR__ . '/../..' . '/',
+        ),
+        'DotCamp\\Promoter\\Tests\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dotcamp/promoter/__tests__',
+        ),
+        'DotCamp\\Promoter\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/dotcamp/promoter/inc',
+            1 => __DIR__ . '/..' . '/dotcamp/promoter/__tests__/php/unit/inc',
         ),
     );
 
@@ -27,9 +41,9 @@ class ComposerStaticInitcd31b4be92019016acc8795d7b95d7c7
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitcd31b4be92019016acc8795d7b95d7c7::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitcd31b4be92019016acc8795d7b95d7c7::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitcd31b4be92019016acc8795d7b95d7c7::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit4b7b070f8154dbc6753933c96b230c13::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit4b7b070f8154dbc6753933c96b230c13::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit4b7b070f8154dbc6753933c96b230c13::$classMap;
 
         }, null, ClassLoader::class);
     }

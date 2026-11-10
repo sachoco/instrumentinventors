@@ -1,18 +1,29 @@
 // Import icon.
 import icons from "./icons";
 
-const { __ } = wp.i18n; // Import __() from wp.i18n
-const { registerBlockType } = wp.blocks;
-
-import attributes from "./attributes";
+import { __ } from "@wordpress/i18n"; // Import __() from wp.i18n
+import { registerBlockType } from "@wordpress/blocks";
+import metadata from "./block.json";
 import PostGridBlock from "./editor";
 import Inspector from "./inspector";
 
-const { withSelect } = wp.data;
-const { BlockControls, BlockAlignmentToolbar } = wp.blockEditor || wp.editor;
-const { Placeholder, Spinner, ToolbarGroup, QueryControls } = wp.components;
-const { addQueryArgs } = wp.url;
-const { apiFetch } = wp;
+import { useSelect } from "@wordpress/data";
+import {
+	BlockControls,
+	BlockAlignmentControl,
+	useBlockProps,
+} from "@wordpress/block-editor";
+import {
+	Placeholder,
+	Spinner,
+	ToolbarGroup,
+	QueryControls,
+} from "@wordpress/components";
+import { addQueryArgs } from "@wordpress/url";
+import { apiFetch } from "@wordpress/api-fetch";
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
 const canSelectMultipleCategories =
 	QueryControls.toString().includes("selectedCategories");
 
@@ -20,20 +31,10 @@ const canSelectMultipleCategories =
 const filterObjectAttributes = (obj, condition) =>
 	Object.fromEntries(Object.entries(obj).filter(condition));
 
-export default registerBlockType("ub/post-grid", {
-	title: __("Post Grid", "ultimate-blocks"),
-	description: __(
-		"Add a grid or list of customizable posts.",
-		"ultimate-blocks"
-	),
+export default registerBlockType(metadata.name, {
+	...metadata,
+	attributes: metadata.attributes,
 	icon: icons,
-	category: "ultimateblocks",
-	keywords: [
-		__("post grid", "ultimate-blocks"),
-		__("posts", "ultimate-blocks"),
-		__("Ultimate Blocks", "ultimate-blocks"),
-	],
-	attributes,
 	/**
 	 * The edit function describes the structure of your block in the context of the editor.
 	 * This represents what the editor will render when the block is used.
@@ -48,30 +49,44 @@ export default registerBlockType("ub/post-grid", {
 			return { "data-align": wrapAlignment };
 		}
 	},
-
-	edit: withSelect((select, props) => {
+	example: {
+		attributes: {
+			postImageWidth: 85,
+			amountPosts: 2,
+		},
+	},
+	edit: (props) => {
 		const {
+			attributes,
+			setAttributes,
+			postType,
+			manualPosts,
+			useManualSelection,
+		} = props;
+		const {
+			postLayout,
+			wrapAlignment,
+			categories,
 			order,
 			categoryArray,
-			categories,
+			excludedCategories,
 			orderBy,
 			amountPosts,
 			offset,
 			tagArray,
 			authorArray,
-		} = props.attributes;
+		} = attributes;
+		const { posts } = useSelect((select) => {
+			const { getEntityRecords } = select("core");
+			const { getCurrentPostId } = select("core/editor");
 
-		const { getEntityRecords } = select("core");
-		const { getCurrentPostId } =
-			select("core/block--editor") || select("core/editor"); //double dashes are needed
-
-		const getPosts = filterObjectAttributes(
-			{
+			const queryArgs = {
 				categories: canSelectMultipleCategories
 					? categoryArray && categoryArray.length > 0
 						? categoryArray.map((cat) => cat.id)
 						: []
 					: categories,
+				categories_exclude: excludedCategories.map((cat) => cat.id),
 				order,
 				orderby: orderBy,
 				per_page: amountPosts,
@@ -79,17 +94,28 @@ export default registerBlockType("ub/post-grid", {
 				exclude: [getCurrentPostId()],
 				tags: tagArray,
 				author: authorArray,
-			},
-			(value) => typeof value !== "undefined"
-		);
-
-		return {
-			posts: getEntityRecords("postType", "post", getPosts),
-		};
-	})((props) => {
-		const { attributes, setAttributes, posts } = props;
-		const { postLayout, wrapAlignment, categories } = attributes;
-
+			};
+			if (
+				useManualSelection &&
+				Array.isArray(manualPosts) &&
+				manualPosts.length > 0
+			) {
+				queryArgs.include = manualPosts;
+				queryArgs.orderby = "include";
+			}
+			const getPosts = filterObjectAttributes(
+				queryArgs,
+				(value) => typeof value !== "undefined",
+			);
+			return {
+				posts: getEntityRecords(
+					"postType",
+					postType ? postType : "post",
+					getPosts,
+				),
+			};
+		});
+		const blockProps = useBlockProps();
 		const emptyPosts = Array.isArray(posts) && posts.length;
 
 		if (categories !== "" && canSelectMultipleCategories) {
@@ -101,7 +127,7 @@ export default registerBlockType("ub/post-grid", {
 				.then((categoriesList) => {
 					setAttributes({
 						categoryArray: categoriesList.filter(
-							(c) => c.id === Number(categories)
+							(c) => c.id === Number(categories),
 						),
 						categories: "",
 					});
@@ -147,20 +173,70 @@ export default registerBlockType("ub/post-grid", {
 			},
 		];
 
+		const styleClipboard = createStyleClipboard("ub_post_grid_copied_style", [
+			"postLayout",
+			"columns",
+			"wrapAlignment",
+			"postImageWidth",
+			"postImageHeight",
+			"preservePostImageAspectRatio",
+			"isEqualHeight",
+			"excerptLength",
+			"postTitleFontSize",
+			"postMetaFontSize",
+			"excerptFontSize",
+			"linkFontSize",
+			"postTitleColorHover",
+			"authorColorHover",
+			"dateColorHover",
+			"excerptColorHover",
+			"linkColorHover",
+			"linkBackgroundColorHover",
+			"linkBackgroundGradientHover",
+			"postBackgroundColorHover",
+			"postBackgroundGradientHover",
+			"postTitleColor",
+			"authorColor",
+			"dateColor",
+			"excerptColor",
+			"linkColor",
+			"linkBackgroundColor",
+			"linkBackgroundGradient",
+			"postBackgroundColor",
+			"postBackgroundGradient",
+			"imageBorderRadius",
+			"postBorderRadius",
+			"linkBorderRadius",
+			"linkPadding",
+			"contentPadding",
+			"postPadding",
+			"margin",
+		]);
+
+		const postGridProps = {
+			...props,
+			posts,
+		};
 		return (
-			<>
-				<Inspector {...props} />
-				<BlockControls>
-					<BlockAlignmentToolbar
+			<div {...blockProps}>
+				<Inspector {...postGridProps} />
+				<BlockControls group="block">
+					<GenericStyleControl
+						attributes={attributes}
+						setAttributes={setAttributes}
+						clipboard={styleClipboard}
+						blockName="Post Grid"
+					/>
+					<BlockAlignmentControl
 						value={wrapAlignment}
 						controls={["center", "wide", "full"]}
 						onChange={(value) => setAttributes({ wrapAlignment: value })}
 					/>
 					<ToolbarGroup controls={toolBarButton} />
 				</BlockControls>
-				<PostGridBlock {...props} />
-			</>
+				<PostGridBlock {...postGridProps} />
+			</div>
 		);
-	}),
+	},
 	save: () => null,
 });

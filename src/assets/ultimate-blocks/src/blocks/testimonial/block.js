@@ -5,72 +5,19 @@ import {
 	oldAttributes,
 	updateFrom,
 } from "./oldVersions";
-
+import metadata from "./block.json";
 import { blockControls, inspectorControls, editorDisplay } from "./components";
 import { mergeRichTextArray, upgradeButtonLabel } from "../../common";
 import { useEffect, useState } from "react";
 
-const { __ } = wp.i18n; // Import __() from wp.i18n
-const { registerBlockType, createBlock } = wp.blocks;
+import { __ } from "@wordpress/i18n";
+import { registerBlockType, createBlock } from "@wordpress/blocks";
 
-const { compose } = wp.compose;
+import { compose } from "@wordpress/compose";
 
-const { withDispatch, withSelect } = wp.data;
-
-const attributes = {
-	blockID: {
-		type: "string",
-		default: "",
-	},
-	ub_testimonial_text: {
-		type: "string",
-		default: "",
-	},
-	textAlign: {
-		type: "string",
-		default: "justify",
-	},
-	ub_testimonial_author: {
-		type: "string",
-		default: "",
-	},
-	authorAlign: {
-		type: "string",
-		default: "right",
-	},
-	ub_testimonial_author_role: {
-		type: "string",
-		default: "",
-	},
-	authorRoleAlign: {
-		type: "string",
-		default: "right",
-	},
-	imgURL: {
-		type: "string",
-		default: "",
-	},
-	imgID: {
-		type: "number",
-	},
-	imgAlt: {
-		type: "string",
-		default: "",
-	},
-	backgroundColor: {
-		type: "string",
-		default: "#f4f6f6",
-	},
-	textColor: {
-		type: "string",
-		default: "",
-	},
-	textSize: {
-		type: "number",
-		default: 17,
-	},
-};
-
+import { withDispatch, withSelect, useSelect } from "@wordpress/data";
+import { useBlockProps } from "@wordpress/block-editor";
+import { getParentBlock } from "../../common";
 /**
  * Register: aa Gutenberg Block.
  *
@@ -105,7 +52,7 @@ registerBlockType("ub/testimonial-block", {
 	edit: compose([
 		withSelect((select, ownProps) => ({
 			block: (select("core/block-editor") || select("core/editor")).getBlock(
-				ownProps.clientId
+				ownProps.clientId,
 			),
 		})),
 		withDispatch((dispatch) => ({
@@ -152,15 +99,15 @@ registerBlockType("ub/testimonial-block", {
 									"ub/testimonial",
 									Object.assign(otherAttributes, {
 										ub_testimonial_author: mergeRichTextArray(
-											ub_testimonial_author
+											ub_testimonial_author,
 										),
 										ub_testimonial_author_role: mergeRichTextArray(
-											ub_testimonial_author_role
+											ub_testimonial_author_role,
 										),
 										ub_testimonial_text:
 											mergeRichTextArray(ub_testimonial_text),
-									})
-								)
+									}),
+								),
 							);
 						}}
 					>
@@ -243,13 +190,11 @@ registerBlockType("ub/testimonial-block", {
 	deprecated: [updateFrom(version_1_1_2), updateFrom(version_1_1_5)],
 });
 
-registerBlockType("ub/testimonial", {
-	title: __("Testimonial"),
+registerBlockType(metadata.name, {
+	...metadata,
 	icon: icons.testimonial,
-	category: "ultimateblocks",
-	keywords: [__("testimonial"), __("quotes"), __("Ultimate Blocks")],
-	attributes,
-
+	attributes: metadata.attributes,
+	example: {},
 	/**
 	 * The edit function describes the structure of your block in the context of the editor.
 	 * This represents what the editor will render when the block is used.
@@ -258,42 +203,38 @@ registerBlockType("ub/testimonial", {
 	 *
 	 * @link https://wordpress.org/gutenberg/handbook/block-api/block-edit-save/
 	 */
-	edit: compose([
-		withSelect((select, ownProps) => {
-			const { getBlock, getClientIdsWithDescendants } =
-				select("core/block-editor") || select("core/editor");
-
-			return {
-				block: getBlock(ownProps.clientId),
-				getBlock,
-				getClientIdsWithDescendants,
-			};
-		}),
-	])(function (props) {
+	edit: function (props) {
 		const {
 			attributes: { blockID },
 			isSelected,
 			className,
-			block,
-			getBlock,
-			getClientIdsWithDescendants,
+			clientId,
 		} = props;
-
+		const blockProps = useBlockProps();
 		const [editable, setEditable] = useState("");
 		const [activeAlignment, setActiveAlignment] = useState(false);
+		const { block, rootBlockClientId } = useSelect((select) => {
+			const { getBlock, getBlockRootClientId } =
+				select("core/block-editor") || select("core/editor");
+			const block = getBlock(clientId);
+			const rootBlockClientId = getBlockRootClientId(block.clientId);
 
+			return {
+				block,
+				rootBlockClientId,
+			};
+		});
 		useEffect(() => {
-			if (
-				blockID === "" ||
-				getClientIdsWithDescendants().some(
-					(ID) =>
-						"blockID" in getBlock(ID).attributes &&
-						getBlock(ID).attributes.blockID === blockID
-				)
-			) {
+			if (blockID === "") {
 				props.setAttributes({ blockID: block.clientId });
 			}
 		}, []);
+		useEffect(() => {
+			const rootBlock = getParentBlock(rootBlockClientId, "core/block");
+			if (!rootBlock) {
+				props.setAttributes({ blockID: block.clientId });
+			}
+		}, [block?.clientId]);
 
 		function setState(state) {
 			if (state.hasOwnProperty("editable")) {
@@ -305,7 +246,7 @@ registerBlockType("ub/testimonial", {
 		}
 
 		return (
-			<>
+			<div {...blockProps}>
 				{isSelected &&
 					blockControls({
 						...props,
@@ -324,8 +265,8 @@ registerBlockType("ub/testimonial", {
 						setState,
 					})}
 				</div>
-			</>
+			</div>
 		);
-	}),
+	},
 	save: () => null,
 });

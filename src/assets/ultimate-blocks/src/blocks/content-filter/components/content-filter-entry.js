@@ -1,11 +1,21 @@
 import icon from "../icon";
+import { closeSmall, Icon } from "@wordpress/icons";
 
 import { useEffect, useState, useRef } from "react";
-
-const { __ } = wp.i18n;
-const { registerBlockType } = wp.blocks;
-
-const { InnerBlocks } = wp.blockEditor || wp.editor;
+import { SpacingControl } from "../../components";
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
+import metadata from "./block.json";
+import { __ } from "@wordpress/i18n";
+import {
+	InnerBlocks,
+	useBlockProps,
+	InspectorControls,
+	BlockControls,
+} from "@wordpress/block-editor";
+import { registerBlockType } from "@wordpress/blocks";
+import { PanelBody } from "@wordpress/components";
 
 function NewDropdown(props) {
 	const wrapperRef = useRef(null);
@@ -91,13 +101,13 @@ function NewDropdown(props) {
 													? [
 															...selectedFilters[item.category].slice(
 																0,
-																item.index
+																item.index,
 															),
 															!selectedFilters[item.category][item.index],
 															...selectedFilters[item.category].slice(
-																item.index + 1
+																item.index + 1,
 															),
-													  ]
+														]
 													: item.index,
 												...selectedFilters.slice(item.category + 1),
 											],
@@ -131,7 +141,7 @@ function OldContentFilterEntry(props) {
 				newSelectedFilters.push(
 					category.canUseMultiple
 						? Array(category.filters.length).fill(false)
-						: -1
+						: -1,
 				);
 			});
 
@@ -150,7 +160,7 @@ function OldContentFilterEntry(props) {
 							name: availableFilters[i].filters[a.index],
 							categoryIndex: i,
 							tagIndex: a.index,
-						})
+						}),
 					);
 			} else
 				tempTagList.push(
@@ -159,8 +169,8 @@ function OldContentFilterEntry(props) {
 								name: availableFilters[i].filters[selection],
 								categoryIndex: i,
 								tagIndex: selection,
-						  }
-						: null
+							}
+						: null,
 				);
 		});
 
@@ -187,7 +197,7 @@ function OldContentFilterEntry(props) {
 														...selectedFilters[i].slice(0, j),
 														false,
 														...selectedFilters[i].slice(j + 1),
-												  ]
+													]
 												: -1,
 											...selectedFilters.slice(i + 1),
 										];
@@ -196,8 +206,10 @@ function OldContentFilterEntry(props) {
 											selectedFilters: newSelectedFilters,
 										});
 									}}
-									class="dashicons dashicons-dismiss"
-								/>
+									className="ub-filter-dismiss-icon"
+								>
+									<Icon icon={closeSmall} size={20} />
+								</span>
 							</div>
 							{tag.name}
 						</div>
@@ -214,6 +226,11 @@ function ContentFilterEntry(props) {
 	const { availableFilters, selectedFilters, buttonColor, buttonTextColor } =
 		attributes;
 
+	const styleClipboard = createStyleClipboard(
+		"ub_content_filter_entry_copied_style",
+		["buttonColor", "buttonTextColor", "padding", "margin"],
+	);
+
 	const [tagList, setTagList] = useState([]);
 
 	useEffect(() => {
@@ -223,7 +240,7 @@ function ContentFilterEntry(props) {
 				newSelectedFilters.push(
 					category.canUseMultiple
 						? Array(category.filters.length).fill(false)
-						: -1
+						: -1,
 				);
 			});
 
@@ -242,7 +259,7 @@ function ContentFilterEntry(props) {
 							name: availableFilters[i].filters[a.index],
 							categoryIndex: i,
 							tagIndex: a.index,
-						})
+						}),
 					);
 			} else
 				tempTagList.push(
@@ -251,8 +268,8 @@ function ContentFilterEntry(props) {
 								name: availableFilters[i].filters[selection],
 								categoryIndex: i,
 								tagIndex: selection,
-						  }
-						: null
+							}
+						: null,
 				);
 		});
 
@@ -260,43 +277,77 @@ function ContentFilterEntry(props) {
 	}, [availableFilters, selectedFilters]);
 
 	return (
-		<div className="ub-content-filter-panel">
-			<InnerBlocks templateLock={false} />
-			<div className="ub-content-assigned-filter-tag-area">
-				{tagList
-					.filter((tag) => tag != null && tag.hasOwnProperty("name"))
-					.map((tag) => (
-						<div className="ub-content-assigned-filter-tag">
-							<div className="ub-content-filter-tag-deselect">
-								<span
-									title={__("Deselect This Filter")}
-									onClick={() => {
-										const { categoryIndex: i, tagIndex: j } = tag;
-										let newSelectedFilters = [
-											...selectedFilters.slice(0, i),
-											Array.isArray(selectedFilters[i])
-												? [
-														...selectedFilters[i].slice(0, j),
-														false,
-														...selectedFilters[i].slice(j + 1),
-												  ]
-												: -1,
-											...selectedFilters.slice(i + 1),
-										];
+		<>
+			<BlockControls>
+				<GenericStyleControl
+					attributes={attributes}
+					setAttributes={setAttributes}
+					clipboard={styleClipboard}
+					blockName="Content Filter Entry"
+				/>
+			</BlockControls>
+			<InspectorControls group="styles">
+				<PanelBody
+					title={__("Dimension Settings", "ultimate-blocks")}
+					initialOpen={false}
+				>
+					<SpacingControl
+						showByDefault
+						attrKey="padding"
+						label={__("Padding", "ultimate-blocks")}
+					/>
+					<SpacingControl
+						minimumCustomValue={-Infinity}
+						showByDefault
+						attrKey="margin"
+						label={__("Margin", "ultimate-blocks")}
+					/>
+				</PanelBody>
+			</InspectorControls>
+			<div
+				{...useBlockProps({
+					className: "ub-content-filter-panel",
+				})}
+			>
+				<InnerBlocks templateLock={false} />
+				<div className="ub-content-assigned-filter-tag-area">
+					{tagList
+						.filter((tag) => tag != null && tag.hasOwnProperty("name"))
+						.map((tag) => (
+							<div className="ub-content-assigned-filter-tag">
+								<div className="ub-content-filter-tag-deselect">
+									<span
+										title={__("Deselect This Filter")}
+										onClick={() => {
+											const { categoryIndex: i, tagIndex: j } = tag;
+											let newSelectedFilters = [
+												...selectedFilters.slice(0, i),
+												Array.isArray(selectedFilters[i])
+													? [
+															...selectedFilters[i].slice(0, j),
+															false,
+															...selectedFilters[i].slice(j + 1),
+														]
+													: -1,
+												...selectedFilters.slice(i + 1),
+											];
 
-										setAttributes({
-											selectedFilters: newSelectedFilters,
-										});
-									}}
-									class="dashicons dashicons-dismiss"
-								/>
+											setAttributes({
+												selectedFilters: newSelectedFilters,
+											});
+										}}
+										className="ub-filter-dismiss-icon"
+									>
+										<Icon icon={closeSmall} size={20} />
+									</span>
+								</div>
+								{tag.name}
 							</div>
-							{tag.name}
-						</div>
-					))}
-				<NewDropdown attributes={attributes} setAttributes={setAttributes} />
+						))}
+					<NewDropdown attributes={attributes} setAttributes={setAttributes} />
+				</div>
 			</div>
-		</div>
+		</>
 	);
 }
 
@@ -345,7 +396,7 @@ registerBlockType("ub/content-filter-entry", {
 							name: availableFilters[i].filters[a.index],
 							categoryIndex: i,
 							tagIndex: a.index,
-						})
+						}),
 					);
 			} else if (selection > -1) {
 				tagList.push({
@@ -376,38 +427,10 @@ registerBlockType("ub/content-filter-entry", {
 	},
 });
 
-registerBlockType("ub/content-filter-entry-block", {
-	title: __("Content Filter Entry"),
-	parent: __("ub/content-filter-block"),
+registerBlockType(metadata.name, {
+	...metadata,
+	attributes: metadata.attributes,
 	icon: icon,
-	category: "ultimateblocks",
-	attributes: {
-		availableFilters: {
-			type: "array",
-			default: [], //get list of filters from parent block
-		},
-		selectedFilters: {
-			type: "array",
-			default: [],
-		},
-		buttonColor: {
-			type: "string",
-			default: "#aaaaaa",
-		},
-		buttonTextColor: {
-			type: "string",
-			default: "#000000",
-		},
-		initiallyShow: {
-			type: "boolean",
-			default: true,
-		},
-	},
-	supports: {
-		inserter: false,
-		reusable: false,
-	},
-
 	edit: ContentFilterEntry,
 	save: () => <InnerBlocks.Content />,
 });

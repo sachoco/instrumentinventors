@@ -5,7 +5,7 @@
  * Description: Custom Blocks for Bloggers and Marketers. Create Better Content With Gutenberg.
  * Author: Ultimate Blocks
  * Author URI: https://ultimateblocks.com/
- * Version: 2.5.6
+ * Version: 3.6.2
  * License: GPL3+
  * License URI: http://www.gnu.org/licenses/gpl-3.0.txt
  * Text Domain: ultimate-blocks
@@ -15,6 +15,8 @@
  */
 
 // Exit if accessed directly.
+use Ultimate_Blocks\includes\pro_manager\Pro_Manager;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -43,7 +45,12 @@ define( 'ULTIMATE_BLOCKS_URL', Ultimate_Blocks_Constants::plugin_url() );
  */
 define( 'ULTIMATE_BLOCKS_TEXT_DOMAIN', Ultimate_Blocks_Constants::text_domain() );
 
-require_once trailingslashit(ULTIMATE_BLOCKS_PATH) . 'vendor/autoload.php';
+/**
+ * Plugin __FILE__
+ */
+define( 'ULTIMATE_BLOCKS_PLUGIN_FILE', __FILE__ );
+
+require_once trailingslashit( ULTIMATE_BLOCKS_PATH ) . 'vendor/autoload.php';
 
 /**
  * Block Initializer.
@@ -72,33 +79,6 @@ function deactivate_ultimate_blocks() {
 register_activation_hook( __FILE__, 'activate_ultimate_blocks' );
 register_deactivation_hook( __FILE__, 'deactivate_ultimate_blocks' );
 
-if ( ! function_exists( 'ub_safe_welcome_redirect' ) ) {
-
-	add_action( 'admin_init', 'ub_safe_welcome_redirect' );
-
-	function ub_safe_welcome_redirect() {
-
-		if ( ! get_transient( '_welcome_redirect_ub' ) ) {
-			return;
-		}
-
-		delete_transient( '_welcome_redirect_ub' );
-
-		if ( is_network_admin() || isset( $_GET['activate-multi'] ) ) {
-			return;
-		}
-
-		wp_safe_redirect( add_query_arg(
-			array(
-				'page' => 'ultimate-blocks-help'
-				),
-			admin_url( 'admin.php' )
-		) );
-
-	}
-
-}
-
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
@@ -118,6 +98,9 @@ function run_ultimate_blocks() {
 
 	$plugin = new Ultimate_Blocks();
 	$plugin->run();
-
 }
-run_ultimate_blocks();
+
+// initialize license provider.
+Pro_Manager::init_freemius();
+
+add_action( 'plugins_loaded', 'run_ultimate_blocks', 10, 1 );

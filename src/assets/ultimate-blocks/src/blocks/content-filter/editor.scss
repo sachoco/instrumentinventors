@@ -29,9 +29,16 @@
 	display: flex;
 	opacity: 0;
 	transition: 0.5s opacity ease-in-out;
-	> span {
+	> span.ub-filter-dismiss-icon {
 		position: absolute;
 		right: -14px;
+		cursor: pointer;
+		> svg {
+			background: black;
+			border-radius: 100px;
+			color: white;
+			fill: white;
+		}
 	}
 }
 
@@ -45,10 +52,16 @@
 	opacity: 0;
 	transition: 0.5s opacity ease-in-out;
 	z-index: 6;
-	> span {
+	> span.ub-filter-dismiss-icon {
 		position: absolute;
 		right: -10px;
-		color: #000000;
+		cursor: pointer;
+		> svg {
+			background: black;
+			border-radius: 100px;
+			color: white;
+			fill: white;
+		}
 	}
 }
 

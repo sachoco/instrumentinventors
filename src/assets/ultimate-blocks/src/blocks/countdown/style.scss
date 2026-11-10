@@ -14,8 +14,11 @@
 .ub_countdown_circle_path {
 	stroke-linecap: round;
 	stroke-dashoffset: 0px;
-	transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray 0.3s ease 0s,
-		stroke 0.3s ease 0s, stroke-width 0.06s ease 0.3s;
+	transition:
+		stroke-dashoffset 0.3s ease 0s,
+		stroke-dasharray 0.3s ease 0s,
+		stroke 0.3s ease 0s,
+		stroke-width 0.06s ease 0.3s;
 	fill-opacity: 0;
 }
 
@@ -23,7 +26,9 @@
 	stroke: #d9d9d9;
 	stroke-dasharray: 219.911px, 219.911px;
 	stroke-dashoffset: 0px;
-	transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray 0.3s ease 0s,
+	transition:
+		stroke-dashoffset 0.3s ease 0s,
+		stroke-dasharray 0.3s ease 0s,
 		stroke 0.3s ease 0s;
 	fill-opacity: 0;
 }
@@ -97,7 +102,7 @@
 }
 
 @media (max-width: 575.98px) {
-	.ub-countdown .ub_countdown_ {
+	.ub-countdown.is-style-ub-countdown-regular .ub_countdown_ {
 		&week,
 		&day,
 		&hour,
@@ -127,8 +132,8 @@
 		}
 	}
 	.ub_countdown_circular_container > div {
-		height: 60px;
-		width: 60px;
+		height: 60px !important;
+		width: 60px !important;
 		svg {
 			width: 60px;
 			height: 60px;
@@ -138,9 +143,9 @@
 
 @media (max-width: 374.98px) {
 	.ub_countdown_circular_container {
-		div {
-			height: 50px;
-			width: 50px;
+		> div {
+			height: 50px !important;
+			width: 50px !important;
 		}
 		> div svg {
 			width: 50px;
@@ -165,19 +170,27 @@
 		font-size: 10px;
 	}
 	.ub_countdown_circular_container > div {
-		height: 40px;
-		width: 40px;
+		height: 40px !important;
+		width: 40px !important;
 		svg {
 			width: 40px;
 			height: 40px;
 		}
 	}
-	.ub-countdown .ub_countdown_week,
-	.ub-countdown .ub_countdown_day,
-	.ub-countdown .ub_countdown_hour,
-	.ub-countdown .ub_countdown_minute,
-	.ub-countdown .ub_countdown_second {
+	.ub-countdown.is-style-ub-countdown-regular .ub_countdown_week,
+	.ub-countdown.is-style-ub-countdown-regular .ub_countdown_day,
+	.ub-countdown.is-style-ub-countdown-regular .ub_countdown_hour,
+	.ub-countdown.is-style-ub-countdown-regular .ub_countdown_minute,
+	.ub-countdown.is-style-ub-countdown-regular .ub_countdown_second {
 		margin: 0;
 		font-size: 10px !important;
+	}
+}
+.ub-countdown-wrapper {
+	.ub-countdown-unit {
+		color: var(--ub-countdown-unit-color);
+	}
+	.ub-countdown-digit {
+		color: var(--ub-countdown-digit-color);
 	}
 }

@@ -1,0 +1,217 @@
+import { __ } from "@wordpress/i18n";
+import { isEmpty } from "lodash";
+import { useEffect } from "@wordpress/element";
+import {
+	useBlockProps,
+	BlockControls,
+	AlignmentToolbar,
+	RichText,
+} from "@wordpress/block-editor";
+
+import Inspector from "./inspector";
+import GenericStyleControl, {
+	createStyleClipboard,
+} from "$Inc/components/GenericStyleControl";
+
+import { useCounter } from "./hooks/use-counter";
+import {
+	generateStyles,
+	getSpacingCss,
+	getSpacingPresetCssVar,
+} from "../utils/styling-helpers";
+
+function Edit(props) {
+	const { attributes, setAttributes } = props;
+	let counter = useCounter(attributes);
+	const {
+		endNumber,
+		prefix,
+		suffix,
+		alignment,
+		label,
+		labelPosition,
+		padding,
+		margin,
+		backgroundColor,
+		backgroundGradient,
+		counterColor,
+	} = attributes;
+
+	// Handle backward compatibility - migrate old style.color values to new attributes
+	useEffect(() => {
+		const styleColor = attributes?.style?.color;
+		if (styleColor) {
+			const updates = {};
+
+			// Migrate text color to counterColor if not already set
+			if (styleColor.text && !attributes.counterColor) {
+				updates.counterColor = styleColor.text;
+			}
+
+			// Migrate background to backgroundColor if not already set
+			if (
+				styleColor.background &&
+				!attributes.backgroundColor &&
+				!attributes.backgroundGradient
+			) {
+				updates.backgroundColor = styleColor.background;
+			}
+
+			// Apply updates and remove old style.color to avoid conflicts
+			if (Object.keys(updates).length > 0) {
+				setAttributes({
+					...updates,
+					style: {
+						...attributes.style,
+						color: undefined,
+					},
+				});
+			}
+		}
+	}, []);
+
+	const paddingObj = getSpacingCss(padding);
+	const marginObj = getSpacingCss(margin);
+	const gap = getSpacingPresetCssVar(attributes.gap?.all) ?? "";
+	const counterFontStyle = !isEmpty(attributes.counterFontAppearance.fontStyle)
+		? attributes.counterFontAppearance.fontStyle
+		: "";
+	const counterFontWeight = !isEmpty(
+		attributes.counterFontAppearance.fontWeight,
+	)
+		? attributes.counterFontAppearance.fontWeight
+		: "";
+	const labelFontStyle = !isEmpty(attributes.labelFontAppearance.fontStyle)
+		? attributes.labelFontAppearance.fontStyle
+		: "";
+	const labelFontWeight = !isEmpty(attributes.labelFontAppearance.fontWeight)
+		? attributes.labelFontAppearance.fontWeight
+		: "";
+
+	const counterWrapperStyles = {
+		gap: gap,
+	};
+	const labelStyles = {
+		color: attributes?.labelColor,
+		fontSize: attributes?.labelFontSize,
+		fontFamily: attributes.labelFontFamily,
+		textDecoration: attributes.labelDecoration,
+		lineHeight: attributes.labelLineHeight,
+		letterSpacing: attributes.labelLetterSpacing,
+		fontStyle: labelFontStyle,
+		fontWeight: labelFontWeight,
+	};
+	const counterStyles = {
+		color: counterColor,
+		fontSize: attributes?.counterFontSize,
+		fontFamily: attributes.counterFontFamily,
+		textDecoration: attributes.counterDecoration,
+		lineHeight: attributes.counterLineHeight,
+		"letter-spacing": attributes.counterLetterSpacing,
+		fontStyle: counterFontStyle,
+		fontWeight: counterFontWeight,
+	};
+	const containerStyles = {
+		background: backgroundGradient || backgroundColor,
+		paddingTop: paddingObj?.top,
+		paddingRight: paddingObj?.right,
+		paddingBottom: paddingObj?.bottom,
+		paddingLeft: paddingObj?.left,
+		marginTop: marginObj?.top,
+		marginRight: marginObj?.right,
+		marginBottom: marginObj?.bottom,
+		marginLeft: marginObj?.left,
+	};
+
+	const blockProps = useBlockProps({
+		className: `ub_counter-container`,
+		style: generateStyles(containerStyles),
+	});
+
+	return (
+		<div {...blockProps}>
+			<BlockControls>
+				<AlignmentToolbar
+					value={alignment}
+					onChange={(newValue) => setAttributes({ alignment: newValue })}
+				/>
+				{/* Create a clipboard for counter styles and attach the generic control */}
+				<GenericStyleControl
+					attributes={attributes}
+					setAttributes={setAttributes}
+					clipboard={createStyleClipboard("ub_counter_copied_style", [
+						"gap",
+						"counterFontSize",
+						"labelFontSize",
+						"counterFontFamily",
+						"labelFontFamily",
+						"counterDecoration",
+						"labelDecoration",
+						"counterLineHeight",
+						"labelLineHeight",
+						"counterLetterSpacing",
+						"labelLetterSpacing",
+						"counterFontAppearance",
+						"labelFontAppearance",
+						"labelColor",
+						"counterColor",
+						"backgroundColor",
+						"backgroundGradient",
+						"padding",
+						"margin",
+						"alignment",
+						"className",
+						"counterColor",
+						"backgroundColor",
+						"backgroundGradient",
+					])}
+					blockName="Counter"
+				/>
+			</BlockControls>
+			<div
+				className={`ub_counter ub_text-${alignment}`}
+				style={generateStyles(counterWrapperStyles)}
+			>
+				{labelPosition === "top" && (
+					<div
+						className="ub_counter-label-wrapper"
+						style={generateStyles(labelStyles)}
+					>
+						<RichText
+							tagName="span"
+							value={label}
+							placeholder={__("Add a Label", "ultimate-blocks")}
+							className="ub_counter-label"
+							onChange={(newLabel) => setAttributes({ label: newLabel })}
+						/>
+					</div>
+				)}
+				<div
+					className="ub_counter-number-wrapper"
+					style={generateStyles(counterStyles)}
+				>
+					<span className="ub_counter-prefix">{prefix}</span>
+					<span className="ub_counter-number">{counter}</span>
+					<span className="ub_counter-suffix">{suffix}</span>
+				</div>
+				{labelPosition === "bottom" && (
+					<div
+						className="ub_counter-label-wrapper"
+						style={generateStyles(labelStyles)}
+					>
+						<RichText
+							tagName="span"
+							value={label}
+							placeholder={__("Add a Label", "ultimate-blocks")}
+							className="ub_counter-label"
+							onChange={(newLabel) => setAttributes({ label: newLabel })}
+						/>
+					</div>
+				)}
+			</div>
+			<Inspector {...props} />
+		</div>
+	);
+}
+
+export default Edit;

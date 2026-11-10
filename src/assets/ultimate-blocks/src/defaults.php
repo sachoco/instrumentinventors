@@ -49,7 +49,7 @@ $defaultValues = array(
 			),
 			'fontWeight'       => array(
 				'type'    => 'string',
-				'default' => 'Bold',
+				'default' => 'Normal',
 			),
 			'lineHeight'       => array(
 				'type'    => 'number',
@@ -59,6 +59,14 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => 'None',
 			),
+			'padding' => array(
+				'type'    => 'array',
+				'default' => array(),
+			),
+			'margin' => array(
+				'type'    => 'array',
+				'default' => array(),
+			),
 		)
 	),
 	'ub/advanced-video'             => array(
@@ -67,8 +75,28 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => ''
 			),
+			'border'              => array(
+				'type'    => 'array',
+				'default' => array()
+			),
+			'borderRadius'              => array(
+				'type'    => 'array',
+				'default' => array()
+			),
+			'margin'              => array(
+				'type'    => 'array',
+				'default' => array()
+			),
+			'aspectRatio'              => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'padding'              => array(
+				'type'    => 'array',
+				'default' => array()
+			),
 			'videoId'              => array(
-				'type'    => 'integer',
+				'type'    => 'number',
 				'default' => - 1,
 			),
 			'videoSource'          => array(
@@ -138,11 +166,11 @@ $defaultValues = array(
 			),
 			'height'               => array(
 				'type'    => 'number',
-				'default' => 0,
+				'default' => 370,
 			),
 			'width'                => array(
 				'type'    => 'number',
-				'default' => 0,
+				'default' => 100,
 			),
 			'origHeight'           => array(
 				'type'    => 'number',
@@ -240,6 +268,23 @@ $defaultValues = array(
 			'showInMobile'  => array(
 				'type'    => 'boolean',
 				'default' => true
+			),
+			'channelId'  => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'shadow'	   => array(
+				'type'	=> 'array',
+				'default' => array(
+					array(
+						"angle" => 0,
+						"radius" => 0,
+						"color" => "#000000",
+						"transparency" => 0,
+						"blur" => 0,
+						"spread" => 0
+					)
+				)
 			)
 		)
 	),
@@ -249,13 +294,33 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => ''
 			),
+			'placeholder'              => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'blockSpacing' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
 			'buttonText'           => array(
 				'type'    => 'string',
 				'default' => 'Button Text'
 			),
+			'orientation'              => array(
+				'type'    => 'string',
+				'default' => 'row',
+			),
 			'align'                => array(
 				'type'    => 'string',
-				'default' => ''
+				'default' => 'center'
 			),
 			'url'                  => array(
 				'type'    => 'string',
@@ -281,6 +346,10 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => '#ffffff'
 			),
+			'isFlexWrap'        => array(
+				'type'    => 'boolean',
+				'default' => true
+			),
 			'buttonRounded'        => array(
 				'type'    => 'boolean',
 				'default' => false
@@ -297,6 +366,10 @@ $defaultValues = array(
 				'type'    => 'boolean',
 				'default' => false
 			),
+			'isBorderComponentChanged'  => array(
+				'type'    => 'boolean',
+				'default' => false
+			),
 			'addNofollow'          => array(
 				'type'    => 'boolean',
 				'default' => false
@@ -305,9 +378,49 @@ $defaultValues = array(
 				'type'    => 'boolean',
 				'default' => true
 			),
-			'buttonWidth'          => array(
+			'buttonWidth'         => array(
 				'type'    => 'string',
-				'default' => 'fixed'
+				'default' => 'flex'
+			),
+			'buttons'      => array(
+				'type'    => 'array',
+				'default' => array()
+			),
+			'typography' => array(
+				'type'    => 'object',
+				'default' => array()
+			),
+			'fontFamily' => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'fontSize' => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'fontStyle' => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'fontWeight' => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'letterSpacing' => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'lineHeight' => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'textTransform' => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'textDecoration' => array(
+				'type'    => 'string',
+				'default' => ''
 			)
 		)
 	),
@@ -316,6 +429,14 @@ $defaultValues = array(
 			'blockID'                         => array(
 				'type'    => 'string',
 				'default' => ''
+			),
+			'margin'              => array(
+				'type'    => 'array',
+				'default' => array()
+			),
+			'padding'              => array(
+				'type'    => 'array',
+				'default' => array()
 			),
 			'ub_call_to_action_headline_text' => array(
 				'type'    => 'string',
@@ -429,6 +550,14 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => '#CCCCCC'
 			),
+			'padding'   => array(
+				'type'    => 'array',
+				'default' => array()
+			),
+			'margin'   => array(
+				'type'    => 'array',
+				'default' => array()
+			),
 		)
 	),
 	'ub/content-filter-block'       => array(
@@ -437,11 +566,15 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => ''
 			),
-			/*COMMENTED OUT TO PREVENT PHP ERRORS
-            'filterArray' => array(
-                'type' => 'array',
-                'default' => array()
-            ),*/
+			'filterButtonAlignment' => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			// UNCOMMENTED OUT, IN JS BLOCK GET UNDEFINED AND BREAK.
+			'filterArray' => array(
+				'type' => 'array',
+				'default' => array()
+			),
 			'buttonColor'           => array(
 				'type'    => 'string',
 				'default' => '#eeeeee'
@@ -474,6 +607,14 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => ''
 			),
+			'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+					'type' 	=> 'array',
+					'default' => array()
+			),
 			'hasFAQSchema'      => array(
 				'type'    => 'boolean',
 				'default' => false
@@ -505,6 +646,19 @@ $defaultValues = array(
 			'showOnlyOne'       => array(
 				'type'    => 'boolean',
 				'default' => false
+			),
+			'panelBorderRadius' => array(
+				'type'    => 'object',
+				'default' => array(
+					"topLeft" => "8px",
+					"topRight" => "8px",
+					"bottomLeft" => "8px",
+					"bottomRight" => "8px"
+				)
+			),
+			'panelBorder' => array(
+				'type'    => 'object',
+				'default' => array()
 			)
 		)
 	),
@@ -517,6 +671,10 @@ $defaultValues = array(
 			'parentID'        => array(
 				'type'    => 'string',
 				'default' => ''
+			),
+			'defaultOpen'        => array(
+				'type'    => 'boolean',
+				'default' => false
 			),
 			'theme'           => array(
 				'type'    => 'string',
@@ -573,6 +731,10 @@ $defaultValues = array(
 			'showOnlyOne'     => array(
 				'type'    => 'boolean',
 				'default' => false
+			),
+			'newBlockPosition' => array(
+				'type'    => 'string',
+				'default' => 'none'
 			)
 		)
 	),
@@ -584,7 +746,7 @@ $defaultValues = array(
 			),
 			'endDate'       => array(
 				'type'    => 'number',
-				'default' => time() + 86400
+				'default' => 1760447520
 			),
 			'style'         => array(
 				'type'    => 'string',
@@ -602,6 +764,14 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => '#2DB7F5'
 			),
+			'countdownColor'   => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'unitColor'   => array(
+				'type'    => 'string',
+				'default' => ''
+			),
 			'circleSize'    => array(
 				'type'    => 'number',
 				'default' => 70
@@ -613,14 +783,38 @@ $defaultValues = array(
 			'smallestUnit'  => array(
 				'type'    => 'string',
 				'default' => 'second'
+			),
+			'padding'  => array(
+				'type'    => 'array',
+				'default' => array()
+			),
+			'margin'  => array(
+				'type'    => 'array',
+				'default' => array()
 			)
 		)
 	),
 	'ub/divider'                    => array(
 		'attributes' => array(
+			'lineHeight'      => array(
+				'type'    => 'string',
+				'default' => '300px'
+			),
+			'orientation'      => array(
+				'type'    => 'string',
+				'default' => 'horizontal'
+			),
 			'blockID'      => array(
 				'type'    => 'string',
 				'default' => ''
+			),
+			'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+					'type' 	=> 'array',
+					'default' => array()
 			),
 			'borderSize'   => array(
 				'type'    => 'number',
@@ -636,7 +830,7 @@ $defaultValues = array(
 			),
 			'borderHeight' => array(
 				'type'    => 'number',
-				'default' => 20
+				'default' => 2
 			),
 			'width'        => array(
 				'type'    => 'number',
@@ -654,6 +848,14 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => ''
 			),
+			'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+					'type' 	=> 'array',
+					'default' => array()
+			),
 			'initialShow'      => array(
 				'type'    => 'boolean',
 				'default' => false
@@ -661,6 +863,40 @@ $defaultValues = array(
 			'toggleAlign'      => array(
 				'type'    => 'string',
 				'default' => 'left'
+			),
+			  'expandButtonColor' => array(
+				  'type' => "string",
+				  'default' => "",
+			  ),
+			'expandButtonBgColor' => array(
+				'type' => "string",
+				'default' => "" ,
+			) ,
+			'expandButtonBgGradient' => array(
+				'type' => "string",
+				'default' => "" ,
+			) ,
+			'expandButtonPadding' => array(
+				'type' => "array",
+				'default' => array(
+					'top' => "8px",
+					'right' => "30px",
+					'bottom' => "8px",
+					'left' => "30px",
+				),
+			) ,
+			'expandButtonBorder' => array(
+				'type' => "array",
+				'default' => array() ,
+			) ,
+			'expandButtonBorderRadius' => array(
+				'type' => "array",
+				'default' => array(
+					'topLeft' => "100px",
+					'topRight' => "100px",
+					'bottomLeft' => "100px",
+					'bottomRight' => "100px",
+				),
 			),
 			'allowScroll'      => array(
 				'type'    => 'boolean',
@@ -697,6 +933,10 @@ $defaultValues = array(
 			'isVisible'   => array(
 				'type'    => 'boolean',
 				'default' => false
+			),
+			'toggleAlign'   => array(
+				'type'    => 'string',
+				'default' => 'left'
 			),
 			'parentID'    => array(
 				'type'    => 'string',
@@ -806,6 +1046,14 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => ''
 			),
+			'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
 			'title'               => array(
 				'type'    => 'string',
 				'default' => ''
@@ -830,11 +1078,11 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => __( 'Required tools' )
 			),
-			/*COMMENTED OUT TO PREVENT PHP ERRORS
-            'tools' => array(
-                'type' => 'array',
-                'default' => array(),
-            ),*/
+			// UNCOMMENTED OUT, IN JS BLOCK GET UNDEFINED AND BREAK.
+			'tools' => array(
+				'type' => 'array',
+				'default' => array(),
+			),
 			'toolsListStyle'      => array(
 				'type'    => 'string',
 				'default' => 'none'
@@ -851,20 +1099,25 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => __( 'Required supplies' )
 			),
-			/*COMMENTED OUT TO PREVENT PHP ERRORS
-            'supplies' => array(
-                'type' => 'array',
-                'default' => array(),
-            ),*/
+			// UNCOMMENTED OUT, IN JS BLOCK GET UNDEFINED AND BREAK.
+			'supplies' => array(
+				'type' => 'array',
+				'default' => array(),
+			),
 			'suppliesListStyle'   => array(
 				'type'    => 'string',
 				'default' => 'none'
 			),
-			/* COMMENTED OUT TO PREVENT PHP ERRORS
-            'section' => array(
-                'type' => 'array',
-                'default' => array()
-            ),*/
+			// UNCOMMENTED OUT, IN JS BLOCK GET UNDEFINED AND BREAK.
+			'section' => array(
+				'type' => 'array',
+				'default' => array(
+					array(
+						'sectionName' => '',
+						'steps' => array()
+					)
+				)
+			),
 			'sectionListStyle'    => array(
 				'type'    => 'string',
 				'default' => 'none'
@@ -881,7 +1134,7 @@ $defaultValues = array(
 				)
 			),
 			'totalTimeText'       => array(
-				'type'    => 'text',
+				'type'    => 'string',
 				'default' => __( 'Total time: ' )
 			),
 			'cost'                => array(
@@ -980,30 +1233,42 @@ $defaultValues = array(
 	),
 	'ub/image-slider'               => array(
 		'attributes' => array(
+			'align'          => array(
+				'type'    => 'string',
+				'default' => ''
+			),
 			'blockID'          => array(
 				'type'    => 'string',
 				'default' => ''
+			),
+			'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+					'type' 	=> 'array',
+					'default' => array()
 			),
 			//retained for reverse compatibility
 			'images'           => array(
 				'type'    => 'string',
 				'default' => '[]'
 			),
-			/*COMMENTED OUT TO PREVENT PHP ERRORS
-            'pics' => array(
-                'type' => 'array',
-                'default' => array()
-            ),*/
+			// UNCOMMENTED OUT, IN JS BLOCK GET UNDEFINED AND BREAK.
+			'pics' => array(
+				'type' => 'array',
+				'default' => array()
+			),
 			//retained for reverse compatibility
 			'captions'         => array(
 				'type'    => 'string',
 				'default' => '[]'
 			),
-			/*COMMENTED OUT TO PREVENT PHP ERRORS
-            'descriptions' => array(
-                'type' => 'array',
-                'default' => array()
-            ),*/
+			// UNCOMMENTED OUT, IN JS BLOCK GET UNDEFINED AND BREAK.
+			'descriptions' => array(
+				'type' => 'array',
+				'default' => array()
+			),
 			'wrapsAround'      => array(
 				'type'    => 'boolean',
 				'default' => true
@@ -1020,11 +1285,27 @@ $defaultValues = array(
 				'type'    => 'number',
 				'default' => 3
 			),
+			'spaceBetween' => array(
+				'type'    => 'number',
+				'default' => 20
+			),
+			'speed' => array(
+				'type'    => 'number',
+				'default' => 300
+			),
+			'slidesPerView' => array(
+				'type'    => 'number',
+				'default' => 1
+			),
 			'sliderHeight'     => array(
 				'type'    => 'number',
 				'default' => 250
 			),
 			'showPageDots'     => array(
+				'type'    => 'boolean',
+				'default' => true
+			),
+			'useNavigation'    => array(
 				'type'    => 'boolean',
 				'default' => true
 			),
@@ -1188,9 +1469,161 @@ $defaultValues = array(
 	),
 	'ub/post-grid'                  => array(
 		'attributes' => array(
+			'rowGap'                      => array(
+				'type'    => 'string',
+				'default' => '32px'
+			),
+			'columnGap'                      => array(
+				'type'    => 'string',
+				'default' => '32px'
+			),
 			'blockID'                      => array(
 				'type'    => 'string',
 				'default' => ''
+			),
+			'postType' => array(
+				'type'    => 'string',
+				'default' => 'post'
+			),
+			'paginationAlignment' => array(
+				'type'    => 'string',
+				'default' => 'left'
+			),
+			'paginationColor' => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'paginationBackground' => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'paginationGradient' => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'activePaginationColor' => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'activePaginationBackground' => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'activePaginationGradient' => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'isEqualHeight' => array(
+				'type'    => 'boolean',
+				'default' => true
+			),
+			'pagination' => array(
+				'type'    => 'boolean',
+				'default' => false
+			),
+			'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'contentPadding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'postPadding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'linkPadding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'postTitleColorHover' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'authorColorHover' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'dateColorHover' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'excerptColorHover' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'linkColorHover' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'linkBackgroundColorHover' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'linkBackgroundGradientHover' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'postBackgroundColorHover' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'postBackgroundGradientHover' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'postTitleColor' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'authorColor' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'dateColor' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'excerptColor' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'linkColor' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'linkBackgroundColor' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'linkBackgroundGradient' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'postBackgroundColor' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'postBackgroundGradient' => array(
+				'type' => 'string',
+				'default' => null
+			),
+			'postBorderRadius' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'linkBorderRadius' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'imageBorderRadius' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+				'type' 	=> 'array',
+				'default' => array()
 			),
 			'wrapAlignment'                => array(
 				'type'    => 'string',
@@ -1202,6 +1635,10 @@ $defaultValues = array(
 			),
 			'categoryArray'                => array(
 				'type'    => 'array',
+				'default' => [],
+			),
+			'excludedCategories'		   => array(
+				'type' => 'array',
 				'default' => [],
 			),
 			'className'                    => array(
@@ -1306,6 +1743,26 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => ''
 			),
+			'numberPrefix'            => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'numberSuffix'            => array(
+				'type'    => 'string',
+				'default' => '%'
+			),
+			'showNumber'            => array(
+				'type'    => 'boolean',
+				'default' => true
+			),
+			'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
 			'percentage'         => array(
 				'type'    => 'number',
 				'default' => - 1
@@ -1320,7 +1777,7 @@ $defaultValues = array(
 			),
 			'detailAlign'        => array(
 				'type'    => 'string',
-				'default' => 'left'
+				'default' => 'center'
 			),
 			'barColor'           => array(
 				'type'    => 'string',
@@ -1341,11 +1798,47 @@ $defaultValues = array(
 			'labelColor'         => array(
 				'type'    => 'string',
 				'default' => ''
+			),
+			'percentagePosition' => array(
+				'type'    => 'string',
+				'default' => 'bottom'
+			),
+			'textPosition'       => array(
+				'type'    => 'string',
+				'default' => 'top'
+			),
+			'isStripe'         	 => array(
+				'type'    => 'boolean',
+				'default' => false
+			),
+			'isCircleRounded'    => array(
+				'type'    => 'boolean',
+				'default' => true
 			)
 		)
 	),
 	'ub/review'                     => array(
 		'attributes' => array(
+			'ID'                 => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'summaryTitleFontSize'  => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'titleFontSize'	=> array(
+				'type'    => 'string',
+				'default' => ''
+			),
 			'blockID'                 => array(
 				'type'    => 'string',
 				'default' => ''
@@ -1384,7 +1877,7 @@ $defaultValues = array(
 			),
 			'enableDescription'       => array(
 				'type'    => 'boolean',
-				'default' => false,
+				'default' => true,
 			),
 			'descriptionAlign'        => array(
 				'type'    => 'string',
@@ -1408,7 +1901,7 @@ $defaultValues = array(
 			),
 			'enableImage'             => array(
 				'type'    => 'boolean',
-				'default' => false
+				'default' => true
 			),
 			'items'                   => array(
 				'type'    => 'string',
@@ -1444,7 +1937,7 @@ $defaultValues = array(
 			),
 			'callToActionBackColor'   => array(
 				'type'    => 'string',
-				'default' => '#f63d3d'
+				'default' => '#e11b4c'
 			),
 			'callToActionBorderColor' => array(
 				'type'    => 'string',
@@ -1491,6 +1984,15 @@ $defaultValues = array(
 				'type'    => 'boolean',
 				'default' => true
 			),
+			'parts'             	=> array(
+				'type'    => 'array',
+				'default' => array(
+					array (
+						'label' => '',
+						'value' => 0
+					)
+				)
+			),
 			'ctaOpenInNewTab'         => array(
 				'type'    => 'boolean',
 				'default' => true
@@ -1506,6 +2008,14 @@ $defaultValues = array(
 			'enableReviewSchema'      => array(
 				'type'    => 'boolean',
 				'default' => true
+			),
+			'enableProductReview'     => array(
+				'type'    => 'boolean',
+				'default' => true
+			),
+			'enableAggregateRating'   => array(
+				'type'    => 'boolean',
+				'default' => false
 			),
 			'starOutlineColor'        => array(
 				'type'    => 'string',
@@ -1563,6 +2073,52 @@ $defaultValues = array(
 				'type'    => 'number',
 				'default' => 0
 			),
+			//BEGIN SHIPPING/RETURN POLICY ATTRIBUTES
+			'enableShippingDetails'   => array(
+				'type'    => 'boolean',
+				'default' => false
+			),
+			'shippingCountry'         => array(
+				'type'    => 'string',
+				'default' => 'US'
+			),
+			'shippingRate'            => array(
+				'type'    => 'number',
+				'default' => 0
+			),
+			'shippingHandlingDays'    => array(
+				'type'    => 'number',
+				'default' => 1
+			),
+			'shippingTransitDays'     => array(
+				'type'    => 'number',
+				'default' => 5
+			),
+			'enableReturnPolicy'      => array(
+				'type'    => 'boolean',
+				'default' => false
+			),
+			'returnPolicyCategory'    => array(
+				'type'    => 'string',
+				'default' => 'MerchantReturnFiniteReturnWindow'
+			),
+			'merchantReturnDays'      => array(
+				'type'    => 'number',
+				'default' => 30
+			),
+			'returnMethod'            => array(
+				'type'    => 'string',
+				'default' => 'ReturnByMail'
+			),
+			'returnFees'              => array(
+				'type'    => 'string',
+				'default' => 'FreeReturn'
+			),
+			'returnApplicableCountry' => array(
+				'type'    => 'string',
+				'default' => 'US'
+			),
+			//END SHIPPING/RETURN POLICY ATTRIBUTES
 			//BEGIN SOFTWAREAPPLICATION ATTRIBUTES
 			'appCategory'             => array(
 				'type'    => 'string',
@@ -1660,6 +2216,14 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => ''
 			),
+			'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+					'type' 	=> 'array',
+					'default' => array()
+			),
 			'showFacebookIcon'   => array(
 				'type'    => 'boolean',
 				'default' => true,
@@ -1718,11 +2282,15 @@ $defaultValues = array(
 			),
 			'iconShape'          => array(
 				'type'    => 'string',
-				'default' => 'circle',
+				'default' => 'none',
 			),
 			'align'              => array(
 				'type'    => 'string',
 				'default' => 'left',
+			),
+			'orientation'              => array(
+				'type'    => 'string',
+				'default' => 'row',
 			),
 			'iconOrder'          => array(
 				'type'    => 'array',
@@ -1737,19 +2305,35 @@ $defaultValues = array(
 			),
 			'useCaptions'        => array(
 				'type'    => 'boolean',
-				'default' => false
+				'default' => true
 			),
 			'addOutline'         => array(
 				'type'    => 'boolean',
-				'default' => false
+				'default' => true
 			)
 		)
 	),
 	'ub/star-rating-block'          => array(
 		'attributes' => array(
+			'textFontSize'         => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'textPosition'         => array(
+				'type'    => 'string',
+				'default' => 'bottom'
+			),
 			'blockID'         => array(
 				'type'    => 'string',
 				'default' => ''
+			),
+			'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+				'type' 	=> 'array',
+				'default' => array()
 			),
 			'starCount'       => array(
 				'type'    => 'number',
@@ -1779,6 +2363,10 @@ $defaultValues = array(
 				'type'    => 'string',
 				'default' => ''
 			),
+			'isShowReviewText' => array(
+				'type'    => 'boolean',
+				'default' => true
+			),
 			'starAlign'       => array(
 				'type'    => 'string',
 				'default' => 'left'
@@ -1790,6 +2378,14 @@ $defaultValues = array(
 			'blockID'               => array(
 				'type'    => 'string',
 				'default' => ''
+			),
+			'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+				'type' 	=> 'array',
+				'default' => array()
 			),
 			'mode'                  => array(
 				'type'    => 'string',
@@ -1830,63 +2426,75 @@ $defaultValues = array(
 					'type' => 'string'
 				)
 			),
-			/* COMMENTED OUT TO PREVENT PHP ERRORS
-            'image' => array(
-                'type' => 'array',
-                'default' => array(
-                    array(
-                        'id' => null,
-                        'alt' => null,
-                        'url' => null
-                    )
-                )
-            ),*/
-            'foreColor' => array(
-                'type' => 'string',
-                'default' => '#000000'
-            ),
-            'backColor' => array(
-                'type' => 'string',
-                'default' => '#CCCCCC'
-            ),
-            'boxColor' => array(
-                'type' => 'string',
-                'default' => ''
-            ),
-            'outlineColor' => array(
-                'type' => 'string',
-                'default' => '#000000'
-            ),
-            'outlineStyle' => array(
-                'type' => 'string',
-                'default' => 'solid'
-            ),
-            'outlineThickness' => array(
-                'type' => 'number',
-                'default' => 1
-            ),
-            'outlineRoundingRadius' => array(
-                'type' => 'number',
-                'default' => 0
-            ),
-            'outlineRadiusUnit' => array(
-                'type' => 'string',
-                'default' => 'percent'
-            )
-        )
+			// UNCOMMENTED OUT, IN JS BLOCK GET UNDEFINED AND BREAK.
+			'image' => array(
+				'type' => 'array',
+				'default' => array(
+					array(
+					'id' => null,
+					'alt' => null,
+					'url' => null
+					)
+				)
+			),
+			'foreColor' => array(
+				'type' => 'string',
+				'default' => '#000000'
+			),
+			'backColor' => array(
+				'type' => 'string',
+				'default' => '#CCCCCC'
+			),
+			'boxColor' => array(
+				'type' => 'string',
+				'default' => ''
+			),
+			'outlineColor' => array(
+				'type' => 'string',
+				'default' => '#000000'
+			),
+			'outlineStyle' => array(
+				'type' => 'string',
+				'default' => 'solid'
+			),
+			'outlineThickness' => array(
+				'type' => 'number',
+				'default' => 1
+			),
+			'outlineRoundingRadius' => array(
+				'type' => 'number',
+				'default' => 0
+			),
+			'outlineRadiusUnit' => array(
+				'type' => 'string',
+				'default' => 'percent'
+			)
+        	)
     ),
     'ub/styled-list' => array(
         'attributes' => array(
+            'listAlignment' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
             'alignment' => array(
                 'type' => 'string',
                 'default' => 'left'
             ),
+		  'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
             'blockID' => array(
                 'type' => 'string',
                 'default' => ''
             ),
             'list' => array(
-                'type' => 'text',
+                'type' => 'string',
                 'default' => '' //phased out, formerly <li>Item 1</li><li>Item 2</li><li>Item 3</li>'
             ),
             'listItem' => array(
@@ -1925,7 +2533,7 @@ $defaultValues = array(
             ),
             'maxMobileColumns' => array(
                 'type' => 'number',
-                'default' => 2
+                'default' => 1
             ),
             'isRootList' => array(
                 'type' => 'boolean',
@@ -1939,6 +2547,37 @@ $defaultValues = array(
                 'type' => 'string',
                 'default' => ''
             ),
+            'listFontFamily' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
+            'listFontSize' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
+            'listFontAppearance' => array(
+                'type' => 'object',
+                'default' => array(
+                    'fontStyle' => '',
+                    'fontWeight' => ''
+                )
+            ),
+            'listLineHeight' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
+            'listLetterSpacing' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
+            'listTextDecoration' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
+            'listTextTransform' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
         )
     ),
     'ub/styled-list-item' => array(
@@ -1947,6 +2586,14 @@ $defaultValues = array(
                 'type' => 'string',
                 'default' => 'left'
             ),
+		  'padding' => array(
+		  	'type' 	=> 'array',
+		  	'default' => array()
+		  	),
+		  'margin' => array(
+		  	'type' 	=> 'array',
+		  	'default' => array()
+		  ),
             'blockID' => array(
                 'type' => 'string',
                 'default' => ''
@@ -1970,6 +2617,45 @@ $defaultValues = array(
             'fontSize' => array(
                 'type' => 'number',
                 'default' => 0
+            ),
+            'itemTextColor' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
+            'itemBackgroundColor' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
+            'itemFontFamily' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
+            'itemFontSize' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
+            'itemFontAppearance' => array(
+                'type' => 'object',
+                'default' => array(
+                    'fontStyle' => '',
+                    'fontWeight' => ''
+                )
+            ),
+            'itemLineHeight' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
+            'itemLetterSpacing' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
+            'itemTextDecoration' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
+            'itemTextTransform' => array(
+                'type' => 'string',
+                'default' => ''
             )
         )
     ),
@@ -1995,6 +2681,30 @@ $defaultValues = array(
                 'type' => 'string',
                 'default' => ''
             ),
+		'tabButtonsBorderRadius' => array(
+			'type'    => 'array',
+			'default' => array()
+		),
+		'tabContentsBorderRadius' => array(
+			'type'    => 'array',
+			'default' => array()
+		),
+            'contentColor' => array(
+                'type' => 'string',
+                'default' => null
+            ),
+            'contentBackground' => array(
+                'type' => 'string',
+                'default' => null
+            ),
+		  'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
             'activeTab' => array(
                 'type' => 'number',
                 'default' => 0
@@ -2014,6 +2724,10 @@ $defaultValues = array(
             'normalTitleColor' => array(
                 'type' => 'string',
                 'default' => ''
+            ),
+            'showBorder' => array(
+                'type' => 'boolean',
+                'default' => true
             ),
             'borderColor' => array(
                 'type' => 'string',
@@ -2074,8 +2788,16 @@ $defaultValues = array(
             ),
             'title' => array(
                 'type' => 'string',
-                'default' => ''
+				'default' => 'Table of Contents'
             ),
+		  'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
             'allowedHeaders' => array(
                 'type' => 'array',
                 'default' => array_fill(0, 6, true),
@@ -2086,6 +2808,10 @@ $defaultValues = array(
             'links' => array(
                 'type' => 'string',
                 'default' => ''
+            ),
+            'linkToDivider' => array(
+                'type' => 'boolean',
+                'default' => false
             ),
             'allowToCHiding' => array(
                 'type' => 'boolean',
@@ -2170,6 +2896,26 @@ $defaultValues = array(
                 'type' => 'string',
                 'default' => 'hide'
             ),
+            'itemSpacing' => array(
+                'type' => 'object',
+                'default' => array()
+            ),
+            'enableShowMore' => array(
+                'type' => 'boolean',
+                'default' => false
+            ),
+            'showMoreLimit' => array(
+                'type' => 'number',
+                'default' => 5
+            ),
+            'showMoreText' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
+            'showLessText' => array(
+                'type' => 'string',
+                'default' => ''
+            ),
         )
     ),
     'ub/testimonial' => array(
@@ -2189,6 +2935,14 @@ $defaultValues = array(
             'ub_testimonial_author' => array(
                 'type' => 'string',
                 'default' => ''
+            ),
+            'padding' => array(
+                'type' => 'array',
+                'default' => array()
+            ),
+            'margin' => array(
+                'type' => 'array',
+                'default' => array()
             ),
             'authorAlign' => array(
                 'type' => 'string',
@@ -2239,5 +2993,163 @@ $defaultValues = array(
 				'default' => 30
 			]
 		]
-	]
+	],
+	'ub/icon'            => array(
+		'attributes' => array(
+			'icon' => array(
+				'type'    => 'array',
+				'default' => array()
+			),
+			'padding' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'margin' => array(
+				'type' 	=> 'array',
+				'default' => array()
+			),
+			'svgIcon'  => array(
+				'type'    => 'string',
+				'default' => ''
+			),
+			'size'     => array(
+				'type'    => 'string',
+				'default' => "40px"
+			),
+			'iconColor' 	=> array(
+				'type'		=> "string",
+				'default'		=> null
+			),
+			'iconHoverColor' 	=> array(
+				'type'		=> "string",
+				'default'		=> null
+			),
+			'iconBackground' 	=> array(
+				'type'		=> "string",
+				'default'		=> null
+			),
+			'iconHoverBackground' 	=> array(
+				'type'		=> "string",
+				'default'		=> null
+			),
+			'iconGradientBackground' 	=> array(
+				'type'		=> "string",
+				'default'		=> null
+			),
+			'iconHoverGradientBackground' 	=> array(
+				'type'		=> "string",
+				'default'		=> null
+			),
+			'justification' 	=> array(
+				'type'		=> "string",
+				'default'		=> 'center'
+			),
+			'linkUrl' => array(
+				'type' => 'string',
+				'default'	=> ''
+			),
+			'linkRel' => array(
+				'type' => 'string',
+				'default'	=> ''
+			),
+			'linkTarget' => array(
+				'type' => 'string',
+				'default'	=> ''
+			),
+			'iconRotation' => array(
+				'type' => 'number',
+				'default'	=> 0
+			),
+		)
+		),
+		'ub/counter'	 => array(
+			'attributes' => array (
+				'labelColor' => array(
+					'type' => 'string',
+					'default' => ''
+				),
+				'counterFontFamily' => array(
+					'type' => 'string',
+					'default' => ''
+				),
+				'labelFontFamily' => array(
+					'type' => 'string',
+					'default' => ''
+				),
+				'counterDecoration' => array(
+					'type' => 'string',
+					'default' => ''
+				),
+				'labelDecoration' => array(
+					'type' => 'string',
+					'default' => ''
+				),
+				'startNumber' => array(
+					'type' => 'string',
+					'default' => '0'
+				),
+				'endNumber' => array(
+					'type' => 'string',
+					'default' => '500'
+				),
+				'labelFontSize' => array(
+					'type' => 'string',
+					'default' => '16px'
+				),
+				'counterFontSize' => array(
+					'type' => 'string',
+					'default' => '48px'
+				),
+				'prefix' => array(
+					'type' => 'string',
+					'default' => ''
+				),
+				'suffix' => array(
+					'type' => 'string',
+					'default' => ''
+				),
+				'animationDuration' => array(
+					'type' => 'number',
+					'default' => 2
+				),
+				'alignment' => array(
+					'type' => 'string',
+					'default' => 'center'
+				),
+				'label' => array(
+					'type' => 'string',
+					'default' => ''
+				),
+				'labelPosition' => array(
+					'type' => 'string',
+					'default' => 'bottom'
+				),
+				'gap' => array(
+					'type' 	=> 'array',
+					'default' => array()
+				),
+				'padding' => array(
+					'type' 	=> 'array',
+					'default' => array()
+				),
+				'margin' => array(
+					'type' 	=> 'array',
+					'default' => array()
+				),
+				'counterFontAppearance' => array(
+					'type' 	=> 'array',
+					'default' => array(
+						'fontStyle'	=> '',
+						'fontWeight'	=> ''
+					)
+				),
+				'labelFontAppearance' => array(
+					'type' 	=> 'array',
+					'default' => array(
+						'fontStyle'	=> '',
+						'fontWeight'	=> ''
+					)
+				),
+			)
+		)
 );

@@ -1,10 +1,56 @@
+.wp-block-ub-advanced-video {
+	line-height: 0;
+	&.alignright {
+		.ub-advanced-video-embed {
+			float: right;
+			video {
+				float: right;
+			}
+			.ub-advanced-video-channel-details {
+				clear: both;
+				text-align: right;
+			}
+		}
+	}
+
+	&.alignleft {
+		.ub-advanced-video-embed {
+			float: left;
+			video {
+				float: left;
+			}
+			.ub-advanced-video-channel-details {
+				clear: both;
+				text-align: left;
+			}
+		}
+	}
+
+	&.aligncenter {
+		.ub-advanced-video-embed {
+			margin-inline-start: auto;
+			text-align: center;
+			margin-inline-end: auto;
+			.ub-advanced-video-channel-details {
+				text-align: center;
+			}
+		}
+	}
+}
 .ub-advanced-video-container {
-	width: fit-content;
-	max-width: 100%;
+	width: 100%;
+	video {
+		width: 100%;
+		height: 100%;
+	}
 }
 
 .ub-advanced-video-thumbnail {
 	position: relative;
+	.ub-advanced-video-thumbnail-image {
+		height: 100%;
+		width: 100%;
+	}
 	& > svg {
 		position: absolute;
 		top: 50%;
@@ -14,13 +60,25 @@
 }
 
 .ub-advanced-video-embed {
-	&.ub-advanced-video-autofit-youtube {
+	// Clip the video to the border radius.
+	overflow: hidden;
+	video {
+		max-width: 100%;
+		aspect-ratio: var(--ub-advanced-video-aspect-ratio);
+		height: auto !important;
+		object-fit: cover;
+	}
+	// The iframe carries the aspect ratio. On the wrapper it would fix the
+	// height, and with overflow hidden cut off the channel details below.
+	&.ub-advanced-video-autofit-youtube,
+	&.ub-advanced-video-autofit-vimeo {
 		width: 100%;
 		> iframe {
 			width: 100%;
+			aspect-ratio: var(--ub-advanced-video-aspect-ratio);
+			height: auto !important;
 		}
 	}
-	&.ub-advanced-video-autofit-vimeo,
 	&.ub-advanced-video-autofit-dailymotion {
 		position: relative;
 		> iframe {
